@@ -81,7 +81,7 @@ func (h *Host) SetRuntimeConfig(config map[string]any) {
 	h.runtimeConfig = cloneMap(config)
 }
 
-func (h *Host) SetSession(session *discordgo.Session) {
+func (h *Host) SetSession(session *discordgo.Session, guildID ...string) {
 	if h == nil || h.runtime == nil || session == nil {
 		return
 	}
@@ -89,7 +89,11 @@ func (h *Host) SetSession(session *discordgo.Session) {
 	if !ok || state == nil {
 		return
 	}
-	state.SetOutboundOps(buildDiscordOps(h.scriptPath, session))
+	defaultGuildID := ""
+	if len(guildID) > 0 {
+		defaultGuildID = strings.TrimSpace(guildID[0])
+	}
+	state.SetOutboundOpsForGuild(buildDiscordOps(h.scriptPath, session), defaultGuildID)
 }
 
 func (h *Host) Close(ctx context.Context) error {

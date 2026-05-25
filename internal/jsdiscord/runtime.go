@@ -64,10 +64,11 @@ func (r *Registrar) RegisterRuntimeModule(ctx *engine.RuntimeModuleContext, reg 
 }
 
 type RuntimeState struct {
-	moduleName string
-	store      *MemoryStore
-	outboundMu sync.RWMutex
-	outbound   *DiscordOps
+	moduleName     string
+	store          *MemoryStore
+	outboundMu     sync.RWMutex
+	outbound       *DiscordOps
+	defaultGuildID string
 }
 
 func NewRuntimeState(moduleName string) *RuntimeState {
@@ -86,12 +87,19 @@ func (s *RuntimeState) ModuleName() string {
 }
 
 func (s *RuntimeState) SetOutboundOps(ops *DiscordOps) {
+	s.SetOutboundOpsForGuild(ops, "")
+}
+
+func (s *RuntimeState) SetOutboundOpsForGuild(ops *DiscordOps, guildID string) {
 	if s == nil {
 		return
 	}
 	s.outboundMu.Lock()
 	defer s.outboundMu.Unlock()
 	s.outbound = ops
+	if strings.TrimSpace(guildID) != "" {
+		s.defaultGuildID = strings.TrimSpace(guildID)
+	}
 }
 
 func (s *RuntimeState) outboundOps() *DiscordOps {
@@ -147,7 +155,38 @@ func (s *RuntimeState) topLevelChannelsObject(vm *goja.Runtime) *goja.Object {
 		}
 		return nil, ops.ChannelSend(ctx, channelID, payload)
 	})
+	_ = channels.Set("list", func(call goja.FunctionCall) goja.Value {
+		ops := s.outboundOps()
+		if ops == nil || ops.ChannelList == nil {
+			panic(vm.NewGoError(fmt.Errorf("discord channel list API is not ready; the bot session must be running")))
+		}
+		guildID := s.defaultGuild()
+		if len(call.Arguments) > 0 && !goja.IsUndefined(call.Argument(0)) && !goja.IsNull(call.Argument(0)) {
+			guildID = strings.TrimSpace(call.Argument(0).String())
+		}
+		if guildID == "" {
+			panic(vm.NewGoError(fmt.Errorf("discord.channels.list requires a guild ID when no default guild is configured")))
+		}
+		ctx := runtimebridge.CurrentContext(vm)
+		if ctx == nil {
+			ctx = context.Background()
+		}
+		channels, err := ops.ChannelList(ctx, guildID)
+		if err != nil {
+			panic(vm.NewGoError(err))
+		}
+		return vm.ToValue(channels)
+	})
 	return channels
+}
+
+func (s *RuntimeState) defaultGuild() string {
+	if s == nil {
+		return ""
+	}
+	s.outboundMu.RLock()
+	defer s.outboundMu.RUnlock()
+	return strings.TrimSpace(s.defaultGuildID)
 }
 
 func (s *RuntimeState) defineBot(vm *goja.Runtime, call goja.FunctionCall) goja.Value {

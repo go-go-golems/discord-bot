@@ -45,6 +45,27 @@ func buildChannelOps(ops *DiscordOps, scriptPath string, session *discordgo.Sess
 		return ret, nil
 	}
 
+	ops.ChannelList = func(ctx context.Context, guildID string) ([]map[string]any, error) {
+		_ = ctx
+		guildID = strings.TrimSpace(guildID)
+		if guildID == "" {
+			return nil, fmt.Errorf("channel list requires guild ID")
+		}
+		channels, err := session.GuildChannels(guildID)
+		if err != nil {
+			return nil, err
+		}
+		ret := make([]map[string]any, 0, len(channels))
+		for _, channel := range channels {
+			if channel == nil {
+				continue
+			}
+			ret = append(ret, channelSnapshotMap(channel))
+		}
+		logLifecycleDebug("listed discord guild channels from javascript", map[string]any{"script": scriptPath, "guildId": guildID, "count": len(ret), "action": "discord.channels.list"})
+		return ret, nil
+	}
+
 	ops.ChannelSetTopic = func(ctx context.Context, channelID, topic string) error {
 		_ = ctx
 		channelID = strings.TrimSpace(channelID)

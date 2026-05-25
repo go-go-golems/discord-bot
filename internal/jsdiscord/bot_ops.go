@@ -96,6 +96,7 @@ func discordOpsObject(vm *goja.Runtime, ctx context.Context, ops *DiscordOps) *g
 		_ = threads.Set("start", op1A(nil, ctx, map[string]any{}))
 		_ = channels.Set("send", op1AErr(nil, ctx))
 		_ = channels.Set("fetch", op1(nil, ctx, map[string]any{}))
+		_ = channels.Set("list", op1(nil, ctx, []map[string]any{}))
 		_ = channels.Set("setTopic", op2E(nil, ctx))
 		_ = channels.Set("setSlowmode", func(channelID string, seconds int) error { return nil })
 		_ = messages.Set("fetch", op2(nil, ctx, map[string]any{}))
@@ -125,6 +126,7 @@ func discordOpsObject(vm *goja.Runtime, ctx context.Context, ops *DiscordOps) *g
 		_ = threads.Set("start", op1A(ops.ThreadStart, ctx, map[string]any{}))
 		_ = channels.Set("send", op1AErr(ops.ChannelSend, ctx))
 		_ = channels.Set("fetch", op1(ops.ChannelFetch, ctx, map[string]any{}))
+		_ = channels.Set("list", op1(ops.ChannelList, ctx, []map[string]any{}))
 		_ = channels.Set("setTopic", op2E(ops.ChannelSetTopic, ctx))
 		_ = channels.Set("setSlowmode", func(channelID string, seconds int) error {
 			if ops.ChannelSetSlowmode == nil {

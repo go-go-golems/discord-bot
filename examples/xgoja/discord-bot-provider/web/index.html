@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>xgoja Discord Say</title>
+  <link rel="stylesheet" href="/retro.css">
+</head>
+<body>
+  <main class="page-shell" aria-labelledby="title">
+    <header class="masthead">
+      <p class="eyebrow">xgoja express → discord</p>
+      <h1 id="title">Send a Discord message</h1>
+      <p class="lede">A tiny black-and-white System 1 inspired form. No window chrome, no menu bar.</p>
+    </header>
+
+    <form id="say-form" class="say-form" method="post" action="/say">
+      <label>
+        <span>Channel</span>
+        <select id="channel-select" name="channelId" required>
+          <option value="">Loading channels…</option>
+        </select>
+      </label>
+
+      <details class="manual-channel">
+        <summary>Manual channel ID</summary>
+        <label>
+          <span>Override Channel ID</span>
+          <input id="manual-channel-id" type="text" inputmode="numeric" autocomplete="off" placeholder="123456789012345678">
+        </label>
+      </details>
+
+      <label>
+        <span>Message</span>
+        <textarea name="content" rows="5" placeholder="hello from xgoja express" required></textarea>
+      </label>
+
+      <div class="button-row">
+        <button type="submit">Say it</button>
+        <button type="reset" class="secondary">Clear</button>
+      </div>
+    </form>
+
+    <pre id="result" class="result" aria-live="polite">Ready.</pre>
+  </main>
+
+  <script>
+    const form = document.getElementById('say-form')
+    const result = document.getElementById('result')
+    const select = document.getElementById('channel-select')
+    const manualChannel = document.getElementById('manual-channel-id')
+
+    async function loadChannels() {
+      try {
+        const response = await fetch('/channels')
+        const payload = await response.json()
+        if (!response.ok || !payload.ok) {
+          throw new Error(payload.error || `HTTP ${response.status}`)
+        }
+        select.replaceChildren()
+        if (!payload.channels.length) {
+          select.append(new Option('No channels returned', ''))
+          result.textContent = 'No channels returned by Discord.'
+          return
+        }
+        select.append(new Option('Choose a channel…', ''))
+        for (const channel of payload.channels) {
+          const label = `#${channel.name}${channel.type ? ` · ${channel.type}` : ''}`
+          select.append(new Option(label, channel.id))
+        }
+        result.textContent = `Loaded ${payload.channels.length} channels.`
+      } catch (error) {
+        select.replaceChildren(new Option('Could not load channels', ''))
+        result.textContent = `Could not load channels: ${error}`
+      }
+    }
+
+    form.addEventListener('submit', async (event) => {
+      event.preventDefault()
+      result.textContent = 'Sending…'
+      const body = new URLSearchParams(new FormData(form))
+      const manual = manualChannel.value.trim()
+      if (manual) {
+        body.set('channelId', manual)
+      }
+      try {
+        const response = await fetch('/say', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body
+        })
+        const text = await response.text()
+        result.textContent = text
+      } catch (error) {
+        result.textContent = String(error)
+      }
+    })
+
+    loadChannels()
+  </script>
+</body>
+</html>

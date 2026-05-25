@@ -44,7 +44,7 @@ func NewWithScript(cfg appconfig.Settings, script string, runtimeConfig map[stri
 	}
 	jsHost := loaded.Host
 	jsHost.SetRuntimeConfig(runtimeConfig)
-	jsHost.SetSession(session)
+	jsHost.SetSession(session, cfg.GuildID)
 	if loaded.Descriptor != nil {
 		session.Identify.Intents = intentsForDescriptor(loaded.Descriptor)
 

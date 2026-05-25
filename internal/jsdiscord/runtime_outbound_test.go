@@ -5,6 +5,38 @@ import (
 	"testing"
 )
 
+func TestDiscordTopLevelChannelsListUsesOutboundOps(t *testing.T) {
+	handle := loadTestBot(t, writeBotScript(t, `
+const discord = require("discord")
+const { defineBot } = discord
+module.exports = defineBot(({ command }) => {
+  command("channels", async () => {
+    const channels = await discord.channels.list("guild-1")
+    return { content: channels.map((channel) => channel.name).join(",") }
+  })
+})
+`))
+
+	result, err := handle.DispatchCommand(context.Background(), DispatchRequest{
+		Name: "channels",
+		Discord: &DiscordOps{
+			ChannelList: func(_ context.Context, guildID string) ([]map[string]any, error) {
+				if guildID != "guild-1" {
+					t.Fatalf("guildID = %q", guildID)
+				}
+				return []map[string]any{{"id": "chan-1", "name": "general"}, {"id": "chan-2", "name": "bots"}}, nil
+			},
+		},
+	})
+	if err != nil {
+		t.Fatalf("dispatch: %v", err)
+	}
+	m, ok := result.(map[string]any)
+	if !ok || m["content"] != "general,bots" {
+		t.Fatalf("result = %#v", result)
+	}
+}
+
 func TestDiscordTopLevelChannelsSendUsesOutboundOps(t *testing.T) {
 	handle := loadTestBot(t, writeBotScript(t, `
 const discord = require("discord")
