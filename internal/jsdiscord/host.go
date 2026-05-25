@@ -30,21 +30,36 @@ func NewHost(ctx context.Context, scriptPath string, opts ...HostOption) (*Host,
 	if err != nil {
 		return nil, err
 	}
-	runtimeRegistrars := []engine.RuntimeModuleRegistrar{NewRegistrar(Config{}), &UIRegistrar{}}
-	runtimeRegistrars = append(runtimeRegistrars, hostOpts.runtimeModuleRegistrars...)
-	factory, err := engine.NewBuilder(
-		engine.WithModuleRootsFromScript(absScript, engine.DefaultModuleRootsOptions()),
-	).
-		WithModules(engine.DefaultRegistryModulesNamed("database")).
-		WithRuntimeModuleRegistrars(runtimeRegistrars...).
-		WithRequireOptions(require.WithGlobalFolders(filepath.Dir(absScript), filepath.Join(filepath.Dir(absScript), "node_modules"))).
-		Build()
+	requireOpts := []require.Option{require.WithGlobalFolders(filepath.Dir(absScript), filepath.Join(filepath.Dir(absScript), "node_modules"))}
+	moduleRootsOpt, err := engine.RequireOptionWithModuleRootsFromScript(absScript, engine.DefaultModuleRootsOptions())
 	if err != nil {
-		return nil, fmt.Errorf("build js runtime: %w", err)
+		return nil, fmt.Errorf("resolve module roots from script: %w", err)
 	}
-	rt, err := factory.NewRuntime(ctx)
-	if err != nil {
-		return nil, fmt.Errorf("create js runtime: %w", err)
+	requireOpts = append(requireOpts, moduleRootsOpt)
+
+	var rt *engine.Runtime
+	if hostOpts.runtimeFactory != nil {
+		rt, err = hostOpts.runtimeFactory.NewRuntime(ctx, requireOpts...)
+		if err != nil {
+			return nil, fmt.Errorf("create js runtime: %w", err)
+		}
+	} else {
+		runtimeRegistrars := []engine.RuntimeModuleSpec{NewRegistrar(Config{}), &UIRegistrar{}}
+		runtimeRegistrars = append(runtimeRegistrars, hostOpts.runtimeModuleRegistrars...)
+		factory, err := engine.NewBuilder(
+			engine.WithModuleRootsFromScript(absScript, engine.DefaultModuleRootsOptions()),
+		).
+			UseModuleMiddleware(engine.MiddlewareOnly("database")).
+			WithModules(runtimeRegistrars...).
+			WithRequireOptions(requireOpts...).
+			Build()
+		if err != nil {
+			return nil, fmt.Errorf("build js runtime: %w", err)
+		}
+		rt, err = factory.NewRuntime(ctx)
+		if err != nil {
+			return nil, fmt.Errorf("create js runtime: %w", err)
+		}
 	}
 	value, err := rt.Require.Require(absScript)
 	if err != nil {

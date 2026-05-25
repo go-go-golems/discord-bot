@@ -29,24 +29,24 @@ func defaultRuntimeFactory(cfg commandOptions) RuntimeFactory {
 			absScript = strings.TrimSpace(verb.File.AbsPath)
 		}
 
-		runtimeRegistrars := []engine.RuntimeModuleRegistrar{jsdiscord.NewRegistrar(jsdiscord.Config{})}
+		runtimeRegistrars := []engine.RuntimeModuleSpec{jsdiscord.NewRegistrar(jsdiscord.Config{})}
 		runtimeRegistrars = append(runtimeRegistrars, cfg.runtimeModuleRegistrars...)
 
 		builder := engine.NewBuilder().
-			WithModules(engine.DefaultRegistryModulesNamed("database")).
-			WithRequireOptions(require.WithLoader(registry.RequireLoader())).
-			WithRuntimeModuleRegistrars(runtimeRegistrars...)
+			UseModuleMiddleware(engine.MiddlewareOnly("database")).
+			WithModules(runtimeRegistrars...).
+			WithRequireOptions(require.WithLoader(registry.RequireLoader()))
 
 		if absScript != "" {
 			builder = engine.NewBuilder(
 				engine.WithModuleRootsFromScript(absScript, engine.DefaultModuleRootsOptions()),
 			).
-				WithModules(engine.DefaultRegistryModulesNamed("database")).
+				UseModuleMiddleware(engine.MiddlewareOnly("database")).
+				WithModules(runtimeRegistrars...).
 				WithRequireOptions(
 					require.WithLoader(registry.RequireLoader()),
 					require.WithGlobalFolders(filepath.Dir(absScript), filepath.Join(filepath.Dir(absScript), "node_modules")),
-				).
-				WithRuntimeModuleRegistrars(runtimeRegistrars...)
+				)
 		}
 
 		factory, err := builder.Build()

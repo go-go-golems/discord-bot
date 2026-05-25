@@ -1,16 +1,23 @@
 package jsdiscord
 
 import (
+	"context"
 	"fmt"
 
+	"github.com/dop251/goja_nodejs/require"
 	"github.com/go-go-golems/go-go-goja/engine"
 )
 
 // HostOption customizes how a JavaScript bot host is created.
 type HostOption func(*hostOptions) error
 
+type RuntimeFactory interface {
+	NewRuntime(ctx context.Context, opts ...require.Option) (*engine.Runtime, error)
+}
+
 type hostOptions struct {
-	runtimeModuleRegistrars []engine.RuntimeModuleRegistrar
+	runtimeModuleRegistrars []engine.RuntimeModuleSpec
+	runtimeFactory          RuntimeFactory
 }
 
 func applyHostOptions(opts ...HostOption) (hostOptions, error) {
@@ -27,7 +34,7 @@ func applyHostOptions(opts ...HostOption) (hostOptions, error) {
 }
 
 // WithRuntimeModuleRegistrars appends per-runtime native module registrars.
-func WithRuntimeModuleRegistrars(registrars ...engine.RuntimeModuleRegistrar) HostOption {
+func WithRuntimeModuleRegistrars(registrars ...engine.RuntimeModuleSpec) HostOption {
 	return func(cfg *hostOptions) error {
 		for i, registrar := range registrars {
 			if registrar == nil {
@@ -35,6 +42,16 @@ func WithRuntimeModuleRegistrars(registrars ...engine.RuntimeModuleRegistrar) Ho
 			}
 		}
 		cfg.runtimeModuleRegistrars = append(cfg.runtimeModuleRegistrars, registrars...)
+		return nil
+	}
+}
+
+func WithRuntimeFactory(factory RuntimeFactory) HostOption {
+	return func(cfg *hostOptions) error {
+		if factory == nil {
+			return fmt.Errorf("runtime factory is nil")
+		}
+		cfg.runtimeFactory = factory
 		return nil
 	}
 }

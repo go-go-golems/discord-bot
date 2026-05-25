@@ -8,7 +8,6 @@ import (
 
 	"github.com/dop251/goja"
 	"github.com/go-go-golems/go-go-goja/pkg/runtimebridge"
-	"github.com/go-go-golems/go-go-goja/pkg/runtimeowner"
 	"github.com/rs/zerolog/log"
 )
 
@@ -103,7 +102,7 @@ func normalizeResultToMap(result any) (map[string]any, error) {
 	}
 }
 
-func settleValue(ctx context.Context, owner runtimeowner.Runner, value any) (any, error) {
+func settleValue(ctx context.Context, owner runtimebridge.OwnerRunner, value any) (any, error) {
 	if value == nil {
 		return nil, nil
 	}
@@ -146,7 +145,7 @@ type promiseSnapshot struct {
 	Text   string
 }
 
-func waitForPromise(ctx context.Context, owner runtimeowner.Runner, promise *goja.Promise) (any, error) {
+func waitForPromise(ctx context.Context, owner runtimebridge.OwnerRunner, promise *goja.Promise) (any, error) {
 	for {
 		select {
 		case <-ctx.Done():

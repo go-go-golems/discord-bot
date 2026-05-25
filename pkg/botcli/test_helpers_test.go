@@ -35,7 +35,7 @@ func (testAppRegistrar) ID() string {
 	return "test-app-registrar"
 }
 
-func (testAppRegistrar) RegisterRuntimeModules(_ *engine.RuntimeModuleContext, reg *noderequire.Registry) error {
+func (testAppRegistrar) RegisterRuntimeModule(_ *engine.RuntimeModuleContext, reg *noderequire.Registry) error {
 	reg.RegisterNativeModule("app", func(vm *goja.Runtime, moduleObj *goja.Object) {
 		exports := moduleObj.Get("exports").(*goja.Object)
 		_ = exports.Set("name", func() string { return "app" })
@@ -53,6 +53,6 @@ func (customRuntimeFactory) HostOptions() []jsdiscord.HostOption {
 }
 
 func (customRuntimeFactory) NewRuntimeForVerb(ctx context.Context, registry *jsverbs.Registry, verb *jsverbs.VerbSpec) (*engine.Runtime, error) {
-	cfg := commandOptions{runtimeModuleRegistrars: []engine.RuntimeModuleRegistrar{testAppRegistrar{}}}
+	cfg := commandOptions{runtimeModuleRegistrars: []engine.RuntimeModuleSpec{testAppRegistrar{}}}
 	return defaultRuntimeFactory(cfg).NewRuntimeForVerb(ctx, registry, verb)
 }

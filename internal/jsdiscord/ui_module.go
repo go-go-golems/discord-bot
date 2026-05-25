@@ -15,12 +15,17 @@ type UIRegistrar struct{}
 
 func (r *UIRegistrar) ID() string { return "discord-ui-registrar" }
 
-func (r *UIRegistrar) RegisterRuntimeModules(ctx *engine.RuntimeModuleContext, reg *require.Registry) error {
+func (r *UIRegistrar) RegisterRuntimeModule(ctx *engine.RuntimeModuleContext, reg *require.Registry) error {
 	if reg == nil {
 		return fmt.Errorf("require registry is nil")
 	}
 	reg.RegisterNativeModule("ui", uiLoader)
 	return nil
+}
+
+// NewUILoader returns the Goja native module loader for require("ui").
+func NewUILoader() require.ModuleLoader {
+	return uiLoader
 }
 
 // uiLoader is the Goja native module loader for require("ui").

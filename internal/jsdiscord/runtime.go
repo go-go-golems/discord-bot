@@ -30,7 +30,7 @@ func (r *Registrar) ID() string {
 	return "discord-js-registrar"
 }
 
-func (r *Registrar) RegisterRuntimeModules(ctx *engine.RuntimeModuleContext, reg *require.Registry) error {
+func (r *Registrar) RegisterRuntimeModule(ctx *engine.RuntimeModuleContext, reg *require.Registry) error {
 	if reg == nil {
 		return fmt.Errorf("require registry is nil")
 	}
@@ -74,6 +74,10 @@ func (s *RuntimeState) Store() *MemoryStore {
 		s.store = NewMemoryStore()
 	}
 	return s.store
+}
+
+func NewLoader(config Config) require.ModuleLoader {
+	return NewRuntimeState(config.ModuleName).Loader
 }
 
 func (s *RuntimeState) Loader(vm *goja.Runtime, moduleObj *goja.Object) {

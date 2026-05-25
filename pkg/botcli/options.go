@@ -37,7 +37,7 @@ type HostOptionsProvider interface {
 
 type commandOptions struct {
 	appName                 string
-	runtimeModuleRegistrars []engine.RuntimeModuleRegistrar
+	runtimeModuleRegistrars []engine.RuntimeModuleSpec
 	runtimeFactory          RuntimeFactory
 }
 
@@ -78,7 +78,7 @@ func WithAppName(name string) CommandOption {
 // require() modules and the default runtime construction is otherwise correct.
 // Prefer this over WithRuntimeFactory(...) unless runtime creation itself must
 // change.
-func WithRuntimeModuleRegistrars(registrars ...engine.RuntimeModuleRegistrar) CommandOption {
+func WithRuntimeModuleRegistrars(registrars ...engine.RuntimeModuleSpec) CommandOption {
 	return func(cfg *commandOptions) error {
 		for i, registrar := range registrars {
 			if registrar == nil {

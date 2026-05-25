@@ -27,34 +27,51 @@ func NewBotsCommand(bootstrap Bootstrap, opts ...CommandOption) (*cobra.Command,
 		return nil, err
 	}
 	parserConfig := botCLIParserConfig(cfg.appName)
-	hostOpts := cfg.hostOptions()
 
 	root := &cobra.Command{
 		Use:   "bots",
 		Short: "List, inspect, and run named JavaScript bot implementations",
 	}
 
-	if err := addStaticBotsCommands(root, bootstrap, hostOpts, parserConfig); err != nil {
+	commands, err := NewBotsCommands(bootstrap, opts...)
+	if err != nil {
 		return nil, err
 	}
-	if err := addDiscoveredBotsCommands(root, bootstrap, cfg, hostOpts, parserConfig); err != nil {
-		return nil, err
+	if err := glazed_cli.AddCommandsToRootCommand(root, commands, nil, glazed_cli.WithParserConfig(parserConfig)); err != nil {
+		return nil, fmt.Errorf("register bot commands: %w", err)
 	}
 	return root, nil
 }
 
-func addStaticBotsCommands(root *cobra.Command, bootstrap Bootstrap, hostOpts []jsdiscord.HostOption, parserConfig glazed_cli.CobraParserConfig) error {
+func NewBotsCommands(bootstrap Bootstrap, opts ...CommandOption) ([]cmds.Command, error) {
+	cfg, err := applyCommandOptions(opts...)
+	if err != nil {
+		return nil, err
+	}
+	hostOpts := cfg.hostOptions()
+	ret := []cmds.Command{}
+	staticCommands, err := staticBotsCommands(bootstrap, hostOpts)
+	if err != nil {
+		return nil, err
+	}
+	ret = append(ret, staticCommands...)
+	if len(bootstrap.Repositories) > 0 {
+		discoveredCommands, err := discoveredBotsCommands(bootstrap, cfg, hostOpts)
+		if err != nil {
+			return nil, err
+		}
+		ret = append(ret, discoveredCommands...)
+	}
+	return ret, nil
+}
+
+func staticBotsCommands(bootstrap Bootstrap, hostOpts []jsdiscord.HostOption) ([]cmds.Command, error) {
 	listDesc := cmds.NewCommandDescription(
 		"list",
 		cmds.WithShort("List discovered bot implementations"),
 		cmds.WithLong("Emit all discovered bots as a structured table."),
 	)
 	listCmd := &listBotsCommand{CommandDescription: listDesc, bootstrap: bootstrap, hostOpts: hostOpts}
-	listCobra, err := glazed_cli.BuildCobraCommandFromCommand(listCmd, glazed_cli.WithParserConfig(parserConfig))
-	if err != nil {
-		return fmt.Errorf("build list command: %w", err)
-	}
-	root.AddCommand(listCobra)
 
 	helpDesc := cmds.NewCommandDescription(
 		"help",
@@ -69,31 +86,8 @@ func addStaticBotsCommands(root *cobra.Command, bootstrap Bootstrap, hostOpts []
 		),
 	)
 	helpCmd := &helpBotsCommand{CommandDescription: helpDesc, bootstrap: bootstrap, hostOpts: hostOpts}
-	helpCobra, err := glazed_cli.BuildCobraCommandFromCommand(helpCmd, glazed_cli.WithParserConfig(parserConfig))
-	if err != nil {
-		return fmt.Errorf("build help command: %w", err)
-	}
-	root.AddCommand(helpCobra)
 
-	return nil
-}
-
-func addDiscoveredBotsCommands(root *cobra.Command, bootstrap Bootstrap, cfg commandOptions, hostOpts []jsdiscord.HostOption, parserConfig glazed_cli.CobraParserConfig) error {
-	if len(bootstrap.Repositories) == 0 {
-		return nil
-	}
-
-	discoveredCommands, err := discoveredBotsCommands(bootstrap, cfg, hostOpts)
-	if err != nil {
-		return err
-	}
-	if len(discoveredCommands) == 0 {
-		return nil
-	}
-	if err := glazed_cli.AddCommandsToRootCommand(root, discoveredCommands, nil, glazed_cli.WithParserConfig(parserConfig)); err != nil {
-		return fmt.Errorf("register discovered bot verbs: %w", err)
-	}
-	return nil
+	return []cmds.Command{listCmd, helpCmd}, nil
 }
 
 func discoveredBotsCommands(bootstrap Bootstrap, cfg commandOptions, hostOpts []jsdiscord.HostOption) ([]cmds.Command, error) {
