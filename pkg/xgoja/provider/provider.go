@@ -31,10 +31,6 @@ type commandProviderConfig struct {
 	RuntimeProfile   string   `json:"runtimeProfile,omitempty"`
 }
 
-type xgojaRuntimeFactory interface {
-	NewRuntime(ctx context.Context, profile string, opts ...require.Option) (*engine.Runtime, error)
-}
-
 func Register(registry *providerapi.Registry) error {
 	return registry.Package(PackageID,
 		providerapi.Module{
@@ -91,8 +87,8 @@ func newBotsCommandSet(ctx providerapi.CommandSetContext) (*providerapi.CommandS
 
 	opts := []botcli.CommandOption{}
 	var runtimeFactory *xgojaBotRuntimeFactory
-	if factory, ok := ctx.RuntimeFactory.(xgojaRuntimeFactory); ok {
-		runtimeFactory = &xgojaBotRuntimeFactory{factory: factory, profile: profile, selectedModules: ctx.SelectedModules}
+	if ctx.RuntimeFactory != nil {
+		runtimeFactory = &xgojaBotRuntimeFactory{factory: ctx.RuntimeFactory, profile: profile, selectedModules: ctx.SelectedModules}
 		opts = append(opts, botcli.WithRuntimeFactory(runtimeFactory))
 	}
 	commands, err := botcli.NewBotsCommands(bootstrap, opts...)
@@ -179,7 +175,7 @@ func bootstrapFromConfig(cfg commandProviderConfig) (botcli.Bootstrap, error) {
 }
 
 type xgojaBotRuntimeFactory struct {
-	factory         xgojaRuntimeFactory
+	factory         providerapi.RuntimeFactory
 	profile         string
 	selectedModules []providerapi.ModuleDescriptor
 	mu              sync.Mutex
