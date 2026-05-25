@@ -44,6 +44,11 @@ func (h *BotHandle) dispatch(ctx context.Context, fn goja.Callable, request Disp
 		return nil, fmt.Errorf("discord bot requires runtime owner bindings")
 	}
 	ret, err := bindings.Owner.Call(ctx, "discord.bot.dispatch", func(callCtx context.Context, vm *goja.Runtime) (any, error) {
+		if request.Discord != nil {
+			if state, ok := StateForRuntime(vm); ok {
+				state.SetOutboundOps(request.Discord)
+			}
+		}
 		input := buildDispatchInput(vm, callCtx, request)
 		result, err := fn(goja.Undefined(), input)
 		if err != nil {

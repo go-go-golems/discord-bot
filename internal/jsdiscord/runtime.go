@@ -1,12 +1,15 @@
 package jsdiscord
 
 import (
+	"context"
 	"fmt"
 	"strings"
+	"sync"
 
 	"github.com/dop251/goja"
 	"github.com/dop251/goja_nodejs/require"
 	"github.com/go-go-golems/go-go-goja/engine"
+	"github.com/go-go-golems/go-go-goja/pkg/runtimebridge"
 )
 
 // RuntimeStateContextKey is the engine context key for the discord runtime state.
@@ -16,6 +19,20 @@ const RuntimeStateContextKey = "discord.runtime"
 
 type Config struct {
 	ModuleName string
+}
+
+var runtimeStates sync.Map // *goja.Runtime -> *RuntimeState
+
+func StateForRuntime(vm *goja.Runtime) (*RuntimeState, bool) {
+	if vm == nil {
+		return nil, false
+	}
+	value, ok := runtimeStates.Load(vm)
+	if !ok {
+		return nil, false
+	}
+	state, ok := value.(*RuntimeState)
+	return state, ok
 }
 
 type Registrar struct {
@@ -49,6 +66,8 @@ func (r *Registrar) RegisterRuntimeModule(ctx *engine.RuntimeModuleContext, reg 
 type RuntimeState struct {
 	moduleName string
 	store      *MemoryStore
+	outboundMu sync.RWMutex
+	outbound   *DiscordOps
 }
 
 func NewRuntimeState(moduleName string) *RuntimeState {
@@ -66,6 +85,24 @@ func (s *RuntimeState) ModuleName() string {
 	return s.moduleName
 }
 
+func (s *RuntimeState) SetOutboundOps(ops *DiscordOps) {
+	if s == nil {
+		return
+	}
+	s.outboundMu.Lock()
+	defer s.outboundMu.Unlock()
+	s.outbound = ops
+}
+
+func (s *RuntimeState) outboundOps() *DiscordOps {
+	if s == nil {
+		return nil
+	}
+	s.outboundMu.RLock()
+	defer s.outboundMu.RUnlock()
+	return s.outbound
+}
+
 func (s *RuntimeState) Store() *MemoryStore {
 	if s == nil {
 		return NewMemoryStore()
@@ -81,10 +118,12 @@ func NewLoader(config Config) require.ModuleLoader {
 }
 
 func (s *RuntimeState) Loader(vm *goja.Runtime, moduleObj *goja.Object) {
+	runtimeStates.Store(vm, s)
 	exports := moduleObj.Get("exports").(*goja.Object)
 	_ = exports.Set("defineBot", func(call goja.FunctionCall) goja.Value {
 		return s.defineBot(vm, call)
 	})
+	_ = exports.Set("channels", s.topLevelChannelsObject(vm))
 
 	// Polyfill jsverbs metadata functions so bot scripts can coexist
 	// with __verb__ / __section__ / __package__ declarations.
@@ -93,6 +132,22 @@ func (s *RuntimeState) Loader(vm *goja.Runtime, moduleObj *goja.Object) {
 			_ = vm.Set(name, func(goja.FunctionCall) goja.Value { return goja.Undefined() })
 		}
 	}
+}
+
+func (s *RuntimeState) topLevelChannelsObject(vm *goja.Runtime) *goja.Object {
+	channels := vm.NewObject()
+	_ = channels.Set("send", func(channelID string, payload any) (any, error) {
+		ops := s.outboundOps()
+		if ops == nil || ops.ChannelSend == nil {
+			return nil, fmt.Errorf("discord outbound channel API is not ready; the bot session must be running")
+		}
+		ctx := runtimebridge.CurrentContext(vm)
+		if ctx == nil {
+			ctx = context.Background()
+		}
+		return nil, ops.ChannelSend(ctx, channelID, payload)
+	})
+	return channels
 }
 
 func (s *RuntimeState) defineBot(vm *goja.Runtime, call goja.FunctionCall) goja.Value {

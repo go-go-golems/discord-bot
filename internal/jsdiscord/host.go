@@ -81,6 +81,17 @@ func (h *Host) SetRuntimeConfig(config map[string]any) {
 	h.runtimeConfig = cloneMap(config)
 }
 
+func (h *Host) SetSession(session *discordgo.Session) {
+	if h == nil || h.runtime == nil || session == nil {
+		return
+	}
+	state, ok := StateForRuntime(h.runtime.VM)
+	if !ok || state == nil {
+		return
+	}
+	state.SetOutboundOps(buildDiscordOps(h.scriptPath, session))
+}
+
 func (h *Host) Close(ctx context.Context) error {
 	if h == nil || h.runtime == nil {
 		return nil
