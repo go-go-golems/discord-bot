@@ -21,6 +21,7 @@ import (
 	"github.com/go-go-golems/go-go-goja/engine"
 	"github.com/go-go-golems/go-go-goja/pkg/jsverbs"
 	"github.com/go-go-golems/go-go-goja/pkg/xgoja/providerapi"
+	"github.com/go-go-golems/go-go-goja/pkg/xgoja/providerutil"
 )
 
 const PackageID = "discord-bot"
@@ -80,7 +81,10 @@ func newBotsCommandSet(ctx providerapi.CommandSetContext) (*providerapi.CommandS
 	if profile == "" {
 		profile = "main"
 	}
-	sections, err := collectModuleSections(ctx.SelectedModules, profile, ctx.Name)
+	sections, err := providerutil.CollectConfigSections(ctx.SelectedModules, providerapi.SectionContext{
+		CommandProviderID: ctx.Name,
+		RuntimeProfile:    profile,
+	}, map[string]string{schema.DefaultSlug: "bot command schema"})
 	if err != nil {
 		return nil, err
 	}
@@ -115,43 +119,6 @@ func newBotsCommandSet(ctx providerapi.CommandSetContext) (*providerapi.CommandS
 			ShortHelpSections: []string{schema.DefaultSlug, schema.GlobalDefaultSlug},
 		},
 	}, nil
-}
-
-func collectModuleSections(descriptors []providerapi.ModuleDescriptor, profile string, commandProvider string) ([]schema.Section, error) {
-	sections := []schema.Section{}
-	seen := map[string]string{schema.DefaultSlug: "bot command schema"}
-	for _, descriptor := range descriptors {
-		for _, capability := range descriptor.Capabilities {
-			sectionCapability, ok := capability.(providerapi.ConfigSectionCapability)
-			if !ok {
-				continue
-			}
-			moduleSections, err := sectionCapability.ConfigSections(providerapi.SectionContext{
-				CommandProviderID: commandProvider,
-				RuntimeProfile:    profile,
-				PackageID:         descriptor.PackageID,
-				ModuleID:          descriptor.ModuleID,
-			})
-			if err != nil {
-				return nil, fmt.Errorf("collect config sections for %s.%s capability %s: %w", descriptor.PackageID, descriptor.ModuleID, capability.CapabilityID(), err)
-			}
-			for _, section := range moduleSections {
-				if section == nil {
-					return nil, fmt.Errorf("%s.%s capability %s returned nil section", descriptor.PackageID, descriptor.ModuleID, capability.CapabilityID())
-				}
-				slug := strings.TrimSpace(section.GetSlug())
-				if slug == "" {
-					return nil, fmt.Errorf("%s.%s capability %s returned empty section slug", descriptor.PackageID, descriptor.ModuleID, capability.CapabilityID())
-				}
-				if previous, ok := seen[slug]; ok {
-					return nil, fmt.Errorf("duplicate config section slug %q from %s.%s capability %s; already provided by %s", slug, descriptor.PackageID, descriptor.ModuleID, capability.CapabilityID(), previous)
-				}
-				seen[slug] = fmt.Sprintf("%s.%s capability %s", descriptor.PackageID, descriptor.ModuleID, capability.CapabilityID())
-				sections = append(sections, section)
-			}
-		}
-	}
-	return sections, nil
 }
 
 func bootstrapFromConfig(cfg commandProviderConfig) (botcli.Bootstrap, error) {
@@ -250,19 +217,7 @@ func initSelectedModules(ctx context.Context, vals *values.Values, rt *engine.Ru
 	if rt == nil {
 		return fmt.Errorf("runtime is nil")
 	}
-	handle := runtimeHandle{rt: rt}
-	for _, descriptor := range descriptors {
-		for _, capability := range descriptor.Capabilities {
-			initializer, ok := capability.(providerapi.RuntimeInitializerCapability)
-			if !ok {
-				continue
-			}
-			if err := initializer.InitRuntimeFromSections(ctx, vals, handle); err != nil {
-				return fmt.Errorf("initialize runtime from sections for %s.%s capability %s: %w", descriptor.PackageID, descriptor.ModuleID, capability.CapabilityID(), err)
-			}
-		}
-	}
-	return nil
+	return providerutil.InitRuntimeFromSections(ctx, vals, runtimeHandle{rt: rt}, descriptors)
 }
 
 type runtimeHandle struct {
