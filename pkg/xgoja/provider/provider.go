@@ -232,11 +232,9 @@ func (f *xgojaBotRuntimeFactory) newRuntime(ctx context.Context, opts ...require
 	if err != nil {
 		return nil, err
 	}
-	if vals := f.currentValues(); vals != nil {
-		if err := initSelectedModules(ctx, vals, rt, f.selectedModules); err != nil {
-			_ = rt.Close(context.Background())
-			return nil, err
-		}
+	if err := initSelectedModules(ctx, f.currentValues(), rt, f.selectedModules); err != nil {
+		_ = rt.Close(context.Background())
+		return nil, err
 	}
 	return rt, nil
 }

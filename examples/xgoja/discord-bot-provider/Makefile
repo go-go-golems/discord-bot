@@ -21,19 +21,21 @@ eval:
 	cd $(EXAMPLE_DIR) && $(BIN) eval 'require("discord"); require("fs").readFileSync("./bot-data/message.txt", "utf8").trim()'
 
 bots-list:
-	cd $(EXAMPLE_DIR) && $(BIN) bots list --output json
+	cd $(EXAMPLE_DIR) && $(BIN) bots list --http-enabled=false --output json
 
 bots-help:
-	cd $(EXAMPLE_DIR) && $(BIN) bots help fs-express-smoke --output json
+	cd $(EXAMPLE_DIR) && $(BIN) bots help fs-express-smoke --http-enabled=false --output json
 
 tmux-run: build
 	@test -n "$(DISCORD_BOT_TOKEN)" || (echo "DISCORD_BOT_TOKEN is required" && exit 1)
 	@test -n "$(DISCORD_APPLICATION_ID)" || (echo "DISCORD_APPLICATION_ID is required" && exit 1)
 	@test -n "$(DISCORD_GUILD_ID)" || (echo "DISCORD_GUILD_ID is required" && exit 1)
 	@tmux has-session -t $(TMUX_SESSION) 2>/dev/null && tmux kill-session -t $(TMUX_SESSION) || true
-	tmux new-session -d -s $(TMUX_SESSION) -- bash -lc 'cd "$(EXAMPLE_DIR)" && source "$(WORKSPACE_ROOT)/.envrc" && exec "$(BIN)" bots fs-express-smoke run --sync-on-start'
+	tmux new-session -d -s $(TMUX_SESSION) -- bash -lc 'cd "$(EXAMPLE_DIR)" && source "$(WORKSPACE_ROOT)/.envrc" && exec "$(BIN)" bots fs-express-smoke run --sync-on-start --http-listen 127.0.0.1:8787'
 	@echo "tmux session $(TMUX_SESSION) is running"
 	@echo "attach: tmux attach -t $(TMUX_SESSION)"
+	@echo "http: curl http://127.0.0.1:8787/"
+	@echo "say: curl -X POST http://127.0.0.1:8787/say -H 'Content-Type: application/json' -d '{\"channelId\":\"<channel-id>\",\"content\":\"hello from xgoja express\"}'"
 
 tmux-stop:
 	tmux kill-session -t $(TMUX_SESSION)

@@ -8,6 +8,10 @@ packages:
     replace: ../../..
   - id: go-go-goja-host
     import: github.com/go-go-golems/go-go-goja/pkg/xgoja/providers/host
+    replace: ../../../../go-go-goja
+  - id: go-go-goja-http
+    import: github.com/go-go-golems/go-go-goja/pkg/xgoja/providers/http
+    replace: ../../../../go-go-goja
 runtimes:
   bot:
     modules:
@@ -22,6 +26,12 @@ runtimes:
         as: fs
         config:
           allow: true
+      - package: go-go-goja-http
+        name: express
+        as: express
+        config:
+          enabled: true
+          listen: "127.0.0.1:8787"
 commands:
   eval:
     enabled: true
