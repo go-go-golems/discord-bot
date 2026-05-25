@@ -30,9 +30,9 @@ func TestRegister(t *testing.T) {
 func TestCollectModuleSections(t *testing.T) {
 	sectionCapability := fakeSectionCapability{slug: "http"}
 	sections, err := providerutil.CollectConfigSections([]providerapi.ModuleDescriptor{{
-		PackageID:    "test-http",
-		ModuleID:     "express",
-		Capabilities: []providerapi.ModuleCapability{sectionCapability},
+		PackageID:           "test-http",
+		ModuleID:            "express",
+		PackageCapabilities: []providerapi.PackageCapability{sectionCapability},
 	}}, providerapi.SectionContext{RuntimeProfile: "bot", CommandProviderID: "bots"}, map[string]string{schema.DefaultSlug: "bot command schema"})
 	if err != nil {
 		t.Fatalf("collect sections: %v", err)
@@ -56,9 +56,9 @@ func TestInitSelectedModulesInvokesRuntimeInitializer(t *testing.T) {
 	initializer := &fakeRuntimeInitializer{}
 	vals := values.New()
 	if err := initSelectedModules(context.Background(), vals, rt, []providerapi.ModuleDescriptor{{
-		PackageID:    "test-http",
-		ModuleID:     "express",
-		Capabilities: []providerapi.ModuleCapability{initializer},
+		PackageID:           "test-http",
+		ModuleID:            "express",
+		PackageCapabilities: []providerapi.PackageCapability{initializer},
 	}}); err != nil {
 		t.Fatalf("init selected modules: %v", err)
 	}
