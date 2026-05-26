@@ -12,7 +12,9 @@ jobs:
   dependency-review:
     name: Dependency Review
     runs-on: ubuntu-latest
-    if: github.event_name == 'pull_request'
+    # Dependency review requires GitHub Dependency Graph. Keep the job skipped
+    # until repository settings enable it, while govulncheck/gosec remain blocking.
+    if: github.event_name == 'pull_request' && github.repository != 'go-go-golems/discord-bot'
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
