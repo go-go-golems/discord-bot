@@ -7,7 +7,6 @@ import (
 	"io"
 	"path/filepath"
 	"strings"
-	"sync"
 
 	"github.com/dop251/goja"
 	"github.com/dop251/goja_nodejs/require"
@@ -145,24 +144,27 @@ type xgojaBotRuntimeFactory struct {
 	factory         providerapi.RuntimeFactory
 	profile         string
 	selectedModules []providerapi.ModuleDescriptor
-	mu              sync.Mutex
-	values          *values.Values
 }
 
 func (f *xgojaBotRuntimeFactory) HostOptions() []jsdiscord.HostOption {
 	return []jsdiscord.HostOption{jsdiscord.WithRuntimeFactory(xgojaHostRuntimeFactory{parent: f})}
 }
 
-func (f *xgojaBotRuntimeFactory) setValues(vals *values.Values) {
-	f.mu.Lock()
-	defer f.mu.Unlock()
-	f.values = vals
+type commandValuesContextKey struct{}
+
+func contextWithCommandValues(ctx context.Context, vals *values.Values) context.Context {
+	if ctx == nil {
+		ctx = context.Background()
+	}
+	return context.WithValue(ctx, commandValuesContextKey{}, vals)
 }
 
-func (f *xgojaBotRuntimeFactory) currentValues() *values.Values {
-	f.mu.Lock()
-	defer f.mu.Unlock()
-	return f.values
+func commandValuesFromContext(ctx context.Context) *values.Values {
+	if ctx == nil {
+		return nil
+	}
+	vals, _ := ctx.Value(commandValuesContextKey{}).(*values.Values)
+	return vals
 }
 
 func (f *xgojaBotRuntimeFactory) NewRuntimeForVerb(ctx context.Context, registry *jsverbs.Registry, verb *jsverbs.VerbSpec) (*engine.Runtime, error) {
@@ -195,7 +197,7 @@ func (f *xgojaBotRuntimeFactory) newRuntime(ctx context.Context, opts ...require
 	if err != nil {
 		return nil, err
 	}
-	if err := initSelectedModules(ctx, f.currentValues(), rt, f.selectedModules); err != nil {
+	if err := initSelectedModules(ctx, commandValuesFromContext(ctx), rt, f.selectedModules); err != nil {
 		_ = rt.Close(context.Background())
 		return nil, err
 	}
@@ -281,23 +283,17 @@ func (c valueCommandBase) ToYAML(w io.Writer) error              { return c.comm
 type valueBareCommand struct{ valueCommandBase }
 
 func (c valueBareCommand) Run(ctx context.Context, vals *values.Values) error {
-	c.factory.setValues(vals)
-	defer c.factory.setValues(nil)
-	return c.command.(cmds.BareCommand).Run(ctx, vals)
+	return c.command.(cmds.BareCommand).Run(contextWithCommandValues(ctx, vals), vals)
 }
 
 type valueWriterCommand struct{ valueCommandBase }
 
 func (c valueWriterCommand) RunIntoWriter(ctx context.Context, vals *values.Values, w io.Writer) error {
-	c.factory.setValues(vals)
-	defer c.factory.setValues(nil)
-	return c.command.(cmds.WriterCommand).RunIntoWriter(ctx, vals, w)
+	return c.command.(cmds.WriterCommand).RunIntoWriter(contextWithCommandValues(ctx, vals), vals, w)
 }
 
 type valueGlazeCommand struct{ valueCommandBase }
 
 func (c valueGlazeCommand) RunIntoGlazeProcessor(ctx context.Context, vals *values.Values, gp middlewares.Processor) error {
-	c.factory.setValues(vals)
-	defer c.factory.setValues(nil)
-	return c.command.(cmds.GlazeCommand).RunIntoGlazeProcessor(ctx, vals, gp)
+	return c.command.(cmds.GlazeCommand).RunIntoGlazeProcessor(contextWithCommandValues(ctx, vals), vals, gp)
 }

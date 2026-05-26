@@ -58,6 +58,13 @@ func (r *Registrar) RegisterRuntimeModule(ctx *engine.RuntimeModuleContext, reg 
 	state := NewRuntimeState(moduleName)
 	if ctx != nil {
 		ctx.SetValue(RuntimeStateContextKey, state)
+		if ctx.VM != nil {
+			vm := ctx.VM
+			_ = ctx.AddCloser(func(context.Context) error {
+				runtimeStates.Delete(vm)
+				return nil
+			})
+		}
 	}
 	reg.RegisterNativeModule(state.ModuleName(), state.Loader)
 	return nil
