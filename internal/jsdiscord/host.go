@@ -56,7 +56,7 @@ func NewHost(ctx context.Context, scriptPath string, opts ...HostOption) (*Host,
 		if err != nil {
 			return nil, fmt.Errorf("build js runtime: %w", err)
 		}
-		rt, err = factory.NewRuntime(ctx)
+		rt, err = factory.NewRuntime(engine.WithStartupContext(ctx), engine.WithLifetimeContext(ctx))
 		if err != nil {
 			return nil, fmt.Errorf("create js runtime: %w", err)
 		}

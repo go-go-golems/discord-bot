@@ -107,7 +107,7 @@ func normalizeResultToMap(result any) (map[string]any, error) {
 	}
 }
 
-func settleValue(ctx context.Context, owner runtimebridge.OwnerRunner, value any) (any, error) {
+func settleValue(ctx context.Context, owner runtimebridge.RuntimeOwner, value any) (any, error) {
 	if value == nil {
 		return nil, nil
 	}
@@ -150,7 +150,7 @@ type promiseSnapshot struct {
 	Text   string
 }
 
-func waitForPromise(ctx context.Context, owner runtimebridge.OwnerRunner, promise *goja.Promise) (any, error) {
+func waitForPromise(ctx context.Context, owner runtimebridge.RuntimeOwner, promise *goja.Promise) (any, error) {
 	for {
 		select {
 		case <-ctx.Done():

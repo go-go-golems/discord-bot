@@ -53,7 +53,7 @@ func defaultRuntimeFactory(cfg commandOptions) RuntimeFactory {
 		if err != nil {
 			return nil, fmt.Errorf("build runtime for %s: %w", verb.SourceRef(), err)
 		}
-		runtime, err := factory.NewRuntime(ctx)
+		runtime, err := factory.NewRuntime(engine.WithStartupContext(ctx), engine.WithLifetimeContext(ctx))
 		if err != nil {
 			return nil, fmt.Errorf("create runtime for %s: %w", verb.SourceRef(), err)
 		}

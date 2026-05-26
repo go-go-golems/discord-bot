@@ -149,7 +149,7 @@ func (s *RuntimeState) topLevelChannelsObject(vm *goja.Runtime) *goja.Object {
 		if ops == nil || ops.ChannelSend == nil {
 			return nil, fmt.Errorf("discord outbound channel API is not ready; the bot session must be running")
 		}
-		ctx := runtimebridge.CurrentContext(vm)
+		ctx := runtimebridge.CurrentOwnerContext(vm)
 		if ctx == nil {
 			ctx = context.Background()
 		}
@@ -167,7 +167,7 @@ func (s *RuntimeState) topLevelChannelsObject(vm *goja.Runtime) *goja.Object {
 		if guildID == "" {
 			panic(vm.NewGoError(fmt.Errorf("discord.channels.list requires a guild ID when no default guild is configured")))
 		}
-		ctx := runtimebridge.CurrentContext(vm)
+		ctx := runtimebridge.CurrentOwnerContext(vm)
 		if ctx == nil {
 			ctx = context.Background()
 		}
