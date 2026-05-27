@@ -12,7 +12,10 @@ jobs:
   dependency-review:
     name: Dependency Review
     runs-on: ubuntu-latest
-    if: github.event_name == 'pull_request'
+    # This repository currently reports "Dependency review is not supported".
+    # Keep the job wired but opt-in via repository variable once Dependency Graph
+    # support is available; govulncheck and gosec below remain blocking.
+    if: github.event_name == 'pull_request' && vars.DEPENDENCY_REVIEW_ENABLED == 'true'
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
