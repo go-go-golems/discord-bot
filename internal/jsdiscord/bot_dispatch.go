@@ -8,7 +8,6 @@ import (
 
 	"github.com/dop251/goja"
 	"github.com/go-go-golems/go-go-goja/pkg/runtimebridge"
-	"github.com/go-go-golems/go-go-goja/pkg/runtimeowner"
 	"github.com/rs/zerolog/log"
 )
 
@@ -45,6 +44,9 @@ func (h *BotHandle) dispatch(ctx context.Context, fn goja.Callable, request Disp
 		return nil, fmt.Errorf("discord bot requires runtime owner bindings")
 	}
 	ret, err := bindings.Owner.Call(ctx, "discord.bot.dispatch", func(callCtx context.Context, vm *goja.Runtime) (any, error) {
+		if state, ok := StateForRuntime(vm); ok {
+			state.SetOutboundOps(request.Discord)
+		}
 		input := buildDispatchInput(vm, callCtx, request)
 		result, err := fn(goja.Undefined(), input)
 		if err != nil {
@@ -103,7 +105,7 @@ func normalizeResultToMap(result any) (map[string]any, error) {
 	}
 }
 
-func settleValue(ctx context.Context, owner runtimeowner.Runner, value any) (any, error) {
+func settleValue(ctx context.Context, owner runtimebridge.RuntimeOwner, value any) (any, error) {
 	if value == nil {
 		return nil, nil
 	}
@@ -146,7 +148,7 @@ type promiseSnapshot struct {
 	Text   string
 }
 
-func waitForPromise(ctx context.Context, owner runtimeowner.Runner, promise *goja.Promise) (any, error) {
+func waitForPromise(ctx context.Context, owner runtimebridge.RuntimeOwner, promise *goja.Promise) (any, error) {
 	for {
 		select {
 		case <-ctx.Done():

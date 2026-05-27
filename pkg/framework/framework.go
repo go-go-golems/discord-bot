@@ -44,7 +44,7 @@ type Config struct {
 	ScriptPath              string
 	RuntimeConfig           map[string]any
 	SyncOnStart             bool
-	RuntimeModuleRegistrars []engine.RuntimeModuleRegistrar
+	RuntimeModuleRegistrars []engine.RuntimeModuleSpec
 }
 
 // Bot is the public single-bot wrapper around the internal runtime.
@@ -144,7 +144,7 @@ func WithSyncOnStart(enabled bool) Option {
 }
 
 // WithRuntimeModuleRegistrars appends custom per-runtime native module registrars.
-func WithRuntimeModuleRegistrars(registrars ...engine.RuntimeModuleRegistrar) Option {
+func WithRuntimeModuleRegistrars(registrars ...engine.RuntimeModuleSpec) Option {
 	return func(cfg *Config) error {
 		for i, registrar := range registrars {
 			if registrar == nil {

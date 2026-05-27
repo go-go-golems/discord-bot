@@ -126,7 +126,7 @@ func (testAppRegistrar) ID() string {
 	return "test-app-registrar"
 }
 
-func (testAppRegistrar) RegisterRuntimeModules(_ *engine.RuntimeModuleContext, reg *noderequire.Registry) error {
+func (testAppRegistrar) RegisterRuntimeModule(_ *engine.RuntimeModuleContext, reg *noderequire.Registry) error {
 	reg.RegisterNativeModule("app", func(vm *goja.Runtime, moduleObj *goja.Object) {
 		exports := moduleObj.Get("exports").(*goja.Object)
 		_ = exports.Set("description", func() string { return "Bot using a custom runtime module" })

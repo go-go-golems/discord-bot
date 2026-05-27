@@ -29,31 +29,31 @@ func defaultRuntimeFactory(cfg commandOptions) RuntimeFactory {
 			absScript = strings.TrimSpace(verb.File.AbsPath)
 		}
 
-		runtimeRegistrars := []engine.RuntimeModuleRegistrar{jsdiscord.NewRegistrar(jsdiscord.Config{})}
+		runtimeRegistrars := []engine.RuntimeModuleSpec{jsdiscord.NewRegistrar(jsdiscord.Config{})}
 		runtimeRegistrars = append(runtimeRegistrars, cfg.runtimeModuleRegistrars...)
 
 		builder := engine.NewBuilder().
-			WithModules(engine.DefaultRegistryModulesNamed("database")).
-			WithRequireOptions(require.WithLoader(registry.RequireLoader())).
-			WithRuntimeModuleRegistrars(runtimeRegistrars...)
+			UseModuleMiddleware(engine.MiddlewareOnly("database")).
+			WithModules(runtimeRegistrars...).
+			WithRequireOptions(require.WithLoader(registry.RequireLoader()))
 
 		if absScript != "" {
 			builder = engine.NewBuilder(
 				engine.WithModuleRootsFromScript(absScript, engine.DefaultModuleRootsOptions()),
 			).
-				WithModules(engine.DefaultRegistryModulesNamed("database")).
+				UseModuleMiddleware(engine.MiddlewareOnly("database")).
+				WithModules(runtimeRegistrars...).
 				WithRequireOptions(
 					require.WithLoader(registry.RequireLoader()),
 					require.WithGlobalFolders(filepath.Dir(absScript), filepath.Join(filepath.Dir(absScript), "node_modules")),
-				).
-				WithRuntimeModuleRegistrars(runtimeRegistrars...)
+				)
 		}
 
 		factory, err := builder.Build()
 		if err != nil {
 			return nil, fmt.Errorf("build runtime for %s: %w", verb.SourceRef(), err)
 		}
-		runtime, err := factory.NewRuntime(ctx)
+		runtime, err := factory.NewRuntime(engine.WithStartupContext(ctx), engine.WithLifetimeContext(ctx))
 		if err != nil {
 			return nil, fmt.Errorf("create runtime for %s: %w", verb.SourceRef(), err)
 		}

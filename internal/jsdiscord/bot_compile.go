@@ -68,6 +68,7 @@ type DiscordOps struct {
 	ThreadStart        func(context.Context, string, any) (map[string]any, error)
 	ChannelSend        func(context.Context, string, any) error
 	ChannelFetch       func(context.Context, string) (map[string]any, error)
+	ChannelList        func(context.Context, string) ([]map[string]any, error)
 	ChannelSetTopic    func(context.Context, string, string) error
 	ChannelSetSlowmode func(context.Context, string, int) error
 	MessageFetch       func(context.Context, string, string) (map[string]any, error)

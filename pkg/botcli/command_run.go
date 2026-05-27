@@ -31,7 +31,9 @@ func (c *botRunCommand) Run(ctx context.Context, parsedValues *values.Values) er
 	runtimeConfig := buildRuntimeConfig(parsedValues)
 	syncOnStart := boolField(parsedValues, schema.DefaultSlug, "sync-on-start")
 
-	b, err := bot.NewWithScript(cfg, c.scriptPath, runtimeConfig, c.hostOpts...)
+	hostOpts := append([]jsdiscord.HostOption(nil), c.hostOpts...)
+	hostOpts = append(hostOpts, hostOptionsFromContext(ctx)...)
+	b, err := bot.NewWithScript(cfg, c.scriptPath, runtimeConfig, hostOpts...)
 	if err != nil {
 		return err
 	}

@@ -1,0 +1,54 @@
+name: xdiscord
+target:
+  kind: xgoja
+  output: dist/xdiscord
+packages:
+  - id: discord-bot
+    import: github.com/go-go-golems/discord-bot/pkg/xgoja/provider
+    replace: ../../..
+  - id: go-go-goja-host
+    import: github.com/go-go-golems/go-go-goja/pkg/xgoja/providers/host
+    replace: ../../../../go-go-goja
+  - id: go-go-goja-http
+    import: github.com/go-go-golems/go-go-goja/pkg/xgoja/providers/http
+    replace: ../../../../go-go-goja
+runtimes:
+  bot:
+    modules:
+      - package: discord-bot
+        name: discord
+        as: discord
+      - package: discord-bot
+        name: ui
+        as: ui
+      - package: go-go-goja-host
+        name: fs
+        as: fs
+        config:
+          allow: true
+      - package: go-go-goja-http
+        name: express
+        as: express
+        config:
+          enabled: true
+          listen: "127.0.0.1:8787"
+commands:
+  eval:
+    enabled: true
+    runtime: bot
+  run:
+    enabled: false
+  repl:
+    enabled: false
+  jsverbs:
+    enabled: false
+commandProviders:
+  - id: discord-bots
+    package: discord-bot
+    name: bots
+    mount: bots
+    runtimeProfile: bot
+    config:
+      workingDirectory: "."
+      repositories:
+        - ./bots
