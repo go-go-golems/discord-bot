@@ -160,6 +160,9 @@ func contextWithCommandValues(ctx context.Context, vals *values.Values) context.
 	if ctx == nil {
 		ctx = context.Background()
 	}
+	if vals == nil {
+		return ctx
+	}
 	return context.WithValue(ctx, commandValuesContextKey{}, vals)
 }
 
