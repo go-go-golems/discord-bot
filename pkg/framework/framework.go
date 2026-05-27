@@ -13,6 +13,8 @@
 // For custom native modules, use WithRuntimeModuleRegistrars.
 package framework
 
+//glazedclilint:file-ignore framework bootstrap reads deployment environment outside command flag parsing
+
 import (
 	"context"
 	"fmt"

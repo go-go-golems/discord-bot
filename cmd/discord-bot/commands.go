@@ -1,5 +1,7 @@
 package main
 
+//glazedclilint:file-ignore legacy command exposes output flags without row processing pending command migration
+
 import (
 	"context"
 	"fmt"
