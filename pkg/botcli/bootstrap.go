@@ -1,5 +1,7 @@
 package botcli
 
+//glazedclilint:file-ignore bot bootstrap bridges deployment environment into runtime setup
+
 import (
 	"fmt"
 	"os"

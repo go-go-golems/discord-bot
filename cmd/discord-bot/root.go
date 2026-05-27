@@ -1,5 +1,7 @@
 package main
 
+//glazedclilint:file-ignore legacy Cobra root flags are kept while Glazed migration is tracked separately
+
 import (
 	"fmt"
 
