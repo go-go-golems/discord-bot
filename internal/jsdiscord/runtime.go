@@ -23,6 +23,12 @@ type Config struct {
 
 var runtimeStates sync.Map // *goja.Runtime -> *RuntimeState
 
+func ForgetRuntime(vm *goja.Runtime) {
+	if vm != nil {
+		runtimeStates.Delete(vm)
+	}
+}
+
 func StateForRuntime(vm *goja.Runtime) (*RuntimeState, bool) {
 	if vm == nil {
 		return nil, false

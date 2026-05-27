@@ -150,6 +150,10 @@ func (f *xgojaBotRuntimeFactory) HostOptions() []jsdiscord.HostOption {
 	return []jsdiscord.HostOption{jsdiscord.WithRuntimeFactory(xgojaHostRuntimeFactory{parent: f})}
 }
 
+func (f *xgojaBotRuntimeFactory) HostOptionsWithValues(vals *values.Values) []jsdiscord.HostOption {
+	return []jsdiscord.HostOption{jsdiscord.WithRuntimeFactory(xgojaHostRuntimeFactory{parent: f, values: vals})}
+}
+
 type commandValuesContextKey struct{}
 
 func contextWithCommandValues(ctx context.Context, vals *values.Values) context.Context {
@@ -197,6 +201,13 @@ func (f *xgojaBotRuntimeFactory) newRuntime(ctx context.Context, opts ...require
 	if err != nil {
 		return nil, err
 	}
+	if err := rt.AddCloser(func(context.Context) error {
+		jsdiscord.ForgetRuntime(rt.VM)
+		return nil
+	}); err != nil {
+		_ = rt.Close(context.Background())
+		return nil, err
+	}
 	if err := initSelectedModules(ctx, commandValuesFromContext(ctx), rt, f.selectedModules); err != nil {
 		_ = rt.Close(context.Background())
 		return nil, err
@@ -206,13 +217,14 @@ func (f *xgojaBotRuntimeFactory) newRuntime(ctx context.Context, opts ...require
 
 type xgojaHostRuntimeFactory struct {
 	parent *xgojaBotRuntimeFactory
+	values *values.Values
 }
 
 func (f xgojaHostRuntimeFactory) NewRuntime(ctx context.Context, opts ...require.Option) (*engine.Runtime, error) {
 	if f.parent == nil {
 		return nil, fmt.Errorf("xgoja runtime factory is nil")
 	}
-	return f.parent.newRuntime(ctx, opts...)
+	return f.parent.newRuntime(contextWithCommandValues(ctx, f.values), opts...)
 }
 
 func initSelectedModules(ctx context.Context, vals *values.Values, rt *engine.Runtime, descriptors []providerapi.ModuleDescriptor) error {
@@ -283,17 +295,23 @@ func (c valueCommandBase) ToYAML(w io.Writer) error              { return c.comm
 type valueBareCommand struct{ valueCommandBase }
 
 func (c valueBareCommand) Run(ctx context.Context, vals *values.Values) error {
-	return c.command.(cmds.BareCommand).Run(contextWithCommandValues(ctx, vals), vals)
+	ctx = contextWithCommandValues(ctx, vals)
+	ctx = botcli.ContextWithHostOptions(ctx, c.factory.HostOptionsWithValues(vals)...)
+	return c.command.(cmds.BareCommand).Run(ctx, vals)
 }
 
 type valueWriterCommand struct{ valueCommandBase }
 
 func (c valueWriterCommand) RunIntoWriter(ctx context.Context, vals *values.Values, w io.Writer) error {
-	return c.command.(cmds.WriterCommand).RunIntoWriter(contextWithCommandValues(ctx, vals), vals, w)
+	ctx = contextWithCommandValues(ctx, vals)
+	ctx = botcli.ContextWithHostOptions(ctx, c.factory.HostOptionsWithValues(vals)...)
+	return c.command.(cmds.WriterCommand).RunIntoWriter(ctx, vals, w)
 }
 
 type valueGlazeCommand struct{ valueCommandBase }
 
 func (c valueGlazeCommand) RunIntoGlazeProcessor(ctx context.Context, vals *values.Values, gp middlewares.Processor) error {
-	return c.command.(cmds.GlazeCommand).RunIntoGlazeProcessor(contextWithCommandValues(ctx, vals), vals, gp)
+	ctx = contextWithCommandValues(ctx, vals)
+	ctx = botcli.ContextWithHostOptions(ctx, c.factory.HostOptionsWithValues(vals)...)
+	return c.command.(cmds.GlazeCommand).RunIntoGlazeProcessor(ctx, vals, gp)
 }
