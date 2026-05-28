@@ -7,7 +7,6 @@ import (
 	"sync"
 
 	"github.com/bwmarrin/discordgo"
-	"github.com/rs/zerolog/log"
 )
 
 func emitEventResult(ctx context.Context, reply func(context.Context, any) error, result any) error {

@@ -3,8 +3,6 @@ package jsdiscord
 import (
 	"fmt"
 	"strings"
-
-	"github.com/rs/zerolog/log"
 )
 
 func payloadLogFields(payload any) map[string]any {

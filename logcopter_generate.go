@@ -1,0 +1,3 @@
+package discordbot
+
+//go:generate go tool logcopter-gen -area-prefix go-go-golems.discord-bot -strip-prefix github.com/go-go-golems/discord-bot ./internal/... ./pkg/... ./cmd/...

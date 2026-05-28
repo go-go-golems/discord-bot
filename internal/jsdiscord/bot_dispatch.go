@@ -8,7 +8,6 @@ import (
 
 	"github.com/dop251/goja"
 	"github.com/go-go-golems/go-go-goja/pkg/runtimebridge"
-	"github.com/rs/zerolog/log"
 )
 
 func (h *BotHandle) DispatchCommand(ctx context.Context, request DispatchRequest) (any, error) {

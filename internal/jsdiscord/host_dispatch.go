@@ -5,7 +5,6 @@ import (
 	"fmt"
 
 	"github.com/bwmarrin/discordgo"
-	"github.com/rs/zerolog/log"
 )
 
 func (h *Host) baseDispatchRequest(session *discordgo.Session) DispatchRequest {

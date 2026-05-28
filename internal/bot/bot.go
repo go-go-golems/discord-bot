@@ -6,7 +6,6 @@ import (
 	"strings"
 
 	"github.com/bwmarrin/discordgo"
-	"github.com/rs/zerolog/log"
 
 	appconfig "github.com/go-go-golems/discord-bot/internal/config"
 	"github.com/go-go-golems/discord-bot/internal/jsdiscord"

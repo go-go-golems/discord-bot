@@ -5,7 +5,6 @@ import (
 
 	"github.com/dop251/goja"
 	"github.com/rs/zerolog"
-	"github.com/rs/zerolog/log"
 )
 
 func loggerObject(vm *goja.Runtime, kind, name string, metadata map[string]any) *goja.Object {
