@@ -85,3 +85,15 @@ discord-bot_BINARY=$(shell which discord-bot)
 install:
 	go build -o ./dist/discord-bot ./cmd/discord-bot && \
 		cp ./dist/discord-bot $(discord-bot_BINARY)
+
+.PHONY: bump-go-go-golems
+bump-go-go-golems:
+	@deps="$$(awk '/^require[[:space:]]+github\.com\/go-go-golems\// { print $$2 } /^[[:space:]]*github\.com\/go-go-golems\// { print $$1 }' go.mod | sort -u)"; \
+	if [ -z "$$deps" ]; then \
+		echo "No github.com/go-go-golems dependencies in go.mod"; \
+	else \
+		echo "Bumping go-go-golems dependencies:"; \
+		echo "$$deps"; \
+		for dep in $$deps; do GOWORK=off go get "$${dep}@latest"; done; \
+	fi
+	GOWORK=off go mod tidy
