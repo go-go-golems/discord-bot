@@ -8,7 +8,7 @@ import (
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/dop251/goja_nodejs/require"
-	"github.com/go-go-golems/go-go-goja/engine"
+	"github.com/go-go-golems/go-go-goja/pkg/engine"
 )
 
 type Host struct {
@@ -44,9 +44,9 @@ func NewHost(ctx context.Context, scriptPath string, opts ...HostOption) (*Host,
 			return nil, fmt.Errorf("create js runtime: %w", err)
 		}
 	} else {
-		runtimeRegistrars := []engine.RuntimeModuleSpec{NewRegistrar(Config{}), &UIRegistrar{}}
+		runtimeRegistrars := []engine.RuntimeModuleRegistrar{NewRegistrar(Config{}), &UIRegistrar{}}
 		runtimeRegistrars = append(runtimeRegistrars, hostOpts.runtimeModuleRegistrars...)
-		factory, err := engine.NewBuilder(
+		factory, err := engine.NewRuntimeFactoryBuilder(
 			engine.WithModuleRootsFromScript(absScript, engine.DefaultModuleRootsOptions()),
 		).
 			UseModuleMiddleware(engine.MiddlewareOnly("database")).

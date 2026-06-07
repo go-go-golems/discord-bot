@@ -10,7 +10,7 @@ import (
 	"github.com/dop251/goja"
 	noderequire "github.com/dop251/goja_nodejs/require"
 	"github.com/go-go-golems/discord-bot/pkg/framework"
-	"github.com/go-go-golems/go-go-goja/engine"
+	"github.com/go-go-golems/go-go-goja/pkg/engine"
 )
 
 func main() {
@@ -39,7 +39,7 @@ func (appRegistrar) ID() string {
 	return "framework-custom-module-app"
 }
 
-func (appRegistrar) RegisterRuntimeModule(_ *engine.RuntimeModuleContext, reg *noderequire.Registry) error {
+func (appRegistrar) RegisterRuntimeModule(_ *engine.RuntimeModuleRegistrationContext, reg *noderequire.Registry) error {
 	reg.RegisterNativeModule("app", func(vm *goja.Runtime, moduleObj *goja.Object) {
 		exports := moduleObj.Get("exports").(*goja.Object)
 		_ = exports.Set("name", func() string { return "framework-custom-module" })

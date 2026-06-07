@@ -6,12 +6,12 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/go-go-golems/go-go-goja/engine"
+	"github.com/go-go-golems/go-go-goja/pkg/engine"
 )
 
 func loadTestBot(t *testing.T, scriptPath string) *BotHandle {
 	t.Helper()
-	factory, err := engine.NewBuilder(
+	factory, err := engine.NewRuntimeFactoryBuilder(
 		engine.WithModuleRootsFromScript(scriptPath, engine.DefaultModuleRootsOptions()),
 	).
 		UseModuleMiddleware(engine.MiddlewareOnly("database")).

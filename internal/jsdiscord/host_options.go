@@ -5,7 +5,7 @@ import (
 	"fmt"
 
 	"github.com/dop251/goja_nodejs/require"
-	"github.com/go-go-golems/go-go-goja/engine"
+	"github.com/go-go-golems/go-go-goja/pkg/engine"
 )
 
 // HostOption customizes how a JavaScript bot host is created.
@@ -16,7 +16,7 @@ type RuntimeFactory interface {
 }
 
 type hostOptions struct {
-	runtimeModuleRegistrars []engine.RuntimeModuleSpec
+	runtimeModuleRegistrars []engine.RuntimeModuleRegistrar
 	runtimeFactory          RuntimeFactory
 }
 
@@ -34,7 +34,7 @@ func applyHostOptions(opts ...HostOption) (hostOptions, error) {
 }
 
 // WithRuntimeModuleRegistrars appends per-runtime native module registrars.
-func WithRuntimeModuleRegistrars(registrars ...engine.RuntimeModuleSpec) HostOption {
+func WithRuntimeModuleRegistrars(registrars ...engine.RuntimeModuleRegistrar) HostOption {
 	return func(cfg *hostOptions) error {
 		for i, registrar := range registrars {
 			if registrar == nil {
