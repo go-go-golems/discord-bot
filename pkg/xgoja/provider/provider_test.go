@@ -13,7 +13,7 @@ import (
 )
 
 func TestRegister(t *testing.T) {
-	registry := providerapi.NewRegistry()
+	registry := providerapi.NewProviderRegistry()
 	if err := Register(registry); err != nil {
 		t.Fatalf("register: %v", err)
 	}
@@ -29,11 +29,11 @@ func TestRegister(t *testing.T) {
 
 func TestCollectModuleSections(t *testing.T) {
 	sectionCapability := fakeSectionCapability{slug: "http"}
-	sections, err := providerutil.CollectConfigSections([]providerapi.ModuleDescriptor{{
+	sections, err := providerutil.CollectGlazedConfigSections([]providerapi.ModuleDescriptor{{
 		PackageID:           "test-http",
 		ModuleID:            "express",
 		PackageCapabilities: []providerapi.PackageCapability{sectionCapability},
-	}}, providerapi.SectionContext{RuntimeProfile: "bot", CommandProviderID: "bots"}, map[string]string{schema.DefaultSlug: "bot command schema"})
+	}}, providerapi.SectionRequest{CommandProviderID: "bots"}, nil)
 	if err != nil {
 		t.Fatalf("collect sections: %v", err)
 	}
@@ -68,7 +68,7 @@ func TestInitSelectedModulesInvokesRuntimeInitializer(t *testing.T) {
 	if initializer.values != vals {
 		t.Fatal("expected parsed values to be passed through")
 	}
-	if initializer.handle == nil || initializer.handle.Runtime() != rt.VM {
+	if initializer.handle == nil || initializer.handle.EngineRuntime() != rt {
 		t.Fatal("expected runtime handle for created runtime")
 	}
 }
@@ -77,7 +77,7 @@ type fakeSectionCapability struct{ slug string }
 
 func (c fakeSectionCapability) CapabilityID() string { return "fake-section" }
 
-func (c fakeSectionCapability) ConfigSections(providerapi.SectionContext) ([]schema.Section, error) {
+func (c fakeSectionCapability) GlazedConfigSections(providerapi.SectionRequest) ([]schema.Section, error) {
 	section, err := schema.NewSection(c.slug, "Fake section", schema.WithFields(fields.New("enabled", fields.TypeBool)))
 	if err != nil {
 		return nil, err
@@ -88,12 +88,12 @@ func (c fakeSectionCapability) ConfigSections(providerapi.SectionContext) ([]sch
 type fakeRuntimeInitializer struct {
 	called bool
 	values *values.Values
-	handle providerapi.RuntimeHandle
+	handle providerapi.RuntimeInitializerHandle
 }
 
 func (i *fakeRuntimeInitializer) CapabilityID() string { return "fake-runtime-initializer" }
 
-func (i *fakeRuntimeInitializer) InitRuntimeFromSections(_ context.Context, vals *values.Values, handle providerapi.RuntimeHandle) error {
+func (i *fakeRuntimeInitializer) InitRuntimeFromSections(_ context.Context, vals *values.Values, handle providerapi.RuntimeInitializerHandle) error {
 	i.called = true
 	i.values = vals
 	i.handle = handle

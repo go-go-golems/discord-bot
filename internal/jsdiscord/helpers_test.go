@@ -11,7 +11,7 @@ import (
 
 func loadTestBot(t *testing.T, scriptPath string) *BotHandle {
 	t.Helper()
-	factory, err := engine.NewBuilder(
+	factory, err := engine.NewRuntimeFactoryBuilder(
 		engine.WithModuleRootsFromScript(scriptPath, engine.DefaultModuleRootsOptions()),
 	).
 		UseModuleMiddleware(engine.MiddlewareOnly("database")).

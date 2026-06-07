@@ -53,6 +53,6 @@ func (customRuntimeFactory) HostOptions() []jsdiscord.HostOption {
 }
 
 func (customRuntimeFactory) NewRuntimeForVerb(ctx context.Context, registry *jsverbs.Registry, verb *jsverbs.VerbSpec) (*engine.Runtime, error) {
-	cfg := commandOptions{runtimeModuleRegistrars: []engine.NativeModuleRegistrar{testAppRegistrar{}}}
+	cfg := commandOptions{runtimeModuleRegistrars: []engine.RuntimeModuleRegistrar{testAppRegistrar{}}}
 	return defaultRuntimeFactory(cfg).NewRuntimeForVerb(ctx, registry, verb)
 }
