@@ -4,6 +4,7 @@ import (
 	"context"
 	"testing"
 
+	"github.com/dop251/goja_nodejs/require"
 	"github.com/go-go-golems/glazed/pkg/cmds/fields"
 	"github.com/go-go-golems/glazed/pkg/cmds/schema"
 	"github.com/go-go-golems/glazed/pkg/cmds/values"
@@ -42,34 +43,25 @@ func TestCollectModuleSections(t *testing.T) {
 	}
 }
 
-func TestInitSelectedModulesInvokesRuntimeInitializer(t *testing.T) {
-	factory, err := engine.NewRuntimeFactoryBuilder().Build()
+func TestNewRuntimeUsesSectionAwareFactory(t *testing.T) {
+	underlying := &fakeRuntimeFactory{}
+	factory := &xgojaBotRuntimeFactory{factory: underlying}
+	vals := values.New()
+
+	rt, err := factory.newRuntime(contextWithCommandValues(context.Background(), vals))
 	if err != nil {
-		t.Fatalf("build runtime factory: %v", err)
-	}
-	rt, err := factory.NewRuntime(engine.WithStartupContext(context.Background()), engine.WithLifetimeContext(context.Background()))
-	if err != nil {
-		t.Fatalf("runtime: %v", err)
+		t.Fatalf("new runtime: %v", err)
 	}
 	defer func() { _ = rt.Close(context.Background()) }()
 
-	initializer := &fakeRuntimeInitializer{}
-	vals := values.New()
-	if err := initSelectedModules(context.Background(), vals, rt, []providerapi.ModuleDescriptor{{
-		PackageID:           "test-http",
-		ModuleID:            "express",
-		PackageCapabilities: []providerapi.PackageCapability{initializer},
-	}}); err != nil {
-		t.Fatalf("init selected modules: %v", err)
+	if underlying.newRuntimeCalled {
+		t.Fatal("expected section-aware NewRuntimeFromSections, got plain NewRuntime")
 	}
-	if !initializer.called {
-		t.Fatal("expected runtime initializer to be called")
+	if !underlying.newRuntimeFromSectionsCalled {
+		t.Fatal("expected NewRuntimeFromSections to be called")
 	}
-	if initializer.values != vals {
+	if underlying.values != vals {
 		t.Fatal("expected parsed values to be passed through")
-	}
-	if initializer.handle == nil || initializer.handle.EngineRuntime() != rt {
-		t.Fatal("expected runtime handle for created runtime")
 	}
 }
 
@@ -85,17 +77,27 @@ func (c fakeSectionCapability) GlazedConfigSections(providerapi.SectionRequest) 
 	return []schema.Section{section}, nil
 }
 
-type fakeRuntimeInitializer struct {
-	called bool
-	values *values.Values
-	handle providerapi.RuntimeInitializerHandle
+type fakeRuntimeFactory struct {
+	newRuntimeCalled             bool
+	newRuntimeFromSectionsCalled bool
+	values                       *values.Values
 }
 
-func (i *fakeRuntimeInitializer) CapabilityID() string { return "fake-runtime-initializer" }
+func (f *fakeRuntimeFactory) NewRuntime(ctx context.Context, opts ...require.Option) (*engine.Runtime, error) {
+	f.newRuntimeCalled = true
+	return newTestRuntime(ctx, opts...)
+}
 
-func (i *fakeRuntimeInitializer) InitRuntimeFromSections(_ context.Context, vals *values.Values, handle providerapi.RuntimeInitializerHandle) error {
-	i.called = true
-	i.values = vals
-	i.handle = handle
-	return nil
+func (f *fakeRuntimeFactory) NewRuntimeFromSections(ctx context.Context, vals *values.Values, opts ...require.Option) (*engine.Runtime, error) {
+	f.newRuntimeFromSectionsCalled = true
+	f.values = vals
+	return newTestRuntime(ctx, opts...)
+}
+
+func newTestRuntime(ctx context.Context, _ ...require.Option) (*engine.Runtime, error) {
+	factory, err := engine.NewRuntimeFactoryBuilder().Build()
+	if err != nil {
+		return nil, err
+	}
+	return factory.NewRuntime(engine.WithStartupContext(ctx), engine.WithLifetimeContext(ctx))
 }

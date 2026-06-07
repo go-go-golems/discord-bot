@@ -8,7 +8,6 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/dop251/goja"
 	"github.com/dop251/goja_nodejs/require"
 	"github.com/go-go-golems/discord-bot/internal/jsdiscord"
 	"github.com/go-go-golems/discord-bot/pkg/botcli"
@@ -54,9 +53,9 @@ func Register(registry *providerapi.ProviderRegistry) error {
 			},
 		},
 		providerapi.CommandSetProvider{
-			Name:         "bots",
-			DefaultMount: "bots",
-			Description:  "List, inspect, and run JavaScript Discord bots",
+			Name:          "bots",
+			DefaultMount:  "bots",
+			Description:   "List, inspect, and run JavaScript Discord bots",
 			NewCommandSet: newBotsCommandSet,
 		},
 	)
@@ -196,7 +195,7 @@ func (f *xgojaBotRuntimeFactory) newRuntime(ctx context.Context, opts ...require
 	if f.factory == nil {
 		return nil, fmt.Errorf("xgoja runtime factory is nil")
 	}
-	rt, err := f.factory.NewRuntime(ctx, opts...)
+	rt, err := f.factory.NewRuntimeFromSections(ctx, commandValuesFromContext(ctx), opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -204,10 +203,6 @@ func (f *xgojaBotRuntimeFactory) newRuntime(ctx context.Context, opts ...require
 		jsdiscord.ForgetRuntime(rt.VM)
 		return nil
 	}); err != nil {
-		_ = rt.Close(context.Background())
-		return nil, err
-	}
-	if err := initSelectedModules(ctx, commandValuesFromContext(ctx), rt, f.selectedModules); err != nil {
 		_ = rt.Close(context.Background())
 		return nil, err
 	}
@@ -224,42 +219,6 @@ func (f xgojaHostRuntimeFactory) NewRuntime(ctx context.Context, opts ...require
 		return nil, fmt.Errorf("xgoja runtime factory is nil")
 	}
 	return f.parent.newRuntime(contextWithCommandValues(ctx, f.values), opts...)
-}
-
-func initSelectedModules(ctx context.Context, vals *values.Values, rt *engine.Runtime, descriptors []providerapi.ModuleDescriptor) error {
-	if rt == nil {
-		return fmt.Errorf("runtime is nil")
-	}
-	return providerutil.InitRuntimeFromSections(ctx, vals, runtimeHandle{rt: rt}, descriptors)
-}
-
-type runtimeHandle struct {
-	rt *engine.Runtime
-}
-
-func (h runtimeHandle) Runtime() *goja.Runtime {
-	if h.rt == nil {
-		return nil
-	}
-	return h.rt.VM
-}
-
-func (h runtimeHandle) EngineRuntime() *engine.Runtime {
-	return h.rt
-}
-
-func (h runtimeHandle) Close(ctx context.Context) error {
-	if h.rt == nil {
-		return nil
-	}
-	return h.rt.Close(ctx)
-}
-
-func (h runtimeHandle) AddCloser(fn func(context.Context) error) error {
-	if h.rt == nil {
-		return fmt.Errorf("runtime is nil")
-	}
-	return h.rt.AddCloser(fn)
 }
 
 func wrapCommandsWithValues(commands []cmds.Command, factory *xgojaBotRuntimeFactory) []cmds.Command {
