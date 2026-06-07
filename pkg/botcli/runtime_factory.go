@@ -7,7 +7,7 @@ import (
 	"strings"
 
 	"github.com/dop251/goja_nodejs/require"
-	"github.com/go-go-golems/go-go-goja/engine"
+	"github.com/go-go-golems/go-go-goja/pkg/engine"
 	"github.com/go-go-golems/go-go-goja/pkg/jsverbs"
 
 	"github.com/go-go-golems/discord-bot/internal/jsdiscord"
@@ -29,16 +29,16 @@ func defaultRuntimeFactory(cfg commandOptions) RuntimeFactory {
 			absScript = strings.TrimSpace(verb.File.AbsPath)
 		}
 
-		runtimeRegistrars := []engine.RuntimeModuleSpec{jsdiscord.NewRegistrar(jsdiscord.Config{})}
+		runtimeRegistrars := []engine.RuntimeModuleRegistrar{jsdiscord.NewRegistrar(jsdiscord.Config{})}
 		runtimeRegistrars = append(runtimeRegistrars, cfg.runtimeModuleRegistrars...)
 
-		builder := engine.NewBuilder().
+		builder := engine.NewRuntimeFactoryBuilder().
 			UseModuleMiddleware(engine.MiddlewareOnly("database")).
 			WithModules(runtimeRegistrars...).
 			WithRequireOptions(require.WithLoader(registry.RequireLoader()))
 
 		if absScript != "" {
-			builder = engine.NewBuilder(
+			builder = engine.NewRuntimeFactoryBuilder(
 				engine.WithModuleRootsFromScript(absScript, engine.DefaultModuleRootsOptions()),
 			).
 				UseModuleMiddleware(engine.MiddlewareOnly("database")).

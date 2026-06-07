@@ -6,7 +6,7 @@ import (
 	"strings"
 
 	"github.com/go-go-golems/discord-bot/internal/jsdiscord"
-	"github.com/go-go-golems/go-go-goja/engine"
+	"github.com/go-go-golems/go-go-goja/pkg/engine"
 	"github.com/go-go-golems/go-go-goja/pkg/jsverbs"
 )
 
@@ -37,7 +37,7 @@ type HostOptionsProvider interface {
 
 type commandOptions struct {
 	appName                 string
-	runtimeModuleRegistrars []engine.RuntimeModuleSpec
+	runtimeModuleRegistrars []engine.RuntimeModuleRegistrar
 	runtimeFactory          RuntimeFactory
 }
 
@@ -78,7 +78,7 @@ func WithAppName(name string) CommandOption {
 // require() modules and the default runtime construction is otherwise correct.
 // Prefer this over WithRuntimeFactory(...) unless runtime creation itself must
 // change.
-func WithRuntimeModuleRegistrars(registrars ...engine.RuntimeModuleSpec) CommandOption {
+func WithRuntimeModuleRegistrars(registrars ...engine.RuntimeModuleRegistrar) CommandOption {
 	return func(cfg *commandOptions) error {
 		for i, registrar := range registrars {
 			if registrar == nil {

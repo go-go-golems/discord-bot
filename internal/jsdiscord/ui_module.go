@@ -6,7 +6,7 @@ import (
 	"github.com/bwmarrin/discordgo"
 	"github.com/dop251/goja"
 	"github.com/dop251/goja_nodejs/require"
-	"github.com/go-go-golems/go-go-goja/engine"
+	"github.com/go-go-golems/go-go-goja/pkg/engine"
 )
 
 // UIRegistrar registers the "ui" native Goja module that provides type-safe
@@ -15,7 +15,7 @@ type UIRegistrar struct{}
 
 func (r *UIRegistrar) ID() string { return "discord-ui-registrar" }
 
-func (r *UIRegistrar) RegisterRuntimeModule(ctx *engine.RuntimeModuleContext, reg *require.Registry) error {
+func (r *UIRegistrar) RegisterRuntimeModule(ctx *engine.RuntimeModuleRegistrationContext, reg *require.Registry) error {
 	if reg == nil {
 		return fmt.Errorf("require registry is nil")
 	}

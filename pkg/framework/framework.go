@@ -24,7 +24,7 @@ import (
 	appbot "github.com/go-go-golems/discord-bot/internal/bot"
 	appconfig "github.com/go-go-golems/discord-bot/internal/config"
 	"github.com/go-go-golems/discord-bot/internal/jsdiscord"
-	"github.com/go-go-golems/go-go-goja/engine"
+	"github.com/go-go-golems/go-go-goja/pkg/engine"
 )
 
 // Credentials holds the explicit Discord settings needed to run one bot.
@@ -46,7 +46,7 @@ type Config struct {
 	ScriptPath              string
 	RuntimeConfig           map[string]any
 	SyncOnStart             bool
-	RuntimeModuleRegistrars []engine.RuntimeModuleSpec
+	RuntimeModuleRegistrars []engine.RuntimeModuleRegistrar
 }
 
 // Bot is the public single-bot wrapper around the internal runtime.
@@ -146,7 +146,7 @@ func WithSyncOnStart(enabled bool) Option {
 }
 
 // WithRuntimeModuleRegistrars appends custom per-runtime native module registrars.
-func WithRuntimeModuleRegistrars(registrars ...engine.RuntimeModuleSpec) Option {
+func WithRuntimeModuleRegistrars(registrars ...engine.RuntimeModuleRegistrar) Option {
 	return func(cfg *Config) error {
 		for i, registrar := range registrars {
 			if registrar == nil {

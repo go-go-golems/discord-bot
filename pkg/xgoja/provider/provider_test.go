@@ -7,7 +7,7 @@ import (
 	"github.com/go-go-golems/glazed/pkg/cmds/fields"
 	"github.com/go-go-golems/glazed/pkg/cmds/schema"
 	"github.com/go-go-golems/glazed/pkg/cmds/values"
-	"github.com/go-go-golems/go-go-goja/engine"
+	"github.com/go-go-golems/go-go-goja/pkg/engine"
 	"github.com/go-go-golems/go-go-goja/pkg/xgoja/providerapi"
 	"github.com/go-go-golems/go-go-goja/pkg/xgoja/providerutil"
 )
@@ -43,7 +43,7 @@ func TestCollectModuleSections(t *testing.T) {
 }
 
 func TestInitSelectedModulesInvokesRuntimeInitializer(t *testing.T) {
-	factory, err := engine.NewBuilder().Build()
+	factory, err := engine.NewRuntimeFactoryBuilder().Build()
 	if err != nil {
 		t.Fatalf("build runtime factory: %v", err)
 	}

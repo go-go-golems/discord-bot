@@ -10,7 +10,7 @@ import (
 	"github.com/dop251/goja"
 	noderequire "github.com/dop251/goja_nodejs/require"
 	"github.com/go-go-golems/discord-bot/internal/jsdiscord"
-	"github.com/go-go-golems/go-go-goja/engine"
+	"github.com/go-go-golems/go-go-goja/pkg/engine"
 	"github.com/go-go-golems/go-go-goja/pkg/jsverbs"
 	"github.com/stretchr/testify/require"
 )
@@ -35,7 +35,7 @@ func (testAppRegistrar) ID() string {
 	return "test-app-registrar"
 }
 
-func (testAppRegistrar) RegisterRuntimeModule(_ *engine.RuntimeModuleContext, reg *noderequire.Registry) error {
+func (testAppRegistrar) RegisterRuntimeModule(_ *engine.RuntimeModuleRegistrationContext, reg *noderequire.Registry) error {
 	reg.RegisterNativeModule("app", func(vm *goja.Runtime, moduleObj *goja.Object) {
 		exports := moduleObj.Get("exports").(*goja.Object)
 		_ = exports.Set("name", func() string { return "app" })
@@ -53,6 +53,6 @@ func (customRuntimeFactory) HostOptions() []jsdiscord.HostOption {
 }
 
 func (customRuntimeFactory) NewRuntimeForVerb(ctx context.Context, registry *jsverbs.Registry, verb *jsverbs.VerbSpec) (*engine.Runtime, error) {
-	cfg := commandOptions{runtimeModuleRegistrars: []engine.RuntimeModuleSpec{testAppRegistrar{}}}
+	cfg := commandOptions{runtimeModuleRegistrars: []engine.NativeModuleRegistrar{testAppRegistrar{}}}
 	return defaultRuntimeFactory(cfg).NewRuntimeForVerb(ctx, registry, verb)
 }
