@@ -9,7 +9,15 @@ Topics:
 DocType: reference
 Intent: long-term
 Owners: []
-RelatedFiles: []
+RelatedFiles:
+    - Path: repo://internal/jsslack/dispatch.go
+      Note: Owner-thread async dispatch and reply lifecycle
+    - Path: repo://pkg/slackbot/ingress.go
+      Note: Bounded offline admission and receipt contract
+    - Path: repo://pkg/slackcli/commands.go
+      Note: Offline inspect manifest and simulation
+    - Path: repo://pkg/slackdoc/slack-offline.md
+      Note: Implemented API and operator commands
 ExternalSources: []
 Summary: ""
 LastUpdated: 2026-09-10T18:20:32.32301754-04:00
@@ -228,3 +236,73 @@ Read `pkg/slackcli/commands.go` and `discover.go`, then `cmd/slack-bot/main_test
 ### Technical details
 
 The parser is constructed with `cli.NewCobraParserFromSections` and mounted with `AddToCobraCommand`; `cli.NewCobraCommandFromCommandDescription` supplies the command shape. Command settings are disabled, and explicit Glazed source middleware handles flags/arguments/defaults.
+
+## Step 6: Bounded ingress, integration coverage, and offline handoff
+
+Extended the offline implementation with bounded admission, event deduplication, filtering, overload receipts, and host shutdown. The ingress integration test drives an actual JavaScript mention handler through the public host and verifies the recorded thread destination while canceling the independent ACK context.
+
+Added an embedded help page, TypeScript declarations, README entry points, fixture validation, and generated package logging registration. The offline phase is usable and validated; the broader MVP task remains open because SDK transport, real wire-protocol tests, rate limiting, and reconnect support have not been implemented.
+
+### Prompt Context
+
+See Step 4. The user authorized offline implementation and commits, not live Slack communication or a new upload.
+
+**Commit (previous milestone):** `6cb0b79` — feat(slack): add offline discovery manifest and fixture replay CLI.
+
+### What I did
+
+- Added `pkg/slackbot/ingress.go`: workspace/app/channel/self-bot filtering, queue bounds, event/envelope identity, dedupe TTL/capacity, receipt dispatch, metrics, and cancellation.
+- Added tests with a blocked dispatcher proving ACK independence, duplicate suppression across delivery IDs, explicit overload, TTL expiry, filtering, and closure.
+- Added `pkg/slackhost/host_test.go` to connect ingress to the real example JS handler and recording service.
+- Added `pkg/slackdoc` with embedded `help slack-offline`, a TypeScript module declaration, and README commands.
+- Tightened fixture size checks and fixed null/scalar values in the detached memory store.
+- Generated logcopter registration for new library packages using the pinned repository tool.
+- Built the Glazed analyzer from the selected v1.3.6 module into `/tmp/slack-glazed-lint` and ran it on the new CLI.
+
+### Why
+
+The in-memory ingress seam establishes lifecycle and admission behavior before a Socket Mode SDK is connected. An end-to-end host test distinguishes “our interfaces compile” from “the actual JS bot produces the intended effect.” Help explicitly separates normalized fixture replay from Slack wire compatibility.
+
+### What worked
+
+- Full `04-go-offline.sh test ./...`: passed, including existing Discord packages.
+- `04-go-offline.sh build -buildvcs=false ./...`: passed.
+- `04-go-offline.sh vet ./...`: passed.
+- Race tests for new host, runtime, domain, and CLI packages: passed after the shutdown behavior fix described below.
+- Focused `golangci-lint run` on all new Slack packages: `0 issues.`
+- Pinned Glazed analyzer on `pkg/slackcli` and `cmd/slack-bot`: passed after expressing log-level as a Glazed field.
+- Actual `go run` command replay emitted one `ephemeral_reply` with `pong`; mention replay emitted one post with `threadTs: 1741234567.000001` and an explicit fake reference.
+- `go run ... help slack-offline` rendered the embedded guide.
+- `docmgr doctor` and `git diff --check`: passed.
+
+### What didn't work
+
+- Build/VCS discovery initially failed with `error obtaining VCS status: exit status 128`. This sandbox cannot reliably inspect the external worktree metadata from the Go builder. `-buildvcs=false` resolves build-only stamping without changing source or Git configuration. Lint package loading needed the same `GOFLAGS=-buildvcs=false` setting.
+- Initial focused lint found unchecked deferred `Close` results and an implicit fulfilled-promise default branch. Cleanup discards are now explicit and the promise switch names `PromiseStateFulfilled`.
+- The Glazed analyzer rejected a raw root `StringVar` flag: `define CLI flags with cmds.WithFlags(fields.New(...)) instead of raw Cobra/pflag/flag APIs`. Moved `log-level` into each Glazed command's settings and removed the custom shared level writer.
+- The new integration test initially observed `context canceled` on the ingress error channel during normal shutdown, after the message had already been recorded. The worker now suppresses dispatch failures once its own lifetime is canceled; unexpected active-lifetime failures remain observable.
+- No `tsc` executable was installed at the checked workstation path. The declaration was reviewed alongside the JS API, but a TypeScript compiler run is not claimed.
+
+### What I learned
+
+A successful side effect does not mean the handler has fully settled yet. Shutdown may legitimately cancel the last promise-completion step. That cancellation should not be reported as an operational ingress failure. A bounded dedupe cache should reject admission when full rather than evict a live key and silently weaken duplicate suppression.
+
+### What was tricky to build
+
+There are three independently meaningful contexts: ACK receipt, admitted work, and runtime lifetime. The integration test cancels ACK context immediately and still obtains the JS response, then shuts down the ingress before the host. The queue's capacity and dedupe capacity are separate bounds; neither may grow to absorb overload indefinitely.
+
+### What warrants a second pair of eyes
+
+The ingress consumes normalized snapshots, not Slack wire payloads. Its ACK interface must be wired to the chosen SDK and tested against HTTP/WebSocket fixtures before claiming protocol support. Injected Go services must honor cancellation. Process-local storage/admission are not durable. Critical scripts should await their side effects.
+
+### What should be done in the future
+
+Follow the separate local-testing plan for SDK selection, exact HTTP/WebSocket fixtures, and a stateful Slack mock server. Implement token-file configuration and Socket Mode only with a fake-compatible transport and no implicit network access. Live app setup and actual workspace checks remain separately required. No new reMarkable upload was requested.
+
+### Code review instructions
+
+Start at `pkg/slackdoc/slack-offline.md` for the shipped contract, then `pkg/slackbot/ingress.go` and `pkg/slackhost/host_test.go`. Reproduce checks with `scripts/04-go-offline.sh`; add `-buildvcs=false` to build/run if the sandbox blocks VCS metadata. Review the independent testing-plan document without staging or overwriting it as part of this implementation.
+
+### Technical details
+
+Dependency downloads remained disabled with GOPROXY/GOSUMDB=off and GOTOOLCHAIN=local. Tests used cached Go 1.26.4, the pinned module graph, local fixtures and fake services. No token values, environment credentials, or real Slack messages were accessed. Vulnerability-database refresh and dependency-installing Make targets were not run because this phase is offline; existing cached lint tooling and a locally built version-matched analyzer were used instead.

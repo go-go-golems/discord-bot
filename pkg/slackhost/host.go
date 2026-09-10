@@ -14,6 +14,8 @@ type Options = jsslack.Options
 // Host exposes lifecycle and dispatch without exposing the VM.
 type Host struct{ host *jsslack.Host }
 
+var _ slackbot.Dispatcher = (*Host)(nil)
+
 func Load(ctx context.Context, script string, opts Options) (*Host, error) {
 	h, err := jsslack.Load(ctx, script, opts)
 	if err != nil {

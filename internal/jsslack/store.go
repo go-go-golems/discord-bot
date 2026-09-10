@@ -37,7 +37,10 @@ func (h *Host) storeObject(vm *goja.Runtime, s *invocationState) *goja.Object {
 	}))
 	must(vm, obj.Set("set", func(c goja.FunctionCall) goja.Value {
 		m, k := access(c)
-		b, err := c.Argument(1).ToObject(vm).MarshalJSON()
+		if goja.IsUndefined(c.Argument(1)) {
+			panic(vm.NewTypeError("store value must not be undefined"))
+		}
+		b, err := json.Marshal(c.Argument(1).Export())
 		must(vm, err)
 		if len(b) == 0 {
 			panic(vm.NewTypeError("store value must be JSON serializable"))

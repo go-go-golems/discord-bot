@@ -23,3 +23,14 @@ func TestDiscoverExcludesHelpersAndFindsDuplicates(t *testing.T) {
 	_, err = Discover(context.Background(), root, time.Second)
 	require.ErrorContains(t, err, "duplicate bot")
 }
+
+func TestFixtureValidation(t *testing.T) {
+	p := filepath.Join(t.TempDir(), "event.json")
+	for _, input := range []string{`{"unknown":true}`, `{} {}`, string(make([]byte, 1024*1024+1))} {
+		require.NoError(t, os.WriteFile(p, []byte(input), 0600))
+		var event struct {
+			Text string `json:"text"`
+		}
+		require.Error(t, readJSON(p, &event))
+	}
+}

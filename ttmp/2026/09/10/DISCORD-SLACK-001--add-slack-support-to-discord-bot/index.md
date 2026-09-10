@@ -32,3 +32,9 @@ Recommended first milestone: a separate `cmd/slack-bot`, Socket Mode, one worksp
 ## Delivery
 
 [Reviewed 21-page PDF](artifacts/slack-intern-guide.pdf). Uploaded successfully to reMarkable cloud at `/ai/2026/09/10/DISCORD-SLACK-001` as `DISCORD-SLACK-001 Intern Implementation Guide`.
+
+## Offline implementation checkpoint
+
+The repository now contains `cmd/slack-bot` and independent Slack domain, JS host, discovery, replay, and bounded ingress packages. Run `go run ./cmd/slack-bot help slack-offline` for the implemented contract. The [detailed diary](reference/01-investigation-diary.md) records tests, failures and milestone commits.
+
+Implemented: offline list/inspect/manifest/simulate commands, typed config projection, async fake-service dispatch, threading, reply-state checks, store isolation, deadlines, dedupe and overload tests. Pending: actual SDK/Socket Mode transport, wire-protocol fixtures, retry/reconnect behavior and live Slack verification. The main MVP task remains open.

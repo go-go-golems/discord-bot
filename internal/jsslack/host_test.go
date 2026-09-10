@@ -61,7 +61,7 @@ func TestInspectOfflineExample(t *testing.T) {
 	require.NoError(t, err)
 	h, err := Load(context.Background(), p, Options{})
 	require.NoError(t, err)
-	defer h.Close(context.Background())
+	defer func() { _ = h.Close(context.Background()) }()
 	d := h.Descriptor()
 	require.Equal(t, "ping", d.Name)
 	require.Len(t, d.Commands, 1)
@@ -162,4 +162,11 @@ func TestInspectionAllowsRequiredConfig(t *testing.T) {
 	require.NoError(t, err)
 	_, err = Load(context.Background(), p, Options{})
 	require.ErrorContains(t, err, "required")
+}
+
+func TestStoreNullAndScalar(t *testing.T) {
+	f := &fakeServices{}
+	h := loadTestHost(t, bot(`ctx=>{ctx.store.set("n",null);ctx.store.set("s","hello");return {text:String(ctx.store.get("n"))+":"+ctx.store.get("s")};}`), Options{})
+	require.NoError(t, h.Dispatch(context.Background(), command(), f))
+	require.Equal(t, "null:hello", f.replies[0].Text)
 }

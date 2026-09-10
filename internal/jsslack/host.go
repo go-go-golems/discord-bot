@@ -53,7 +53,7 @@ func Inspect(ctx context.Context, path string, timeout time.Duration) (slackbot.
 	if err != nil {
 		return slackbot.Descriptor{}, err
 	}
-	defer h.Close(context.Background())
+	defer func() { _ = h.Close(context.Background()) }()
 	return h.Descriptor(), nil
 }
 func load(ctx context.Context, path string, opts Options, inspect bool) (*Host, error) {

@@ -17,6 +17,8 @@ type Error struct {
 	Message   string `json:"message"`
 }
 
+var _ error = (*Error)(nil)
+
 func (e *Error) Error() string            { return e.Operation + ": " + e.Code + ": " + e.Message }
 func Fail(code, op, message string) error { return &Error{code, op, message} }
 

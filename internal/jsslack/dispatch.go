@@ -76,7 +76,7 @@ func (h *Host) Dispatch(ctx context.Context, input slackbot.Invocation, responde
 					return outcome{pending: true}, nil
 				case goja.PromiseStateRejected:
 					return outcome{err: errors.New(rejectionText(vm, p.Result()))}, nil
-				default:
+				case goja.PromiseStateFulfilled:
 					value = p.Result()
 				}
 			}

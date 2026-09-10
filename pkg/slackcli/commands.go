@@ -1,6 +1,7 @@
 package slackcli
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"io"
@@ -21,6 +22,7 @@ import (
 )
 
 type settings struct {
+	LogLevel   string `glazed:"log-level"`
 	Repository string `glazed:"bot-repository"`
 	Name       string `glazed:"name"`
 	EventFile  string `glazed:"event-file"`
@@ -41,6 +43,7 @@ func NewBotsCommand(logger zerolog.Logger) (*cobra.Command, error) {
 	root := &cobra.Command{Use: "bots", Short: "Inspect and simulate Slack bots offline"}
 	for _, op := range []string{"list", "inspect", "manifest", "simulate"} {
 		desc := cmds.NewCommandDescription(op, cmds.WithShort(op+" a Slack bot (offline)"), cmds.WithFlags(
+			fields.New("log-level", fields.TypeString, fields.WithDefault("info"), fields.WithHelp("Log level (debug, info, warn, error)")),
 			fields.New("bot-repository", fields.TypeString, fields.WithDefault("examples/slack-bots"), fields.WithHelp("Repository of Slack bot entrypoints")),
 			fields.New("timeout-ms", fields.TypeInteger, fields.WithDefault(5000), fields.WithHelp("Inspection and invocation deadline in milliseconds")),
 		))
@@ -85,6 +88,10 @@ func (c *command) RunIntoWriter(ctx context.Context, vals *values.Values, w io.W
 	if s.TimeoutMS <= 0 || s.TimeoutMS > 60000 {
 		return errors.New("timeout-ms must be between 1 and 60000")
 	}
+	level, err := zerolog.ParseLevel(s.LogLevel)
+	if err != nil {
+		return errors.Wrap(err, "log-level")
+	}
 	timeout := time.Duration(s.TimeoutMS) * time.Millisecond
 	enc := json.NewEncoder(w)
 	enc.SetIndent("", "  ")
@@ -116,11 +123,11 @@ func (c *command) RunIntoWriter(ctx context.Context, vals *values.Values, w io.W
 			}
 		}
 		recorder := &slackbot.Recorder{}
-		h, err := slackhost.Load(ctx, d.ScriptPath, slackhost.Options{Messages: recorder, Config: config, Timeout: timeout, Logger: c.logger})
+		h, err := slackhost.Load(ctx, d.ScriptPath, slackhost.Options{Messages: recorder, Config: config, Timeout: timeout, Logger: c.logger.Level(level)})
 		if err != nil {
 			return err
 		}
-		defer h.Close(context.Background())
+		defer func() { _ = h.Close(context.Background()) }()
 		if err := h.Dispatch(ctx, invocation, recorder); err != nil {
 			return err
 		}
@@ -133,8 +140,15 @@ func readJSON(path string, target any) error {
 	if err != nil {
 		return errors.Wrap(err, "open fixture")
 	}
-	defer f.Close()
-	dec := json.NewDecoder(io.LimitReader(f, 1024*1024+1))
+	defer func() { _ = f.Close() }()
+	data, err := io.ReadAll(io.LimitReader(f, 1024*1024+1))
+	if err != nil {
+		return errors.Wrap(err, "read fixture")
+	}
+	if len(data) > 1024*1024 {
+		return errors.New("fixture exceeds 1 MiB")
+	}
+	dec := json.NewDecoder(bytes.NewReader(data))
 	dec.DisallowUnknownFields()
 	if err := dec.Decode(target); err != nil {
 		return errors.Wrap(err, "decode fixture")

@@ -304,3 +304,18 @@ make goreleaser    # Snapshot release (local)
 ## License
 
 MIT
+
+## Offline Slack development
+
+A separate Slack host follows the same Go/JavaScript concepts. It currently supports
+inspection, manifest generation and fixture replay, without connecting to Slack:
+
+```sh
+go run ./cmd/slack-bot bots list
+go run ./cmd/slack-bot bots simulate ping --event-file examples/slack-bots/fixtures/command.json
+go run ./cmd/slack-bot help slack-offline
+```
+
+See [the offline API guide](pkg/slackdoc/slack-offline.md) and
+[example bot](examples/slack-bots/ping/index.js). Socket Mode and real Slack API
+calls are still planned; these commands require no credentials.
