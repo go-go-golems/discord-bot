@@ -306,3 +306,72 @@ Start at `pkg/slackdoc/slack-offline.md` for the shipped contract, then `pkg/sla
 ### Technical details
 
 Dependency downloads remained disabled with GOPROXY/GOSUMDB=off and GOTOOLCHAIN=local. Tests used cached Go 1.26.4, the pinned module graph, local fixtures and fake services. No token values, environment credentials, or real Slack messages were accessed. Vulnerability-database refresh and dependency-installing Make targets were not run because this phase is offline; existing cached lint tooling and a locally built version-matched analyzer were used instead.
+
+## Step 7: Publish the implementation deep dive to the Obsidian vault
+
+The user redirected the next phase from local transport experiments to a detailed project report. Wrote a 5,211-word technical article explaining the completed offline implementation at `fd84234`, its concurrency and delivery contracts, the evidence behind the tests, and the separate planned transport verification. No SDK/mock compatibility experiment was completed or claimed during this reporting step.
+
+Published a new append-only vault note at `Projects/2026/09/10/PROJ - Slack Bot - Runtime Ownership Admission and Local Verification.md`. The go-go-parc commit is `80b1f8f` and the push to `origin/main` succeeded. The existing research guide's reMarkable delivery remains a separate historical deliverable.
+
+### Prompt Context
+
+**User prompt (verbatim):**
+
+> Actually  write a detailed project report for the obsidian vault as a deep dive technical analysis blog post using a textbook writing style (no analogies, see skill).
+> Commit and push the bsidian vault when done (go-go-parc vault).
+
+**Assistant interpretation:** Replace the immediate transport implementation step with an evidence-backed vault article, then commit and push that article. Preserve the earlier detailed diary requirement.
+
+**Inferred user intent:** Produce a durable technical explanation of the project and its current engineering state for future readers.
+
+**Commit (implementation baseline):** `fd84234` — feat(slack): validate bounded ingress and document offline workflow.
+
+**Commit (vault publication):** `80b1f8f` — docs: publish Slack bot runtime technical deep dive.
+
+### What I did
+
+- Applied the Obsidian vault-writing and textbook-authoring skills, including direct technical explanations without analogies.
+- Read the diary, runtime, domain, ingress, CLI, example, tests, pinned dependencies, and local-testing plan.
+- Wrote the report with three Mermaid diagrams, real code, algorithm pseudocode, package references, a captured simulation result, and related vault links.
+- Distinguished implemented behavior from planned SDK, wire-fixture, stateful mock, and live workspace verification.
+- Validated YAML frontmatter, fenced blocks, referenced local source paths, and all four vault wikilinks.
+- Staged only the new article in a previously clean vault and pushed its focused commit.
+
+### Why
+
+The report should teach ownership, cancellation, admission, and response semantics through the actual implementation. A project narrative must also preserve the limits of its evidence so that an intern does not treat normalized replay as successful Socket Mode integration.
+
+### What worked
+
+- `04-go-offline.sh test ./pkg/slackbot ./pkg/slackhost ./internal/jsslack ./pkg/slackcli ./cmd/slack-bot` passed with cached test results.
+- `04-go-offline.sh run -buildvcs=false ./cmd/slack-bot bots simulate ping --event-file examples/slack-bots/fixtures/mention.json` freshly produced one post to `C-TEST`, preserving `threadTs: 1741234567.000001` with fake reference `offline.000001`.
+- The report's YAML, fence parity, source paths, and wikilinks validated. Vault staged diff whitespace checks passed.
+- `git push origin main` returned `9e0ebe7..80b1f8f main -> main` for go-go-parc.
+
+### What didn't work
+
+No publication or validation failures occurred. Some combined source reads were truncated by output limits; targeted follow-up reads recovered the specific code needed for claims. No new full lint, race, or TypeScript compiler run is claimed for this documentation-only step.
+
+### What I learned
+
+Ingress ACK independence is weaker than strict ACK-before-handler-start ordering: queue insertion precedes the acknowledgment call, so the worker can begin first. The report explicitly describes the actual guarantee. Native workers reject promises but return nil to the errgroup, so waiting for workers alone does not surface all unawaited service failures.
+
+### What was tricky to build
+
+The report needed to distinguish VM serialization from whole-invocation serialization, receipt context from worker lifetime, and reply-slot consumption from confirmed remote delivery. It also distinguishes the separate untracked test plan from the committed application revision rather than attributing the plan to `fd84234`.
+
+### What warrants a second pair of eyes
+
+Review the ACK ordering explanation, unawaited-operation policy, typed error trust boundary, store capacity limitations, and conservative reply-slot consumption before implementing the transport. The article identifies these constraints without modifying application behavior.
+
+### What should be done in the future
+
+Resume the local testing plan with a pinned Go SDK/mock interoperability probe, then precise wire fixtures and the full process harness. The report lists this as future work. No real Slack credentials are needed for the implemented tests or planned local synthetic-credential harness.
+
+### Code review instructions
+
+Read the new vault article at commit `80b1f8f`, then compare its key explanations against `internal/jsslack/dispatch.go`, `internal/jsslack/host.go`, and `pkg/slackbot/ingress.go`. Use the diary's earlier validation entries for the complete offline milestone checks; this step records its narrower fresh verification separately.
+
+### Technical details
+
+Vault root: `/home/manuel/code/wesen/go-go-golems/go-go-parc`. The article is 419 lines and 5,211 whitespace-delimited words, with three native Mermaid diagrams and no external image dependencies. Only the article was included in the vault commit. Filesystem escalation enabled the authorized vault write/commit; network escalation enabled the explicitly requested push. No environment credentials were inspected and no Slack traffic was sent.
