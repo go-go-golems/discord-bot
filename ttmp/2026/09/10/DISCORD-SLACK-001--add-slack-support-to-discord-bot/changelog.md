@@ -15,3 +15,7 @@ Uploaded the reviewed intern guide to reMarkable cloud at /ai/2026/09/10/DISCORD
 ## 2026-09-10
 
 Implemented offline Slack domain and native JS host with typed config, owner-thread promise settlement, deadlines, reply state, workspace store, and race-tested fake-service dispatch.
+
+## 2026-09-10
+
+Added independent offline Slack CLI: discover, inspect, emit manifest and replay normalized fixtures through real JS handlers into recording services.

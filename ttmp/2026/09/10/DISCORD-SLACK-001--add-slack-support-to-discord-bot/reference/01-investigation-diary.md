@@ -173,3 +173,58 @@ Read `pkg/slackbot/model.go`, then `internal/jsslack/host.go`, `module.go`, and 
 No new module or dependency was introduced. The research source snapshot files retain `.txt` suffixes and do not participate in Go compilation. Script config is an allowlist projection, and no token fields are exposed to JavaScript.
 
 Step 4 validation: the host/domain tests passed under the race detector, covering actual fake-service replies and posts, retained contexts, detached workspace-scoped storage, and CPU/network cancellation. A follow-up split between inspection and execution initially introduced `load redeclared in this block` because a test helper had that name. Renamed the helper to `loadTestHost`; inspection can now describe required config without requiring its value. Runtime loading still validates required fields.
+
+## Step 5: Offline CLI and manifest generation
+
+Committed the native runtime milestone as `e21a06d`, then implemented a separate `slack-bot` command with list, inspect, manifest, and simulate operations. Simulation executes the actual example JS bot against a recording service and emits the resulting operations as JSON.
+
+### Prompt Context
+
+See Step 4 for the implementation request. The current scope is offline work with incremental commits and detailed diary entries.
+
+**Commit (previous milestone):** `e21a06d` — feat(slack): add offline JavaScript host and typed services.
+
+### What I did
+
+- Added `pkg/slackcli` discovery with explicit root-file / immediate-child-index conventions.
+- Added JSON manifest generation and fixture-based simulation with `--event-file` and `--bot-config-file`.
+- Added `cmd/slack-bot` with zerolog, `--log-level`, cancellation, and application-owned errors.
+- Added command and mention fixtures and CLI tests that execute Cobra commands and inspect actual JSON output.
+
+### Why
+
+An offline end-to-end command makes the host useful immediately and gives later transport work a stable behavioral reference. The CLI does not claim that simulation proves Slack wire compatibility or that a live runner exists.
+
+### What worked
+
+`04-go-offline.sh test ./cmd/slack-bot ./pkg/slackcli ./pkg/slackbot` passed. List, inspect, manifest, command replay, and threaded mention replay produce the expected output; missing names and invalid deadlines return errors.
+
+### What didn't work
+
+- The first milestone staging attempt failed with `Unable to create .../.git/worktrees/discord-bot/index.lock: Read-only file system`. The worktree's Git metadata lives outside the workspace. The authorized commit succeeded with filesystem escalation; no network was needed.
+- CLI construction initially failed with `Flag 'config-file' ... already exists`; the pinned framework reserves that name. Renamed the bot input to `bot-config-file`.
+- The pinned high-level Glazed builder writes to `os.Stdout` and invokes `cobra.CheckErr` on domain failures. The missing-bot test therefore exited the test process with `Error: bot "missing" not found` rather than returning an error.
+
+### What I learned
+
+The installed command-authoring skill describes newer Glazed behavior than this repository's v1.3.6. The public parser API is sufficient to keep Glazed schemas and parsing while giving the new application its own `RunE` and output writer. No dependency upgrade or compatibility wrapper was needed.
+
+### What was tricky to build
+
+Inspection must not require runtime config values. It loads registration with a deadline, obtains metadata, and closes the runtime. Simulation then loads the selected bot with configuration validation and injected services. The Glazed source chain explicitly contains flags, arguments, and defaults; it does not load environment credentials or config files implicitly.
+
+### What warrants a second pair of eyes
+
+Review command-name conventions, discovery's exclusion of nested helpers, and the clear distinction between normalized invocation fixtures and Slack wire payloads. The JSON manifest still needs validation against Slack when live setup is authorized.
+
+### What should be done in the future
+
+Add embedded API help, TypeScript declarations, full offline validation, and the bounded ingress test seam. A separate side-conversation testing plan appeared as untracked `design-doc/02-full-local-testing-plan-and-slack-mock-evaluation.md`; it is left untouched and unstaged.
+
+### Code review instructions
+
+Read `pkg/slackcli/commands.go` and `discover.go`, then `cmd/slack-bot/main_test.go`. Run the example fixture commands after the tests and verify that stdout contains JSON operations only.
+
+### Technical details
+
+The parser is constructed with `cli.NewCobraParserFromSections` and mounted with `AddToCobraCommand`; `cli.NewCobraCommandFromCommandDescription` supplies the command shape. Command settings are disabled, and explicit Glazed source middleware handles flags/arguments/defaults.
