@@ -11,3 +11,7 @@ Completed intern Slack architecture guide, archived Slack APIs and vault/code ev
 ## 2026-09-10
 
 Uploaded the reviewed intern guide to reMarkable cloud at /ai/2026/09/10/DISCORD-SLACK-001; documentation delivery complete, Slack implementation remains open.
+
+## 2026-09-10
+
+Implemented offline Slack domain and native JS host with typed config, owner-thread promise settlement, deadlines, reply state, workspace store, and race-tested fake-service dispatch.
