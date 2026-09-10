@@ -1,0 +1,100 @@
+[
+  {
+    "name": "01-socket-mode",
+    "url": "https://docs.slack.dev/apis/events-api/using-socket-mode/",
+    "bytes": 16788,
+    "sha256": "ab0b2f2e243af43aeb3a60138eab6d08f3b635de05eee8f5a2afe4f30b77e44b",
+    "fetched_at": "2026-09-10T22:21:50.124707+00:00"
+  },
+  {
+    "name": "02-connections-scope",
+    "url": "https://docs.slack.dev/reference/scopes/connections.write/",
+    "bytes": 537,
+    "sha256": "d4a604fc6e298652cdc76cecaa4ea5ef98695205238b20e6c305871130c02886",
+    "fetched_at": "2026-09-10T22:21:47.826986+00:00"
+  },
+  {
+    "name": "03-slash-commands",
+    "url": "https://docs.slack.dev/interactivity/implementing-slash-commands/",
+    "bytes": 38647,
+    "sha256": "53121fe854e30a0d2ed553de6bd3c0dd151061b1c45dbb799ae0134e942e9b89",
+    "fetched_at": "2026-09-10T22:21:48.834070+00:00"
+  },
+  {
+    "name": "04-post-message",
+    "url": "https://docs.slack.dev/reference/methods/chat.postMessage/",
+    "bytes": 22048,
+    "sha256": "1eacac5dcff037e38a0ec7a01d406c322589908977ba5bebc8bfd1080e74717a",
+    "fetched_at": "2026-09-10T22:21:49.270997+00:00"
+  },
+  {
+    "name": "05-interactions",
+    "url": "https://docs.slack.dev/interactivity/handling-user-interaction/",
+    "bytes": 14165,
+    "sha256": "3d36df48a9bdc1d4b3dd728b17e5056ffbbd9bd9e482e80a0cfc93762b89fd53",
+    "fetched_at": "2026-09-10T22:21:49.789428+00:00"
+  },
+  {
+    "name": "06-rate-limits",
+    "url": "https://docs.slack.dev/apis/web-api/rate-limits/",
+    "bytes": 9810,
+    "sha256": "674ba589ed28654bb3e1b25635409df6288810dff4bc4e8f68f079c1458d3203",
+    "fetched_at": "2026-09-10T22:21:50.325203+00:00"
+  },
+  {
+    "name": "07-app-manifest",
+    "url": "https://docs.slack.dev/reference/app-manifest/",
+    "bytes": 32816,
+    "sha256": "1d3617b8a47a6c59931ecca4d890e4f19d3f3db6e0eb80190fbfe8d199ad5cc9",
+    "fetched_at": "2026-09-10T22:22:01.155926+00:00"
+  },
+  {
+    "name": "08-app-mention",
+    "url": "https://docs.slack.dev/reference/events/app_mention/",
+    "bytes": 4535,
+    "sha256": "016b384f381ab3a7290db77dc016207d2f42522d19e5abc33ed6a8e6a799e642",
+    "fetched_at": "2026-09-10T22:21:51.453141+00:00"
+  },
+  {
+    "name": "09-request-signing",
+    "url": "https://docs.slack.dev/authentication/verifying-requests-from-slack/",
+    "bytes": 11084,
+    "sha256": "21f5300f3a4051d4b45762f5a942d039b6347c1fc3d3ca5ecc108286999c1668",
+    "fetched_at": "2026-09-10T22:21:51.539617+00:00"
+  },
+  {
+    "name": "10-slack-go",
+    "url": "https://github.com/slack-go/slack",
+    "bytes": 27493,
+    "sha256": "28337f150ed6883d99951270a5fd90f2f6b1ccbed7a643bf1582939897772fbc",
+    "fetched_at": "2026-09-10T22:21:58.756807+00:00"
+  },
+  {
+    "name": "11-auth-test",
+    "url": "https://docs.slack.dev/reference/methods/auth.test/",
+    "bytes": 4650,
+    "sha256": "fa958e682fe17f93a3c07f9afca1dc0f72477faa327c95d990fa963c0daeb151",
+    "fetched_at": "2026-09-10T22:21:53.475377+00:00"
+  },
+  {
+    "name": "12-chat-update",
+    "url": "https://docs.slack.dev/reference/methods/chat.update/",
+    "bytes": 12144,
+    "sha256": "7d288628ab82fd62ec0238449defb78573f1e0548a8774d69d81faba808a0131",
+    "fetched_at": "2026-09-10T22:21:54.194299+00:00"
+  },
+  {
+    "name": "13-views-open",
+    "url": "https://docs.slack.dev/reference/methods/views.open/",
+    "bytes": 5972,
+    "sha256": "e7b8663b23e6f46af7ac5c75c34b5dc0413dcf381437eb35319b3440a114b35d",
+    "fetched_at": "2026-09-10T22:21:55.799383+00:00"
+  },
+  {
+    "name": "14-message-im",
+    "url": "https://docs.slack.dev/reference/events/message.im/",
+    "bytes": 1318,
+    "sha256": "93457d8b40451ea70bb2f7b9665dcc11dae3567ad3a5d368d5513d04d6a2c0e6",
+    "fetched_at": "2026-09-10T22:21:56.204690+00:00"
+  }
+]

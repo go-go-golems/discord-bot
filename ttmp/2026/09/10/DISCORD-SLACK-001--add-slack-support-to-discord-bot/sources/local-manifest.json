@@ -1,0 +1,139 @@
+[
+  {
+    "path": "/home/manuel/code/wesen/go-go-golems/go-go-parc/Projects/2026/06/22/ARTICLE - Designing DSLs with go-go-goja - Go-Backed JavaScript APIs.md",
+    "snapshot": "20-dsl-design.original.md",
+    "extracted": "20-dsl-design.md",
+    "sha256": "72444ad7563c4be32fc6f135fce4821bc18820ed1493cc7d41e01f8f2309ab08"
+  },
+  {
+    "path": "/home/manuel/code/wesen/go-go-golems/go-go-parc/Projects/2026/04/22/PROJ - JS Discord Bot Framework.md",
+    "snapshot": "21-discord-framework.original.md",
+    "extracted": "21-discord-framework.md",
+    "sha256": "86c048c2bd8d60c55a73534cc30af5972fc37a1e42b2bbaf6e242abaa23e9220"
+  },
+  {
+    "path": "/home/manuel/code/wesen/go-go-golems/go-go-parc/Projects/2026/04/22/ARTICLE - Go-Side JavaScript DSLs for Discord Bots - Types, Errors, and In-Place Updates.md",
+    "snapshot": "22-discord-ui-dsl.original.md",
+    "extracted": "22-discord-ui-dsl.md",
+    "sha256": "bfaf4a20e34c18d0cfe1466ccf97d2b7711540821ec1721bf37fb34d81287c25"
+  },
+  {
+    "path": "/home/manuel/code/wesen/go-go-golems/go-go-parc/Projects/2026/05/25/ARTICLE - xgoja Modules in Existing Runners - Discord Bot Case Study.md",
+    "snapshot": "23-xgoja-discord.original.md",
+    "extracted": "23-xgoja-discord.md",
+    "sha256": "7e4e910ac15df36a382e225ad8f69280b4e0278650f48ed2dfcaf8f0eb672e45"
+  },
+  {
+    "path": "/home/manuel/code/wesen/go-go-golems/go-go-parc/Projects/2026/05/15/ARTICLE - go-go-goja Context Management - Runtime Request and Async Call Context.md",
+    "snapshot": "24-context-management.original.md",
+    "extracted": "24-context-management.md",
+    "sha256": "1e6371682e70e0d54b40aa7353d547ed48c3f7fcd74107a7a9305a947d8e5322"
+  },
+  {
+    "path": "/home/manuel/workspaces/2026-09-10/add-slack-support/discord-bot/README.md",
+    "snapshot": "code/README.md.txt",
+    "sha256": "2633c22e241594e27ef07831eed65353160c38253556e039a15ba334ca599278"
+  },
+  {
+    "path": "/home/manuel/workspaces/2026-09-10/add-slack-support/discord-bot/go.mod",
+    "snapshot": "code/go.mod.txt",
+    "sha256": "23c36b843da0d040df1b36d17c5d7e3203eabf0f022dcbd4dc1b66a4bfabd52a"
+  },
+  {
+    "path": "/home/manuel/workspaces/2026-09-10/add-slack-support/discord-bot/internal/bot/bot.go",
+    "snapshot": "code/internal/bot/bot.go.txt",
+    "sha256": "c5b643902544169bd4416290b42d8d5455150f3a6c72944d1f80cd4c133be0c3"
+  },
+  {
+    "path": "/home/manuel/workspaces/2026-09-10/add-slack-support/discord-bot/internal/config/config.go",
+    "snapshot": "code/internal/config/config.go.txt",
+    "sha256": "97fd1eb9a94236e4766b9f4002579a5f7d56187955c9a95a674789a2be6f8658"
+  },
+  {
+    "path": "/home/manuel/workspaces/2026-09-10/add-slack-support/discord-bot/internal/jsdiscord/host.go",
+    "snapshot": "code/internal/jsdiscord/host.go.txt",
+    "sha256": "88306172a280f6545d9fdf7ddc8ee04700924076f65a6b210e32d5cb1cdc8027"
+  },
+  {
+    "path": "/home/manuel/workspaces/2026-09-10/add-slack-support/discord-bot/internal/jsdiscord/runtime.go",
+    "snapshot": "code/internal/jsdiscord/runtime.go.txt",
+    "sha256": "541f80490a20aa408b586ab38d543a1d6a9dd9a46c95b42c128b105b1300e24c"
+  },
+  {
+    "path": "/home/manuel/workspaces/2026-09-10/add-slack-support/discord-bot/internal/jsdiscord/bot_dispatch.go",
+    "snapshot": "code/internal/jsdiscord/bot_dispatch.go.txt",
+    "sha256": "243c0f8800c267f376e0a2b04c54b1fb0f99e4ac91a700075d5350f99c718b0d"
+  },
+  {
+    "path": "/home/manuel/workspaces/2026-09-10/add-slack-support/discord-bot/internal/jsdiscord/bot_context.go",
+    "snapshot": "code/internal/jsdiscord/bot_context.go.txt",
+    "sha256": "113f0e385b2347949b3f6a3c8f497bd4c7912ac2b488b13cf8ce073413b80011"
+  },
+  {
+    "path": "/home/manuel/workspaces/2026-09-10/add-slack-support/discord-bot/internal/jsdiscord/descriptor.go",
+    "snapshot": "code/internal/jsdiscord/descriptor.go.txt",
+    "sha256": "ea0011c7d41121ec6d817a320c7f75c0e78a491c0df060c38a25f8eb2798c986"
+  },
+  {
+    "path": "/home/manuel/workspaces/2026-09-10/add-slack-support/discord-bot/internal/jsdiscord/host_responses.go",
+    "snapshot": "code/internal/jsdiscord/host_responses.go.txt",
+    "sha256": "374ea292907ec1e1db257296bbbc2e4d2ff0a0f24db812f1348a3e1b5acf259a"
+  },
+  {
+    "path": "/home/manuel/workspaces/2026-09-10/add-slack-support/discord-bot/internal/jsdiscord/ui_message.go",
+    "snapshot": "code/internal/jsdiscord/ui_message.go.txt",
+    "sha256": "1f6baf48cfd1950df3d8847cc4cb9126bb2af656011f9a36d279b40018bb5ad6"
+  },
+  {
+    "path": "/home/manuel/workspaces/2026-09-10/add-slack-support/discord-bot/internal/jsdiscord/store.go",
+    "snapshot": "code/internal/jsdiscord/store.go.txt",
+    "sha256": "9d7e34875241a8a6b04b568bfa01417dd2da7d971af747423b6f547ee9d77cb9"
+  },
+  {
+    "path": "/home/manuel/workspaces/2026-09-10/add-slack-support/discord-bot/pkg/botcli/discover.go",
+    "snapshot": "code/pkg/botcli/discover.go.txt",
+    "sha256": "7a76d8244f05ab65c43c773a088d353eb0d4bb757c65d6968a38c10eb381dd62"
+  },
+  {
+    "path": "/home/manuel/workspaces/2026-09-10/add-slack-support/discord-bot/pkg/botcli/command_run.go",
+    "snapshot": "code/pkg/botcli/command_run.go.txt",
+    "sha256": "31718fdcb6d30eab044fc6b5a39bdcabf8a4d149db6f8d156fe07e22bfabc961"
+  },
+  {
+    "path": "/home/manuel/workspaces/2026-09-10/add-slack-support/discord-bot/pkg/botcli/runtime_helpers.go",
+    "snapshot": "code/pkg/botcli/runtime_helpers.go.txt",
+    "sha256": "24fd57b3d0a6ea2149d9c2ffbc82f9c81bbcc2d0f7770794e02100aa6e8a3158"
+  },
+  {
+    "path": "/home/manuel/workspaces/2026-09-10/add-slack-support/discord-bot/pkg/botcli/run_description.go",
+    "snapshot": "code/pkg/botcli/run_description.go.txt",
+    "sha256": "642e66b1f0191eb240c4013f7ef6a37b63552217fe88d3b9bc75ab515d855f7e"
+  },
+  {
+    "path": "/home/manuel/workspaces/2026-09-10/add-slack-support/discord-bot/pkg/botcli/command_root.go",
+    "snapshot": "code/pkg/botcli/command_root.go.txt",
+    "sha256": "307a589721b589aa45c0c06e1a7375e979f3f58aef97f780439250b3c55f3321"
+  },
+  {
+    "path": "/home/manuel/workspaces/2026-09-10/add-slack-support/discord-bot/pkg/framework/framework.go",
+    "snapshot": "code/pkg/framework/framework.go.txt",
+    "sha256": "658cc6ddb52a2847fb05d52d1ae6682421ede7b3062d513c8ebd1fb315dc3585"
+  },
+  {
+    "path": "/home/manuel/workspaces/2026-09-10/add-slack-support/discord-bot/pkg/xgoja/provider/provider.go",
+    "snapshot": "code/pkg/xgoja/provider/provider.go.txt",
+    "sha256": "5161c5d97758e9991c2a25a0f1a1e382bcf7dbc07ef165d0ab73ba482f4c3718"
+  },
+  {
+    "path": "/home/manuel/workspaces/2026-09-10/add-slack-support/go-go-goja/pkg/runtimebridge/runtimebridge.go",
+    "snapshot": "go-go-goja/pkg/runtimebridge/runtimebridge.go.txt",
+    "sha256": "ada6e9f94ad60a288b407b82ca05ae3019022703846e050b464f9ce2883eeea5",
+    "revision": "c265ae037c319aa90fd9c6c4e3818a2f6c9bd15e"
+  },
+  {
+    "path": "/home/manuel/workspaces/2026-09-10/add-slack-support/go-go-goja/pkg/engine/runtime.go",
+    "snapshot": "go-go-goja/pkg/engine/runtime.go.txt",
+    "sha256": "2073078bfa61353287314a5de9660b2dc0a92e70f16df8330b332c3e6bc879c6",
+    "revision": "c265ae037c319aa90fd9c6c4e3818a2f6c9bd15e"
+  }
+]
