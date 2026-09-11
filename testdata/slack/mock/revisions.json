@@ -1,0 +1,9 @@
+{
+  "applicationBaseline": "7cc01a0",
+  "slackSDK": "github.com/slack-go/slack v0.17.3",
+  "websocket": "github.com/gorilla/websocket v1.5.3",
+  "mockPackage": "@desplega.ai/slack-mock 0.4.0",
+  "mockRevision": "6397b31a9c5e04a3ba52dd6e82f16ab8b5b10eac",
+  "bun": "1.2.13",
+  "go": "1.26.4"
+}

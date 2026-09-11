@@ -27,3 +27,7 @@ Completed offline ingress and real-JS replay coverage, embedded help and TypeScr
 ## 2026-09-10
 
 Published the detailed textbook-style Slack runtime project report to go-go-parc in vault commit 80b1f8f and pushed origin/main; recorded source review, verification, and implementation-versus-plan boundaries in diary Step 7.
+
+## 2026-09-10
+
+Proved pinned Go Slack SDK interoperability with the local Bun Socket Mode mock: exact thread reply, empty slash ACK, private recipient, two first-attempt ACKs, and clean socket cancellation; archived sources and sanitized receipts.

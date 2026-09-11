@@ -375,3 +375,67 @@ Read the new vault article at commit `80b1f8f`, then compare its key explanation
 ### Technical details
 
 Vault root: `/home/manuel/code/wesen/go-go-golems/go-go-parc`. The article is 419 lines and 5,211 whitespace-delimited words, with three native Mermaid diagrams and no external image dependencies. Only the article was included in the vault commit. Filesystem escalation enabled the authorized vault write/commit; network escalation enabled the explicitly requested push. No environment credentials were inspected and no Slack traffic was sent.
+
+## Step 8: Prove actual Go SDK and local Socket Mode interoperability
+
+Resumed offline implementation with the test plan's first experiment. Pinned cached slack-go v0.17.3 and its WebSocket dependency, wrote an explicit external-server test, and started the pinned Bun mock in tmux. The real SDK authenticated, received two Socket Mode deliveries, acknowledged them, posted a threaded message, and sent an ephemeral command response. The mock independently verified conversation state and socket closure.
+
+The probe is intentionally smaller than a complete application process test. It establishes SDK/mock interoperability without claiming that the production transport or JavaScript composition has been connected. Sources and sanitized receipts are archived in the ticket; synthetic credentials remain in the explicit /tmp run directory.
+
+### Prompt Context
+
+**User prompt (verbatim):** "Ok, continue.commit at appropriate intervals and keep a detailed diary as you work (using the diary format from the skill)"
+
+**Assistant interpretation:** Resume the local testing and implementation plan, preserving offline execution, focused commits, and detailed investigation entries.
+
+**Inferred user intent:** Progress from the validated offline runtime toward a working Slack transport using local evidence before real workspace access.
+
+**Commit (previous checkpoint):** `7cc01a0` — docs: record Slack deep dive vault publication.
+
+### What I did
+
+- Added cached `github.com/slack-go/slack v0.17.3`; upgraded its required `gorilla/websocket` to v1.5.3 without downloads.
+- Added `internal/slackprobe/probe_test.go`, a real SDK test with explicit fixture-directory selection and literal-loopback-only HTTP/WebSocket dialers.
+- Added `testdata/slack/mock/probe.ts`, pinned revisions, and a reproduction runbook.
+- Ran Bun 1.2.13 against mock commit `6397b31a9c5e04a3ba52dd6e82f16ab8b5b10eac` in tmux.
+- Archived SDK/mock source snapshots with hashes under `sources/sdk-probe` and sanitized results under `artifacts/sdk-probe-001`.
+
+### Why
+
+The mock's upstream tests mainly establish JavaScript/Bolt compatibility. A real Go SDK experiment is necessary before depending on this server for the process gate. Independent mock observations prevent successful local SDK calls from being mistaken for correct thread, recipient, or ACK behavior.
+
+### What worked
+
+`04-go-offline.sh test -count=1 -v ./internal/slackprobe -run TestSDKInteroperability -args -slack-probe-directory /tmp/slack-sdk-probe-001` passed in 0.178 seconds. The mock recorded exactly two deliveries, each acknowledged on its first attempt. Thread identity was preserved, the private response belonged to Alice, no public private-response message existed, the slash ACK was empty, and cancellation reduced connection count to zero.
+
+The actual server used loopback port 45255. It stopped itself after cancellation; `lsof-who -p 45255 -k` reported `no process listening/bound on port 45255`, then the owned tmux session was removed. No outside endpoints were dialed.
+
+### What didn't work
+
+One exploratory source read used nonexistent `socketmode/event_type.go` and returned `No such file or directory`; the probe uses the verified request type from `request.go` and did not require that guessed filename. No compile, execution, or compatibility failures occurred in the first probe.
+
+### What I learned
+
+The cached SDK supports endpoint injection, an explicit HTTP client, a WebSocket dialer, and context-aware ACK scheduling. The mock supports these actual SDK calls without source changes. ACK scheduling success still needs mock/wire observation to establish receipt, which this probe checks through the mock delivery ledger.
+
+### What was tricky to build
+
+All three network paths must obey offline constraints: Web API, returned WebSocket URL, and response URL. The probe uses a no-proxy HTTP transport, rejects redirects, and rejects hostnames and non-loopback literal addresses before dialing. Readiness/results use atomic file rename to avoid partial JSON observations. Cancellation is verified by a separate server-side shutdown receipt.
+
+### What warrants a second pair of eyes
+
+The selected mock is permissive about some token usage, so this test alone cannot prove correct token routing. Strict HTTP fixtures remain required. Ordinary repository tests explicitly skip the external-server gate unless a directory is supplied; CI must run the gate separately and must not count the default skip as coverage.
+
+### What should be done in the future
+
+Implement the actual transport using these endpoint seams, strict request fixtures, normalized ingress, and real JS host composition. Add rate-limit, uncertain-delivery, reconnect, ACK failure, and process lifecycle cases per the plan.
+
+### Code review instructions
+
+Read `testdata/slack/mock/README.md`, then compare the SDK test with the independent TS assertions. Review the two sanitized receipts and pinned revisions. Reproduce with a fresh run directory and the prepared dependencies; do not archive config.json.
+
+### Technical details
+
+SDK v0.17.3, WebSocket v1.5.3, Go 1.26.4, Bun 1.2.13, mock package v0.4.0. The test has a 30-second operation deadline and the launcher a 45-second watchdog. No production secrets or environment credentials are read. Source archives are original code snapshots with .txt suffixes; no new HTML/Markdown web sources were fetched.
+
+Step 8 final validation: full offline `go test ./...` passed after the SDK dependency change, including existing Discord packages. The previously separate local-testing plan is included unchanged in this milestone so the implementation gate and its source design are reviewable together.
