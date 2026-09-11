@@ -439,3 +439,70 @@ Read `testdata/slack/mock/README.md`, then compare the SDK test with the indepen
 SDK v0.17.3, WebSocket v1.5.3, Go 1.26.4, Bun 1.2.13, mock package v0.4.0. The test has a 30-second operation deadline and the launcher a 45-second watchdog. No production secrets or environment credentials are read. Source archives are original code snapshots with .txt suffixes; no new HTML/Markdown web sources were fetched.
 
 Step 8 final validation: full offline `go test ./...` passed after the SDK dependency change, including existing Discord packages. The previously separate local-testing plan is included unchanged in this milestone so the implementation gate and its source design are reviewable together.
+
+## Step 9: Connect the real JavaScript CLI to local Socket Mode and verify wire behavior
+
+Implemented `internal/slacktransport` and `bots run-local`, connecting actual SDK HTTP/WebSocket traffic through normalized ingress to the existing JS host. The runner only accepts a literal loopback HTTP endpoint with an explicit port. Its exact host/port dial guard also applies to returned WebSocket URLs and response URL calls; no external Slack connection is enabled by this milestone.
+
+The complete application scenario now passes against the pinned mock: a mention reaches the actual example handler and yields a threaded response, a slash command yields private `pong`, both envelopes are acknowledged, and SIGTERM closes the socket with a zero Go-runner exit code. Strict Go fixtures separately test token routing and ACK independence from a blocked handler. The milestone intentionally reports rate limits and ambiguous delivery without automatic message retries.
+
+### Prompt Context
+
+See Step 8 for the verbatim continuation request and interpretation. The user authorized offline development, tested milestone commits, and a detailed diary.
+
+**Commit (previous milestone):** `a161eb2` — test(slack): prove offline SDK Socket Mode interoperability.
+
+### What I did
+
+- Added local endpoint validation, SDK message posting, private response capabilities, safe service errors, and resource cleanup in `internal/slacktransport/client.go`.
+- Added identity verification, event/command decoding, ingress composition, busy slash receipts, and independent socket/consumer lifetimes in `run.go`.
+- Added actual HTTP fixtures for bot/app tokens, exact thread fields, invalid-input zero traffic, response payloads, 429 and malformed failures, and accepted-then-lost HTTP responses without retransmission.
+- Added a WebSocket fixture that observes two exact ACK IDs while the single admitted handler remains blocked; the second delivery uses the same business-event ID and a different envelope ID.
+- Added Glazed `bots run-local NAME --local-connection-file PATH`, explicit host-only JSON configuration, CLI rejection tests, and SIGTERM handling.
+- Extended the Bun probe with actual-example expectations and added `process_gate.py` to own two tmux sessions, capture process exit explicitly, and clean the mock port.
+- Updated README, embedded API help, and the local test runbook; generated the transport package's logcopter registration.
+
+### Why
+
+The previous SDK probe could pass even if our application composition were incorrect. This milestone exercises that composition, while precise fixtures cover cases the stateful mock does not enforce strictly. Conservative one-request posting avoids duplicate messages when a server may have accepted a request before the response was lost.
+
+### What worked
+
+- Full repository `04-go-offline.sh test ./...` passed with loopback binding enabled, including existing Discord tests.
+- Full `build -buildvcs=false ./...` and `vet ./...` passed.
+- The version-matched Glazed analyzer passed on the CLI packages.
+- Focused golangci-lint on the transport, probe, CLI library, and executable returned `0 issues.`
+- `go test -count=1 -race ./internal/slacktransport` passed in 1.031 seconds after the fixture Origin correction below.
+- The actual local application received two accepted events and the mock verified exact thread identity, private recipient, zero public private-response posts, and two first-attempt ACKs.
+- The final process gate at `/tmp/slack-host-probe-003` verified SIGTERM, zero connections, and `goRunExitCode: 0`. Sanitized receipts and logs are archived under `artifacts/host-probe-003`.
+
+### What didn't work
+
+- The first HTTP-fixture test in the restricted sandbox failed with `httptest: failed to listen on a port: listen tcp6 [::1]:0: socket: operation not permitted`. Ran the authorized local socket tests with filesystem/network sandbox escalation inside tmux. No source workaround or external networking was needed.
+- Sending a command to the previous completed tmux session fed its final `read` prompt instead of executing a new test; `/tmp/slack-wire-race.log` did not exist. Started a fresh named tmux session for the next test command.
+- The first WebSocket fixture rejected the SDK handshake: `websocket: request origin not allowed by Upgrader.CheckOrigin`, followed by `ACKs did not arrive while handler blocked`. SDK source sets `Origin: https://api.slack.com`; the fixture now explicitly validates that fixed value. Production client behavior was unchanged.
+- A manual process-check script expected `pane_dead_status` to contain zero, but this installed tmux returned empty status and signal fields despite `pane_dead=1` and zero mock connections. Recorded this incomplete exit-status evidence in `artifacts/host-probe-002/process.json`. The reusable gate now waits on the Go subprocess and writes an explicit exit-code receipt; the next run passed. This was a harness observation failure, not evidence of a nonzero application exit.
+
+### What I learned
+
+The actual SDK's Origin header is independent of the configured local endpoint, so a default browser-origin check is inappropriate for this wire fixture. The full application can reuse the SDK's Socket Mode lifecycle while retaining its own ingress/dedupe lifetime. Mock success still does not establish strict token routing; the separate HTTP tests caught the relevant request formats directly.
+
+### What was tricky to build
+
+There are two layers of acknowledgment evidence: SDK AckCtx schedules a response, while the mock/fixture observes its envelope ID on the wire. The blocked-handler test proves that receipt makes progress without waiting for JS work, and deduplication operates on business-event identity rather than connection delivery identity. SIGTERM must target the actual application child of `go run`; the process driver identifies that child and captures the runner's eventual exit without relying on terminal metadata.
+
+### What warrants a second pair of eyes
+
+Review local endpoint enforcement, unknown SDK error sanitization, response URL handling, ACK mapping for overload, and context cleanup. The run-local configuration allows optional userID as probe metadata, but authenticates the actual bot user through auth.test. Rate-limited posts currently return a typed failure with no retry; no method-scoped pacing, durable admission, or exactly-once delivery is claimed. SDK reconnection is inherited but its failure/recovery acceptance catalog remains unimplemented.
+
+### What should be done in the future
+
+Implement the remaining plan catalog: bounded rate-limit waits/pacing, malformed retry metadata, additional cancellation and ACK-failure cases, reconnect observations, negative identity/channel cases across the whole process, and explicit CI gates. Decide the unawaited-operation error policy. External Slack endpoints and real workspace validation remain separate future work; no real tokens are needed for the current local runner.
+
+### Code review instructions
+
+Read `internal/slacktransport/client.go` and `run.go`, then their HTTP/WebSocket fixtures. Run the prepared-dependency process gate from `testdata/slack/mock/README.md`; inspect its business-state and exit receipts. Compare CLI help and the connection-file rejection test. The complete test catalog in design-doc/02 remains a plan, not a blanket claim that every catalog item now passes.
+
+### Technical details
+
+Queue capacity is 32, deduplication capacity 4096, TTL five minutes, ACK context two seconds, HTTP client timeout ten seconds, and WebSocket handshake timeout five seconds. Host invocation timeout remains configurable through the existing CLI field. Local connection input is capped by the shared one-MiB JSON reader and never projected into JS config. Synthetic config files remain outside Git. The final mock port was 33555 and the server stopped itself before lsof-who cleanup; all owned process/test tmux sessions were cleaned.

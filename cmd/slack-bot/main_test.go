@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"os"
 	"path/filepath"
 	"testing"
 
@@ -62,4 +63,17 @@ func TestHelpAndParseErrors(t *testing.T) {
 	require.Error(t, err)
 	_, err = execute(t, "bots", "list", "--log-level", "bogus")
 	require.ErrorContains(t, err, "log-level")
+}
+
+func TestLocalRunnerRejectsExternalConfiguration(t *testing.T) {
+	repo, err := filepath.Abs("../../examples/slack-bots")
+	require.NoError(t, err)
+	path := filepath.Join(t.TempDir(), "connection.json")
+	require.NoError(t, os.WriteFile(path, []byte(`{"apiURL":"https://slack.com/api/","botToken":"secret-marker","appToken":"secret-marker","teamID":"T","appID":"A"}`), 0600))
+	_, err = execute(t, "bots", "run-local", "ping", "--bot-repository", repo, "--local-connection-file", path)
+	require.Error(t, err)
+	require.NotContains(t, err.Error(), "secret-marker")
+	out, err := execute(t, "bots", "run-local", "--help")
+	require.NoError(t, err)
+	require.Contains(t, out, "local-connection-file")
 }

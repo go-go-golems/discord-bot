@@ -8,6 +8,7 @@ import (
 	"os"
 	"time"
 
+	"github.com/go-go-golems/discord-bot/internal/slacktransport"
 	"github.com/go-go-golems/discord-bot/pkg/slackbot"
 	"github.com/go-go-golems/discord-bot/pkg/slackhost"
 	"github.com/go-go-golems/glazed/pkg/cli"
@@ -22,12 +23,13 @@ import (
 )
 
 type settings struct {
-	LogLevel   string `glazed:"log-level"`
-	Repository string `glazed:"bot-repository"`
-	Name       string `glazed:"name"`
-	EventFile  string `glazed:"event-file"`
-	ConfigFile string `glazed:"bot-config-file"`
-	TimeoutMS  int    `glazed:"timeout-ms"`
+	LocalConnectionFile string `glazed:"local-connection-file"`
+	LogLevel            string `glazed:"log-level"`
+	Repository          string `glazed:"bot-repository"`
+	Name                string `glazed:"name"`
+	EventFile           string `glazed:"event-file"`
+	ConfigFile          string `glazed:"bot-config-file"`
+	TimeoutMS           int    `glazed:"timeout-ms"`
 }
 type command struct {
 	*cmds.CommandDescription
@@ -37,11 +39,11 @@ type command struct {
 
 var _ cmds.WriterCommand = (*command)(nil)
 
-// Commands intentionally produce one JSON document. They are writer commands, not
+// Offline commands produce one JSON document; run-local waits for cancellation. These are writer commands, not
 // structured-row commands, and do not depend on Glazed's evolving output flags.
 func NewBotsCommand(logger zerolog.Logger) (*cobra.Command, error) {
 	root := &cobra.Command{Use: "bots", Short: "Inspect and simulate Slack bots offline"}
-	for _, op := range []string{"list", "inspect", "manifest", "simulate"} {
+	for _, op := range []string{"list", "inspect", "manifest", "simulate", "run-local"} {
 		desc := cmds.NewCommandDescription(op, cmds.WithShort(op+" a Slack bot (offline)"), cmds.WithFlags(
 			fields.New("log-level", fields.TypeString, fields.WithDefault("info"), fields.WithHelp("Log level (debug, info, warn, error)")),
 			fields.New("bot-repository", fields.TypeString, fields.WithDefault("examples/slack-bots"), fields.WithHelp("Repository of Slack bot entrypoints")),
@@ -49,6 +51,9 @@ func NewBotsCommand(logger zerolog.Logger) (*cobra.Command, error) {
 		))
 		if op != "list" {
 			cmds.WithArguments(fields.New("name", fields.TypeString, fields.WithIsArgument(true), fields.WithRequired(true), fields.WithHelp("Bot name")))(desc)
+		}
+		if op == "run-local" {
+			cmds.WithFlags(fields.New("local-connection-file", fields.TypeString, fields.WithRequired(true), fields.WithHelp("JSON local mock connection file; never exposed to JavaScript")), fields.New("bot-config-file", fields.TypeString, fields.WithHelp("Optional declared bot configuration JSON")))(desc)
 		}
 		if op == "simulate" {
 			cmds.WithFlags(fields.New("event-file", fields.TypeString, fields.WithRequired(true), fields.WithHelp("JSON invocation fixture")), fields.New("bot-config-file", fields.TypeString, fields.WithHelp("Optional JSON object of declared bot configuration")))(desc)
@@ -107,6 +112,31 @@ func (c *command) RunIntoWriter(ctx context.Context, vals *values.Values, w io.W
 		return err
 	}
 	switch c.operation {
+	case "run-local":
+		var connection struct {
+			APIURL, BotToken, AppToken, TeamID, AppID, UserID string
+			AllowedChannels                                   []string
+		}
+		if err := readJSON(s.LocalConnectionFile, &connection); err != nil {
+			return errors.New("invalid local connection file")
+		}
+		client, err := slacktransport.NewLocal(slacktransport.LocalOptions{APIURL: connection.APIURL, BotToken: connection.BotToken, AppToken: connection.AppToken, TeamID: connection.TeamID, AppID: connection.AppID, AllowedChannels: connection.AllowedChannels, Logger: c.logger.Level(level)})
+		if err != nil {
+			return err
+		}
+		defer client.Close()
+		config := map[string]any{}
+		if s.ConfigFile != "" {
+			if err := readJSON(s.ConfigFile, &config); err != nil {
+				return err
+			}
+		}
+		host, err := slackhost.Load(ctx, d.ScriptPath, slackhost.Options{Messages: client, Config: config, Timeout: timeout, Logger: c.logger.Level(level)})
+		if err != nil {
+			return err
+		}
+		defer func() { _ = host.Close(context.Background()) }()
+		return client.Run(ctx, host)
 	case "inspect":
 		return enc.Encode(d)
 	case "manifest":

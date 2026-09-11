@@ -4,6 +4,7 @@ import (
 	"context"
 	"os"
 	"os/signal"
+	"syscall"
 
 	"github.com/go-go-golems/discord-bot/pkg/slackcli"
 	"github.com/go-go-golems/discord-bot/pkg/slackdoc"
@@ -15,7 +16,7 @@ import (
 
 func newRoot() (*cobra.Command, error) {
 	logger := zerolog.New(zerolog.ConsoleWriter{Out: os.Stderr}).With().Timestamp().Logger()
-	root := &cobra.Command{Use: "slack-bot", Short: "Go-hosted Slack bots: offline inspection and simulation", SilenceUsage: true, SilenceErrors: true, Long: "Inspect, generate manifests, and simulate Slack bot behavior without tokens or network access. Socket Mode is not implemented yet."}
+	root := &cobra.Command{Use: "slack-bot", Short: "Go-hosted Slack bots: offline inspection and simulation", SilenceUsage: true, SilenceErrors: true, Long: "Inspect, generate manifests, and simulate Slack bot behavior without tokens or network access. The run-local command connects to an explicitly configured loopback Socket Mode mock."}
 	bots, err := slackcli.NewBotsCommand(logger)
 	if err != nil {
 		return nil, err
@@ -30,7 +31,7 @@ func newRoot() (*cobra.Command, error) {
 }
 
 func main() {
-	ctx, cancel := signal.NotifyContext(context.Background(), os.Interrupt)
+	ctx, cancel := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
 	defer cancel()
 	root, err := newRoot()
 	if err == nil {

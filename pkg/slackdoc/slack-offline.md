@@ -13,7 +13,7 @@ SectionType: GeneralTopic
 
 # Offline Slack bot development
 
-The separate `slack-bot` binary uses the existing Go module and dependencies. It hosts JavaScript through go-go-goja and `require("slack")`. This release implements offline behavior and a bounded Go ingress seam. It does not open Socket Mode, call Slack, install an app, or load credentials.
+The separate `slack-bot` binary uses the existing Go module and dependencies. It hosts JavaScript through go-go-goja and `require("slack")`. This release implements offline behavior, bounded ingress, and an explicit loopback-only Socket Mode runner. Inspection and simulation require no credentials or network. The local runner reads synthetic connection settings from a file; it cannot connect to real Slack.
 
 Run these commands from the repository root:
 
@@ -27,7 +27,7 @@ go run ./cmd/slack-bot bots simulate ping \
   --event-file examples/slack-bots/fixtures/mention.json
 ```
 
-Use `--bot-repository PATH` to select another repository, `--timeout-ms 5000` to bound inspection and each invocation, and `--log-level debug` for lifecycle diagnostics. Commands emit one JSON document. `--bot-config-file PATH` on simulate reads a JSON object, for example `{"greeting":"hello"}`. Only declared fields reach `ctx.config`; no environment configuration is loaded. Fixture/config files must contain one JSON value and fit within 1 MiB.
+Use `--bot-repository PATH` to select another repository, `--timeout-ms 5000` to bound inspection and each invocation, and `--log-level debug` for lifecycle diagnostics. Inspection and simulation commands emit one JSON document. `--bot-config-file PATH` on simulate reads a JSON object, for example `{"greeting":"hello"}`. Only declared fields reach `ctx.config`; no environment configuration is loaded. Fixture/config files must contain one JSON value and fit within 1 MiB.
 
 Repositories contain root `.js` entries or immediate child `index.js` entries. Helpers below a bot directory are not discovered. A candidate entry executes during inspection; scripts are trusted local code, not an untrusted-code sandbox. The runtime exposes the Slack registration module and local CommonJS imports, without outbound host capabilities during inspection. Required runtime config does not prevent inspection.
 
@@ -91,10 +91,26 @@ err = host.Dispatch(ctx, slackbot.Invocation{
 
 Import `pkg/slackbot` and `pkg/slackhost` from this repository's module. Inject context-aware `MessageService` and `Responder` implementations; keep any future tokens and response URLs private to those implementations. The public host serializes whole invocations, and a deadline interrupts CPU-bound JavaScript. Go services must honor context cancellation; a service that blocks forever cannot be forcibly stopped safely by the host.
 
-`slackbot.NewIngress` accepts a dispatcher, workspace/app policy, queue capacity, dedupe capacity and TTL. `Admit` takes a detached envelope and an `Acknowledger`. Receipt does not enter JS, duplicate events are keyed by workspace/event ID, and full queues/dedupe caches return `busy`. The worker uses host lifetime, not the ACK context. Shutdown cancels pending work. This is best-effort memory admission, not durable delivery. It still needs a real transport decoder, SDK connection, rate-limit handling and reconnect tests.
+`slackbot.NewIngress` accepts a dispatcher, workspace/app policy, queue capacity, dedupe capacity and TTL. `Admit` takes a detached envelope and an `Acknowledger`. Receipt does not enter JS, duplicate events are keyed by workspace/event ID, and full queues/dedupe caches return `busy`. The worker uses host lifetime, not the ACK context. Shutdown cancels pending work. This is best-effort memory admission, not durable delivery. The local transport connects this ingress to the pinned Slack SDK. Rate-limit retry policy and reconnect tests remain pending.
 
 ## Validation and remaining work
 
 Run `go test ./...`, `go build ./...`, `go vet ./...`, and race tests for the Slack packages. On the development workstation the ticket's `scripts/04-go-offline.sh` selects the cached matching Go 1.26.4 toolchain, disables downloads and bypasses the mismatched parent workspace.
 
-Live Socket Mode, HTTP/WebSocket protocol fixtures, SDK integration, rate-limit/reconnect behavior, buttons, modals and xgoja providers are not implemented. See the ticket's intern guide and local-testing plan for those phases. Offline tests require no Slack tokens or test-message authorization.
+A pinned SDK/mock probe, a complete local CLI scenario, and baseline HTTP/WebSocket fixtures now exercise real network encoding. External Slack connections, rate-limit retries, reconnect acceptance tests, buttons, modals and xgoja providers remain pending. See the ticket's intern guide and local-testing plan for those phases. Offline tests require no Slack tokens or test-message authorization.
+
+## Run against a prepared local mock
+
+```sh
+go run ./cmd/slack-bot bots run-local ping \
+  --local-connection-file /tmp/slack-host-probe/config.json \
+  --log-level debug
+```
+
+The connection file contains `apiURL`, `botToken`, `appToken`, `teamID`, `appID`, optional `userID` (probe metadata), and optional `allowedChannels`. Use synthetic mock values, not real Slack credentials. `apiURL` must use HTTP, a literal loopback IP, an explicit port and a trailing slash, for example `http://127.0.0.1:12345/api/`. The mock launcher in `testdata/slack/mock/probe.ts` writes this file with mode 0600. No host connection field enters JavaScript. `--bot-config-file` supplies declared bot configuration separately.
+
+All HTTP and WebSocket dials are restricted to that exact host and port. HTTP proxies are disabled and redirects are rejected. A response URL from any other origin is rejected. The runner verifies the workspace using `auth.test`, decodes mention/command envelopes, acknowledges receipt independently of handler completion, and dispatches through bounded ingress to the actual JS host. SIGINT and SIGTERM cancel the process lifetime.
+
+Posting performs one SDK request. A 429 returns `rate_limited`; unknown or ambiguous failures return `delivery_unknown` without automatic retransmission. This conservative baseline avoids duplicating messages after a lost response; it does not yet implement method-scoped pacing or retry waits. Invalid input is rejected before HTTP.
+
+Run the separate SDK gate and full process scenario described in `testdata/slack/mock/README.md`. Ordinary Go tests skip the external-server probe unless explicitly configured, while HTTP/WebSocket fixture tests need permission to bind loopback sockets.

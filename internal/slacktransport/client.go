@@ -1,0 +1,141 @@
+// Package slacktransport connects the Slack host to an explicitly local Socket Mode server.
+package slacktransport
+
+import (
+	"bytes"
+	"context"
+	"encoding/json"
+	"io"
+	"net"
+	"net/http"
+	"net/url"
+	"strings"
+	"time"
+
+	"github.com/go-go-golems/discord-bot/pkg/slackbot"
+	"github.com/gorilla/websocket"
+	"github.com/pkg/errors"
+	"github.com/rs/zerolog"
+	"github.com/slack-go/slack"
+	"github.com/slack-go/slack/socketmode"
+)
+
+// LocalOptions never enables external networking. Tokens are supplied explicitly by Go callers.
+type LocalOptions struct {
+	APIURL, BotToken, AppToken, TeamID, AppID string
+	AllowedChannels                           []string
+	Logger                                    zerolog.Logger
+}
+type Client struct {
+	api       *slack.Client
+	socket    *socketmode.Client
+	http      *http.Client
+	transport *http.Transport
+	origin    *url.URL
+	opts      LocalOptions
+}
+
+var _ slackbot.MessageService = (*Client)(nil)
+
+func NewLocal(opts LocalOptions) (*Client, error) {
+	u, err := url.Parse(opts.APIURL)
+	if err != nil || u.Scheme != "http" || u.User != nil || u.RawQuery != "" || u.Fragment != "" || u.Port() == "" || !strings.HasSuffix(u.Path, "/") {
+		return nil, errors.New("api URL must be a loopback HTTP URL with explicit port and trailing slash")
+	}
+	ip := net.ParseIP(u.Hostname())
+	if ip == nil || !ip.IsLoopback() {
+		return nil, errors.New("api URL requires a literal loopback address")
+	}
+	if opts.BotToken == "" || opts.AppToken == "" || opts.TeamID == "" || opts.AppID == "" {
+		return nil, errors.New("bot token, app token, team ID and app ID are required")
+	}
+	opts.AllowedChannels = append([]string(nil), opts.AllowedChannels...)
+	c := &Client{origin: u, opts: opts}
+	dial := func(ctx context.Context, network, address string) (net.Conn, error) {
+		if address != u.Host {
+			return nil, errors.New("local transport refused unexpected destination")
+		}
+		return (&net.Dialer{Timeout: 3 * time.Second}).DialContext(ctx, network, address)
+	}
+	c.transport = &http.Transport{DialContext: dial}
+	c.http = &http.Client{Transport: c.transport, Timeout: 10 * time.Second, CheckRedirect: func(*http.Request, []*http.Request) error { return errors.New("local transport refuses redirects") }}
+	c.api = slack.New(opts.BotToken, slack.OptionAppLevelToken(opts.AppToken), slack.OptionAPIURL(opts.APIURL), slack.OptionHTTPClient(c.http))
+	c.socket = socketmode.New(c.api, socketmode.OptionDialer(&websocket.Dialer{NetDialContext: dial, HandshakeTimeout: 5 * time.Second}))
+	return c, nil
+}
+func (c *Client) Close() { c.transport.CloseIdleConnections() }
+func (c *Client) Post(ctx context.Context, m slackbot.PostMessage) (slackbot.MessageRef, error) {
+	if err := m.Validate(); err != nil {
+		return slackbot.MessageRef{}, err
+	}
+	options := []slack.MsgOption{slack.MsgOptionText(m.Text, false)}
+	if m.ThreadTS != "" {
+		options = append(options, slack.MsgOptionTS(m.ThreadTS))
+	}
+	channel, ts, err := c.api.PostMessageContext(ctx, m.ChannelID, options...)
+	if err != nil {
+		return slackbot.MessageRef{}, safeError(ctx, err, "messages.post")
+	}
+	return slackbot.MessageRef{ChannelID: channel, TS: ts}, nil
+}
+
+// Only reviewed error codes cross the service boundary; SDK error strings can contain remote content.
+func safeError(ctx context.Context, err error, operation string) error {
+	if ctx.Err() != nil {
+		return slackbot.Fail("context_closed", operation, "operation canceled")
+	}
+	var limited *slack.RateLimitedError
+	if errors.As(err, &limited) {
+		return slackbot.Fail("rate_limited", operation, "service rate limit reached")
+	}
+	switch err.Error() {
+	case "channel_not_found", "not_in_channel", "invalid_auth", "missing_scope", "token_revoked", "is_archived":
+		return slackbot.Fail(err.Error(), operation, "Slack rejected the operation")
+	}
+	return slackbot.Fail("delivery_unknown", operation, "operation outcome could not be confirmed")
+}
+
+type responder struct {
+	client *Client
+	target string
+}
+
+var _ slackbot.Responder = (*responder)(nil)
+
+func (r *responder) Reply(ctx context.Context, text slackbot.Text) error {
+	if err := text.Validate(); err != nil {
+		return err
+	}
+	body, err := json.Marshal(map[string]string{"response_type": "ephemeral", "text": text.Text})
+	if err != nil {
+		return err
+	}
+	req, err := http.NewRequestWithContext(ctx, http.MethodPost, r.target, bytes.NewReader(body))
+	if err != nil {
+		return slackbot.Fail("invalid_argument", "reply", "invalid response capability")
+	}
+	req.Header.Set("Content-Type", "application/json")
+	response, err := r.client.http.Do(req)
+	if err != nil {
+		return safeError(ctx, err, "reply")
+	}
+	defer func() { _ = response.Body.Close() }()
+	_, err = io.Copy(io.Discard, io.LimitReader(response.Body, 4096))
+	if err != nil {
+		return safeError(ctx, err, "reply")
+	}
+	if response.StatusCode == http.StatusTooManyRequests {
+		return slackbot.Fail("rate_limited", "reply", "service rate limit reached")
+	}
+	if response.StatusCode != http.StatusOK {
+		return slackbot.Fail("delivery_unknown", "reply", "response could not be confirmed")
+	}
+	return nil
+}
+func (c *Client) responseCapability(target string) (slackbot.Responder, error) {
+	u, err := url.Parse(target)
+	if err != nil || u.Scheme != "http" || u.Host != c.origin.Host || u.User != nil || u.Fragment != "" {
+		return nil, errors.New("invalid local response capability")
+	}
+	return &responder{client: c, target: target}, nil
+}

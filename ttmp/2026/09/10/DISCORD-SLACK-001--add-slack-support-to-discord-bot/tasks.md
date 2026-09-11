@@ -10,3 +10,6 @@
 - [x] Implement offline discovery, inspect, manifest and fixture simulation CLI <!-- t:2yql -->
 - [x] Exercise bounded ingress, ACK independence, deduplication and overload with fakes <!-- t:wolx -->
 - [x] Document offline API and run complete offline checks <!-- t:q4zt -->
+- [x] Prove pinned SDK and Bun mock interoperability with sanitized receipts <!-- t:dxm6 -->
+- [x] Connect local-only Socket Mode CLI to actual JS host and verify wire/process baseline <!-- t:hfny -->
+- [ ] Complete remaining retry pacing reconnect cancellation and CI catalog from local test plan <!-- t:zcho -->

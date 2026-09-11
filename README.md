@@ -308,7 +308,7 @@ MIT
 ## Offline Slack development
 
 A separate Slack host follows the same Go/JavaScript concepts. It currently supports
-inspection, manifest generation and fixture replay, without connecting to Slack:
+inspection, manifest generation, fixture replay, and an explicit loopback-only Socket Mode runner:
 
 ```sh
 go run ./cmd/slack-bot bots list
@@ -317,5 +317,6 @@ go run ./cmd/slack-bot help slack-offline
 ```
 
 See [the offline API guide](pkg/slackdoc/slack-offline.md) and
-[example bot](examples/slack-bots/ping/index.js). Socket Mode and real Slack API
-calls are still planned; these commands require no credentials.
+[example bot](examples/slack-bots/ping/index.js). External Slack connections and broader
+retry/reconnect acceptance coverage remain planned. The commands above need no
+credentials; `bots run-local` uses an explicit synthetic connection file.

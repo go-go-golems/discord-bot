@@ -31,3 +31,7 @@ Published the detailed textbook-style Slack runtime project report to go-go-parc
 ## 2026-09-10
 
 Proved pinned Go Slack SDK interoperability with the local Bun Socket Mode mock: exact thread reply, empty slash ACK, private recipient, two first-attempt ACKs, and clean socket cancellation; archived sources and sanitized receipts.
+
+## 2026-09-10
+
+Connected local-only Socket Mode transport to the real JavaScript CLI; strict HTTP/WebSocket fixtures and complete mock process scenario pass, including dedupe while handler blocked and SIGTERM with exit 0. Broader retry/reconnect catalog remains open.
