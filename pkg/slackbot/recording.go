@@ -8,10 +8,10 @@ import (
 
 // RecordedOperation is an offline side effect. It contains no tokens or response URLs.
 type RecordedOperation struct {
-	Kind    string       `json:"kind"`
-	Message *PostMessage `json:"message,omitempty"`
-	Reply   *Text        `json:"reply,omitempty"`
-	Ref     *MessageRef  `json:"ref,omitempty"`
+	Kind    string          `json:"kind"`
+	Message *PostMessage    `json:"message,omitempty"`
+	Reply   *MessagePayload `json:"reply,omitempty"`
+	Ref     *MessageRef     `json:"ref,omitempty"`
 }
 type Recorder struct {
 	mu         sync.Mutex
@@ -35,10 +35,14 @@ func (r *Recorder) Post(ctx context.Context, m PostMessage) (MessageRef, error) 
 	return ref, nil
 }
 func (r *Recorder) Reply(ctx context.Context, m Text) error {
+	return r.ReplyMessage(ctx, MessagePayload{Text: m.Text})
+}
+
+func (r *Recorder) ReplyMessage(ctx context.Context, m MessagePayload) error {
 	if err := ctx.Err(); err != nil {
 		return err
 	}
-	if err := m.Validate(); err != nil {
+	if err := m.Validate("reply"); err != nil {
 		return err
 	}
 	r.mu.Lock()
@@ -58,6 +62,9 @@ func (r *Recorder) Operations() []RecordedOperation {
 		}
 		if op.Reply != nil {
 			v := *op.Reply
+			if op.Reply.Blocks != nil {
+				v.Blocks = append([]Block(nil), op.Reply.Blocks...)
+			}
 			out[i].Reply = &v
 		}
 		if op.Ref != nil {

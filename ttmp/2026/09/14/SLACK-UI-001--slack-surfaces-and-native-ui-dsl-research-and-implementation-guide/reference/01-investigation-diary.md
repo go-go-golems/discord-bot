@@ -275,3 +275,57 @@ Regenerated the reading copy after the scope edit and uploaded it under a new na
 ### Technical details
 - v2 was uploaded with `remarquee upload bundle`, `--toc-depth 2`, 0.72-inch margins, DejaVu fonts, and `--non-interactive`.
 - Cloud receipt proves cloud delivery, not physical device synchronization.
+
+## Step 6: Implement the first rich-message and builder slice
+
+The first production code checkpoint extends the existing text-only message contract without introducing a second runtime or scheduling subsystem. The implementation keeps Block Kit as detached JSON at the domain boundary, converts it losslessly at the Slack transport edge, and exposes a small native `slack/ui` module that produces ordinary JSON-compatible objects.
+
+### Prompt Context
+**User prompt (verbatim):** "continue."
+**Assistant interpretation:** Proceed from the completed research handoff into the agreed implementation phases, starting with Phase 1.
+**Inferred user intent:** Begin implementing layers 1–7 while preserving the explicit deferral of layer 8 scheduling machinery.
+
+### What I did
+- Added `slackbot.Block`, `MessagePayload`, and rich `PostMessage` validation with a mandatory fallback text and a 50-block cap.
+- Added an optional `RichResponder` capability so response URLs can carry blocks while existing text-only responders remain valid.
+- Extended the Socket/Web API transport to preserve arbitrary validated block fields through a small lossless SDK wrapper instead of `slack.UnknownBlock`.
+- Registered `require("slack/ui")` with plain-text, mrkdwn, section, action, divider, header, button, and fluent message builders.
+- Added a runtime test that constructs a section and a danger button, posts the resulting message, and inspects the detached payload.
+
+### Why
+- The Slack SDK's `UnknownBlock` round-trip drops fields for newer blocks. A transport-owned JSON wrapper is sufficient for the low-level message boundary and avoids an SDK upgrade for the core slice.
+- Rich message support must work for both returned handler values and explicit `ctx.slack.messages.post` calls, while the existing text-only response contract should not be widened unnecessarily.
+- The builder API follows the documented Slack-native construction style and keeps builders separate from the transport client.
+
+### What worked
+- `GOCACHE=/tmp/go-build-cache-slack-ui GOWORK=off go test ./internal/jsslack` passed, including the new rich-message builder test.
+- `GOCACHE=/tmp/go-build-cache-slack-ui GOWORK=off go test ./... -run '^$'` compiled every package successfully.
+- `git diff --check` passed.
+
+### What didn't work
+- The first test invocation used the repository's default Go cache and failed because `/home/manuel/.cache/go-build` is read-only in this environment.
+- The transport test package cannot start its existing `httptest` IPv6 listener under the sandbox (`listen tcp6 [::1]:0: operation not permitted`); compilation succeeds and the failure is environmental rather than a test assertion.
+
+### What I learned
+- Rich payloads can be added without changing ordinary message service ownership: the existing `MessageService.Post` remains the network boundary, and only the payload shape grows.
+- Goja's object spread works with the detached objects returned by the builders, which allows `ctx.slack.messages.post({channelId, ...ui.message(...).build()})`.
+
+### What was tricky to build
+- The response URL path has a narrower existing `Responder` interface. The additive `RichResponder` check lets block responses work where supported and returns a clear capability error otherwise.
+- Builder objects need a `build` method but must become plain JSON before entering the strict Go decoder; a small `valueMap` helper handles both builders and raw objects.
+
+### What warrants a second pair of eyes
+- Review block-shape validation before adding action routing. The current low-level layer verifies type and count but intentionally does not claim to validate every Block Kit schema.
+- Review the response URL JSON fixture once the local HTTP test harness can bind a loopback listener.
+
+### What should be done in the future
+- Add TypeScript declarations and an example bot for the new `slack/ui` module, then mark Phase 1 complete.
+- Implement interactive envelope decoding and action registration next; keep ACK handling in the transport boundary and do not add a scheduler.
+
+### Code review instructions
+- Start with `pkg/slackbot/model.go`, `internal/slacktransport/client.go`, `internal/jsslack/ui_module.go`, and `internal/jsslack/dispatch.go`.
+- Run `GOCACHE=/tmp/go-build-cache-slack-ui GOWORK=off go test ./internal/jsslack` and the compile-only repository check. The existing transport test requires a sandbox that permits an IPv6 loopback listener.
+
+### Technical details
+- Checkpoint tests: `GOCACHE=/tmp/go-build-cache-slack-ui GOWORK=off go test ./internal/jsslack`; `GOCACHE=/tmp/go-build-cache-slack-ui GOWORK=off go test ./... -run '^$'`; `git diff --check`.
+- No Slack credentials, network calls, or live bot processes were used.

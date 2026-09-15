@@ -45,6 +45,20 @@ type Client struct {
 	opts          LocalOptions
 }
 
+// jsonBlock preserves a validated framework block while satisfying the Slack
+// SDK's Block interface. The SDK's UnknownBlock intentionally drops fields it
+// does not know, so the transport uses this small lossless wrapper instead.
+type jsonBlock struct{ slackbot.Block }
+
+func (b jsonBlock) BlockType() slack.MessageBlockType { return slack.MessageBlockType(b.Type()) }
+func (b jsonBlock) ID() string {
+	if id, ok := b.Block["block_id"].(string); ok {
+		return id
+	}
+	return ""
+}
+func (b jsonBlock) MarshalJSON() ([]byte, error) { return json.Marshal(map[string]any(b.Block)) }
+
 var _ slackbot.MessageService = (*Client)(nil)
 
 func NewLocal(opts LocalOptions) (*Client, error) {
@@ -93,6 +107,13 @@ func (c *Client) Post(ctx context.Context, m slackbot.PostMessage) (slackbot.Mes
 		return slackbot.MessageRef{}, err
 	}
 	options := []slack.MsgOption{slack.MsgOptionText(m.Text, false)}
+	if m.Blocks != nil {
+		blocks := make([]slack.Block, 0, len(m.Blocks))
+		for _, block := range m.Blocks {
+			blocks = append(blocks, jsonBlock{Block: block})
+		}
+		options = append(options, slack.MsgOptionBlocks(blocks...))
+	}
 	if m.ThreadTS != "" {
 		options = append(options, slack.MsgOptionTS(m.ThreadTS))
 	}
@@ -127,10 +148,22 @@ type responder struct {
 var _ slackbot.Responder = (*responder)(nil)
 
 func (r *responder) Reply(ctx context.Context, text slackbot.Text) error {
-	if err := text.Validate(); err != nil {
+	return r.ReplyMessage(ctx, slackbot.MessagePayload{Text: text.Text})
+}
+
+func (r *responder) ReplyMessage(ctx context.Context, message slackbot.MessagePayload) error {
+	if err := message.Validate("reply"); err != nil {
 		return err
 	}
-	body, err := json.Marshal(map[string]string{"response_type": "ephemeral", "text": text.Text})
+	bodyValue := map[string]any{"response_type": "ephemeral", "text": message.Text}
+	if message.Blocks != nil {
+		blocks := make([]map[string]any, len(message.Blocks))
+		for i, block := range message.Blocks {
+			blocks[i] = map[string]any(block)
+		}
+		bodyValue["blocks"] = blocks
+	}
+	body, err := json.Marshal(bodyValue)
 	if err != nil {
 		return err
 	}

@@ -21,7 +21,7 @@ type invocationState struct {
 }
 type outcome struct {
 	pending bool
-	text    *slackbot.Text
+	message *slackbot.MessagePayload
 	err     error
 }
 
@@ -83,11 +83,11 @@ func (h *Host) Dispatch(ctx context.Context, input slackbot.Invocation, responde
 			if goja.IsNull(value) || goja.IsUndefined(value) {
 				return outcome{}, nil
 			}
-			var text slackbot.Text
-			if err := decode(vm, value, &text); err != nil {
+			var message slackbot.MessagePayload
+			if err := decode(vm, value, &message); err != nil {
 				return outcome{err: err}, nil
 			}
-			return outcome{text: &text, err: text.Validate()}, nil
+			return outcome{message: &message, err: message.Validate("reply")}, nil
 		})
 		if err != nil {
 			return err
@@ -97,13 +97,13 @@ func (h *Host) Dispatch(ctx context.Context, input slackbot.Invocation, responde
 			return o.err
 		}
 		if !o.pending {
-			if o.text != nil {
+			if o.message != nil {
 				// Claim the reply slot on the owner; perform network I/O outside it.
 				_, err = h.call(ctx, "slack.auto-reply", func(*goja.Runtime) (any, error) { return nil, claimReply(s) })
 				if err != nil {
 					return err
 				}
-				if _, err = h.sendReply(s, *o.text); err != nil {
+				if _, err = h.sendReply(s, *o.message); err != nil {
 					return publicError(err, "reply")
 				}
 			}
@@ -134,12 +134,22 @@ func claimReply(s *invocationState) error {
 	s.replied = true
 	return nil
 }
-func (h *Host) sendReply(s *invocationState, text slackbot.Text) (any, error) {
+func (h *Host) sendReply(s *invocationState, message slackbot.MessagePayload) (any, error) {
 	if s.input.Command != "" {
 		if s.responder == nil {
 			return nil, slackbot.Fail("unavailable", "reply", "no response capability")
 		}
-		if err := s.responder.Reply(s.ctx, text); err != nil {
+		var err error
+		if len(message.Blocks) > 0 {
+			rich, ok := s.responder.(slackbot.RichResponder)
+			if !ok {
+				return nil, slackbot.Fail("unavailable", "reply", "response capability does not support blocks")
+			}
+			err = rich.ReplyMessage(s.ctx, message)
+		} else {
+			err = s.responder.Reply(s.ctx, slackbot.Text{Text: message.Text})
+		}
+		if err != nil {
 			return nil, err
 		}
 		return map[string]any{"delivered": true, "via": "response_url"}, nil
@@ -151,7 +161,7 @@ func (h *Host) sendReply(s *invocationState, text slackbot.Text) (any, error) {
 	if thread == "" {
 		thread = s.input.TS
 	}
-	ref, err := h.messages.Post(s.ctx, slackbot.PostMessage{ChannelID: s.input.ChannelID, Text: text.Text, ThreadTS: thread})
+	ref, err := h.messages.Post(s.ctx, slackbot.PostMessage{ChannelID: s.input.ChannelID, Text: message.Text, Blocks: message.Blocks, ThreadTS: thread})
 	return map[string]any{"channelId": ref.ChannelID, "ts": ref.TS}, err
 }
 func publicError(err error, op string) error {
@@ -203,13 +213,13 @@ func (h *Host) buildContext(vm *goja.Runtime, s *invocationState) *goja.Object {
 	}
 	must(vm, c.Set("event", map[string]any{"type": s.input.Event, "text": s.input.Text, "ts": s.input.TS, "threadTs": s.input.ThreadTS, "channelId": s.input.ChannelID, "userId": s.input.UserID}))
 	must(vm, c.Set("reply", func(call goja.FunctionCall) goja.Value {
-		var text slackbot.Text
-		must(vm, decode(vm, call.Argument(0), &text))
-		must(vm, text.Validate())
+		var message slackbot.MessagePayload
+		must(vm, decode(vm, call.Argument(0), &message))
+		must(vm, message.Validate("reply"))
 		if err := claimReply(s); err != nil {
 			panic(jsError(vm, err))
 		}
-		return h.async(vm, s, "reply", func() (any, error) { return h.sendReply(s, text) })
+		return h.async(vm, s, "reply", func() (any, error) { return h.sendReply(s, message) })
 	}))
 	messages := vm.NewObject()
 	must(vm, messages.Set("post", func(call goja.FunctionCall) goja.Value {

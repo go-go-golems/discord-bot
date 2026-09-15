@@ -149,5 +149,6 @@ var _ engine.RuntimeModuleRegistrar = (*registrar)(nil)
 func (*registrar) ID() string { return "slack" }
 func (r *registrar) RegisterRuntimeModule(_ *engine.RuntimeModuleRegistrationContext, reg *require.Registry) error {
 	reg.RegisterNativeModule("slack", r.host.loader)
+	registerUILoader(reg)
 	return nil
 }

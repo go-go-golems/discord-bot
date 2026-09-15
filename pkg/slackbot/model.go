@@ -3,7 +3,9 @@ package slackbot
 
 import (
 	"context"
+	"encoding/json"
 	"regexp"
+	"strconv"
 	"strings"
 	"unicode/utf8"
 
@@ -33,21 +35,66 @@ func (m Text) Validate() error {
 	return nil
 }
 
+// Block is a detached Block Kit object. The framework keeps the wire shape as
+// JSON so that supported helpers and the low-level message escape hatch share
+// one transport boundary without exposing Slack SDK values to JavaScript.
+type Block map[string]any
+
+func (b Block) Type() string {
+	if b == nil {
+		return ""
+	}
+	v, _ := b["type"].(string)
+	return strings.TrimSpace(v)
+}
+
+func (b Block) Validate() error {
+	if b.Type() == "" {
+		return Fail("invalid_argument", "message.blocks", "block type is required")
+	}
+	return nil
+}
+
+// MessagePayload is the common rich-message shape used by replies and posts.
+// Text remains mandatory as the notification and accessibility fallback.
+type MessagePayload struct {
+	Text   string  `json:"text"`
+	Blocks []Block `json:"blocks,omitempty"`
+}
+
+func (m MessagePayload) Validate(operation string) error {
+	if err := (Text{Text: m.Text}).Validate(); err != nil {
+		return Fail("invalid_argument", operation, "text must contain 1–4000 characters")
+	}
+	if len(m.Blocks) > 50 {
+		return Fail("invalid_argument", operation, "at most 50 blocks are supported")
+	}
+	for i, block := range m.Blocks {
+		if err := block.Validate(); err != nil {
+			return Fail("invalid_argument", operation, "blocks["+strconv.Itoa(i)+"] is invalid")
+		}
+	}
+	return nil
+}
+
+func (m MessagePayload) JSON() ([]byte, error) { return json.Marshal(m) }
+
 type MessageRef struct {
 	ChannelID string `json:"channelId"`
 	TS        string `json:"ts"`
 }
 type PostMessage struct {
-	ChannelID string `json:"channelId"`
-	Text      string `json:"text"`
-	ThreadTS  string `json:"threadTs,omitempty"`
+	ChannelID string  `json:"channelId"`
+	Text      string  `json:"text"`
+	ThreadTS  string  `json:"threadTs,omitempty"`
+	Blocks    []Block `json:"blocks,omitempty"`
 }
 
 func (m PostMessage) Validate() error {
 	if strings.TrimSpace(m.ChannelID) == "" {
 		return Fail("invalid_argument", "messages.post", "channelId is required")
 	}
-	return (Text{m.Text}).Validate()
+	return MessagePayload{Text: m.Text, Blocks: m.Blocks}.Validate("messages.post")
 }
 
 type MessageService interface {
@@ -57,6 +104,13 @@ type MessageService interface {
 // Responder retains the response URL privately in its implementation. It sends an ephemeral reply.
 type Responder interface {
 	Reply(context.Context, Text) error
+}
+
+// RichResponder is implemented by response URL transports that can preserve
+// Block Kit payloads. Text-only responders remain valid for simple tests and
+// integrations; callers must check this capability before sending blocks.
+type RichResponder interface {
+	ReplyMessage(context.Context, MessagePayload) error
 }
 type Invocation struct {
 	ID        string `json:"id"`

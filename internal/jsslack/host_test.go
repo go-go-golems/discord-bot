@@ -170,3 +170,26 @@ func TestStoreNullAndScalar(t *testing.T) {
 	require.NoError(t, h.Dispatch(context.Background(), command(), f))
 	require.Equal(t, "null:hello", f.replies[0].Text)
 }
+
+func TestSlackUIBuildersProduceRichMessageBlocks(t *testing.T) {
+	f := &fakeServices{}
+	h := loadTestHost(t, `const {defineBot}=require("slack"); const ui=require("slack/ui");
+module.exports=defineBot(({configure,command})=>{configure({name:"ui-test"}); command("/ui",{description:"ui"},async ctx=>{
+  const edit=ui.button("note.edit","Edit").value("n1").style("danger");
+  const payload=ui.message("Note: Meeting notes.").block(ui.section(ui.mrkdwn("*Meeting notes*"))).block(ui.actions("note-actions",edit)).build();
+  await ctx.slack.messages.post({channelId:ctx.channelId,...payload});
+  return {text:"sent"};
+});});`, Options{Messages: f})
+	i := command()
+	i.Command = "/ui"
+	require.NoError(t, h.Dispatch(context.Background(), i, f))
+	require.Len(t, f.posts, 1)
+	require.Equal(t, "Note: Meeting notes.", f.posts[0].Text)
+	require.Equal(t, "section", f.posts[0].Blocks[0].Type())
+	require.Equal(t, "actions", f.posts[0].Blocks[1].Type())
+	actions := f.posts[0].Blocks[1]["elements"].([]any)
+	button := actions[0].(map[string]any)
+	require.Equal(t, "note.edit", button["action_id"])
+	require.Equal(t, "n1", button["value"])
+	require.Equal(t, "danger", button["style"])
+}
