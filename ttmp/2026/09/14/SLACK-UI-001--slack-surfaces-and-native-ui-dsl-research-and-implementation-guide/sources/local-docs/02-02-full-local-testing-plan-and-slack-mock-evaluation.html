@@ -1,0 +1,1544 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>02-full-local-testing-plan-and-slack-mock-evaluation</title>
+  <style>
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      background-color: #1a1a1a;
+      border: none;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+    /* CSS for syntax highlighting */
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      {   }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #7d9029; } /* Attribute */
+    code span.bn { color: #40a070; } /* BaseN */
+    code span.bu { color: #008000; } /* BuiltIn */
+    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4070a0; } /* Char */
+    code span.cn { color: #880000; } /* Constant */
+    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+    code span.dt { color: #902000; } /* DataType */
+    code span.dv { color: #40a070; } /* DecVal */
+    code span.er { color: #ff0000; font-weight: bold; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #40a070; } /* Float */
+    code span.fu { color: #06287e; } /* Function */
+    code span.im { color: #008000; font-weight: bold; } /* Import */
+    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+    code span.op { color: #666666; } /* Operator */
+    code span.ot { color: #007020; } /* Other */
+    code span.pp { color: #bc7a00; } /* Preprocessor */
+    code span.sc { color: #4070a0; } /* SpecialChar */
+    code span.ss { color: #bb6688; } /* SpecialString */
+    code span.st { color: #4070a0; } /* String */
+    code span.va { color: #19177c; } /* Variable */
+    code span.vs { color: #4070a0; } /* VerbatimString */
+    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+  </style>
+</head>
+<body>
+<h1 id="full-local-testing-plan-and-slack-mock-evaluation">Full local
+testing plan and Slack mock evaluation</h1>
+<h2 id="decision-and-scope">1. Decision and scope</h2>
+<p>Use three complementary testing mechanisms: Go fakes for bot behavior
+and runtime ownership, small Go HTTP/WebSocket fixtures for exact
+protocol failures, and the existing <code>desplega-ai/slack-mock</code>
+server for stateful end-to-end scenarios. The third component is a real
+local server: the actual Go Slack client can connect through HTTP and
+Socket Mode while the test driver acts as a human user. Its
+compatibility with our selected Go SDK version must be demonstrated by
+an initial probe; the upstream integration tests primarily exercise Bolt
+for JavaScript.</p>
+<p>This document supplements the <a
+href="01-slack-support-architecture-and-intern-implementation-guide.md">intern
+implementation guide</a>. It specifies a test implementation, not a
+completed harness. The work in this side conversation was source
+inspection and documentation only. No mock servers, dependency
+installation scripts, upstream test suites, production bots, or Slack
+messages were run. The main-thread implementation continues
+independently.</p>
+<p>The MVP under test is a single-workspace Slack host, one JavaScript
+bot per process, <code>/golem-ping</code>, mention events, threaded
+replies, offline discovery, explicit configuration, and clean lifecycle
+handling. Later sections define tests for buttons, modals, direct
+messages, and persistence so that these features have acceptance gates
+before they are added. They are not requirements to implement those
+features now.</p>
+<p>The practical goal is to let an intern answer four questions without
+Slack credentials:</p>
+<ol type="1">
+<li>Does the JavaScript API produce the correct typed operations?</li>
+<li>Does the transport encode, route, acknowledge, retry, and cancel
+those operations correctly?</li>
+<li>Does the complete process produce the expected visible conversation
+state?</li>
+<li>When a test fails, can its artifacts identify the failing
+boundary?</li>
+</ol>
+<h2 id="research-baseline-and-checkout-locations">2. Research baseline
+and checkout locations</h2>
+<p>The following repositories were cloned, without installing
+dependencies or modifying their source, under
+<code>/home/manuel/code/others/slack/</code> on 2026-09-10. Commit IDs,
+rather than branch names, identify the evidence behind this
+recommendation.</p>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Checkout directory</th>
+<th>Project</th>
+<th>Inspected commit</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>slack-go</code></td>
+<td><code>slack-go/slack</code></td>
+<td><code>4b9cec9bdb1eaca3b66968b02c9f08fecd860285</code></td>
+</tr>
+<tr class="even">
+<td><code>desplega-slack-mock</code></td>
+<td><code>desplega-ai/slack-mock</code></td>
+<td><code>6397b31a9c5e04a3ba52dd6e82f16ab8b5b10eac</code></td>
+</tr>
+<tr class="odd">
+<td><code>slack-testing-library</code></td>
+<td><code>chrishutchinson/slack-testing-library</code></td>
+<td><code>3f450bb5abcf00991a5ebe8cbeef98a60e1d4530</code></td>
+</tr>
+<tr class="even">
+<td><code>slack-mock</code></td>
+<td><code>Skellington-Closet/slack-mock</code></td>
+<td><code>7bf3eb5073a8a2c071ece360a7b8729390a37024</code></td>
+</tr>
+</tbody>
+</table>
+<p>The application HEAD observed during this analysis was
+<code>1ee4d4ac535e1b69971f5bf0022a3b20041299f1</code>. Uncommitted files
+under <code>pkg/slackbot/</code> and <code>internal/jsslack/</code>
+belonged to the active main thread. Their names and contracts informed
+the test plan, but this document does not assert that their current
+contents are final, committed, or tested. Reconcile test signatures with
+the implementation at the start of each milestone.</p>
+<h2 id="evaluation-of-existing-mocks">3. Evaluation of existing
+mocks</h2>
+<h3 id="recommended-end-to-end-server-desplega-aislack-mock">3.1
+Recommended end-to-end server: desplega-ai/slack-mock</h3>
+<p>The checked-out package declares version 0.4.0 and Bun &gt;=1.2. It
+has no declared production dependencies; its development dependencies
+include Bolt, TypeScript, and Biome. Its server uses
+<code>Bun.serve</code>, so the project should be treated as a Bun
+application rather than assumed runnable under ordinary Node.js. Pin the
+source revision and runtime version before making it a reproducible test
+dependency.</p>
+<p>The implementation supports the exact broad path we need:</p>
+<pre class="text"><code>Go Slack client -- HTTP apps.connections.open --&gt; mock
+Go Slack client &lt;-------- WebSocket hello ------- mock
+Go Slack client &lt;------ Socket Mode envelope ---- mock
+Go Slack client -------- envelope ACK ----------&gt; mock
+Go Slack client ------- chat.postMessage -------&gt; mock
+                                                   |
+                                                   v
+                                      stored messages and threads
+                                                   |
+                                                   v
+                                    test assertions and browser UI</code></pre>
+<p>Concrete source evidence:</p>
+<ul>
+<li><code>src/server.ts:243</code>, <code>listen</code>: loopback by
+default and dynamically allocated ports through
+<code>port: 0</code>.</li>
+<li><code>src/web-api.ts:119</code>: <code>apps.connections.open</code>
+issues a mock WebSocket ticket.</li>
+<li><code>src/socket-mode.ts:104</code>, <code>open</code>: sends
+<code>hello</code>, connection metadata, and periodic WebSocket ping
+frames.</li>
+<li><code>src/socket-mode.ts:125</code>, <code>message</code>: matches
+envelope ACKs to pending deliveries and records ACK payloads.</li>
+<li><code>src/socket-mode.ts:170</code>, <code>send</code>, and
+<code>:195</code>, <code>attempt</code>: emits envelopes and redelivers
+with an incremented retry count when receipt is missing.</li>
+<li><code>src/server.ts:397</code>, <code>handleApi</code>:
+authentication checks, method dispatch, API-call records, and injected
+error responses.</li>
+<li><code>src/server.ts:941</code>, <code>slashCommand</code>:
+constructs a command payload, supplies a response URL, and waits for the
+envelope ACK.</li>
+<li><code>src/server.ts:1032</code>, <code>submitView</code>: applies
+modal ACK responses such as errors, update, push, and clear.</li>
+<li><code>src/server.ts:1271</code>, <code>handleAdmin</code>: HTTP
+endpoints for driving a separate application process.</li>
+<li><code>test/smoke.test.ts</code>: a real Bolt app receives a mention
+and creates a threaded reply.</li>
+<li><code>test/socket-mode.test.ts</code>: source examples for
+redelivery, reconnect, and missing connections.</li>
+<li><code>test/faults.test.ts</code>: error and 429 injection exercised
+with Slack’s JavaScript WebClient.</li>
+</ul>
+<p>These findings correct the earlier search-based uncertainty: the
+repository is available and Socket Mode is implemented. They do not
+establish that the Go client passes the same scenarios; that is the
+first proposed experiment.</p>
+<h3 id="important-limits-of-that-server">3.2 Important limits of that
+server</h3>
+<p>The mock is useful precisely because it implements a bounded Slack
+model. A passing test proves conformance to that model, not every
+behavior of Slack itself.</p>
+<ul>
+<li><strong>OAuth scopes are not fully enforced.</strong>
+<code>actorFor</code> accepts the configured bot or app token as a bot
+actor, and <code>handleApi</code> specifically restricts
+<code>apps.connections.open</code> to the app token. It does not
+generally reject the app token for ordinary bot Web API calls. Verify
+correct token selection separately with strict Go request fixtures.</li>
+<li><strong>Manifest import is JSON.</strong> <code>loadManifest</code>
+uses <code>JSON.parse(readFileSync(...))</code>. The YAML manifest in
+the original design must be converted to JSON by the harness, or
+represented directly as an object. Passing YAML to this CLI is not
+supported by the inspected code.</li>
+<li><strong>The default event set is broad.</strong> Supply the actual
+MVP subscriptions rather than accepting <code>DEFAULT_EVENTS</code>;
+otherwise the mock may emit traffic a real installation would not
+receive.</li>
+<li><strong>Retries preserve <code>envelope_id</code>.</strong> The
+retry loop changes attempt metadata on the same envelope. Test identical
+Events API <code>event_id</code> under a different envelope using
+<code>mock.hub.send</code> or the Go wire fixture; the default timeout
+retry alone is not enough to verify business-event deduplication.</li>
+<li><strong>ACK recording lacks ACK timestamps.</strong>
+<code>DeliveryRecord</code> stores <code>sentAt</code>, attempt count,
+ACK status, and ACK payload. It does not expose a monotonic
+<code>ackedAt</code>. Use a Go wire fixture to assert exact ACK ordering
+and measure receipt latency.</li>
+<li><strong>Fault injection is application-level.</strong> The public
+<code>Fault</code> shape supplies method, error code, status, retry
+delay, count, and extras. It does not implement “commit a message and
+then lose the HTTP response,” arbitrary malformed frames, or a
+controlled blocked request. Those belong in Go fixtures.</li>
+<li><strong>Some controls are TypeScript-only.</strong>
+<code>injectFault</code> and <code>deliveries</code> are public methods,
+but the inspected admin router has no <code>/mock/faults</code>,
+<code>/mock/deliveries</code>, or <code>/mock/reset</code> endpoints. Do
+not invent those URLs in scripts.</li>
+<li><strong><code>flush()</code> is a convenience, not completion
+proof.</strong> It waits for tracked deliveries and a period of HTTP
+quiet; delivery failures are settled internally. Its <code>maxMs</code>
+check occurs after awaiting inflight promises, so it is not a hard outer
+timeout. Always assert ACK state and business results explicitly, with a
+test-owned deadline.</li>
+<li><strong>Message waits can match old state.</strong>
+<code>waitForMessage</code> and <code>waitForApiCall</code> search
+existing records first. Use unique scenario markers, references, and
+per-test instances or record offsets.</li>
+<li><strong>Timestamp comparisons inside waits use Number.</strong>
+<code>waitForMessage(..., {after})</code> converts timestamps to
+numbers. Exact identifier-preservation tests should inspect captured
+strings rather than trusting numeric ordering in the mock.</li>
+<li><strong>UI rendering is illustrative.</strong> Its HTML renderer is
+suitable for reviewing message shape and thread flow. It does not prove
+pixel parity, accessibility behavior, or layout limits in Slack’s
+official clients.</li>
+</ul>
+<p>Each of these limits has a test placement below. None requires
+changing the production bot to imitate an emulator quirk.</p>
+<h3 id="useful-go-building-block-slack-goslacktest">3.3 Useful Go
+building block: slack-go/slacktest</h3>
+<p>The current checkout is more capable than its RTM-oriented exported
+names imply. <code>slacktest/server.go:37</code> constructs an
+<code>httptest</code> server and registers <code>/auth.test</code>,
+<code>/chat.postMessage</code>, and <code>/apps.connections.open</code>
+among other methods. <code>SendToWebsocket</code> can send arbitrary
+JSON, and constructor binders can install a custom WebSocket handler
+before the defaults are registered.</p>
+<p>However, the default <code>slacktest/handlers.go:371</code> WebSocket
+loop parses RTM event types and responds to RTM ping messages. It does
+not supply the stateful Socket Mode delivery/ACK/retry ledger that this
+plan needs. Default message handling also uses timestamp seconds and
+parses form bodies. It should not be treated as a comprehensive modern
+Slack emulator.</p>
+<p>The useful reuse point is demonstrated by the SDK itself:
+<code>socketmode/socket_mode_managed_conn_test.go:154</code> constructs
+<code>slacktest.NewTestServer</code> with a custom <code>/ws</code>
+handler. Register overrides through that constructor:
+<code>Server.Handle</code> silently ignores a pattern that has already
+been registered. An override attempted after construction may therefore
+leave the default behavior in place.</p>
+<p>Use this package if it makes the small wire fixture easier. Plain
+<code>httptest.NewServer</code> plus the already-selected WebSocket
+library is also sufficient. There is no need to create a new generic
+mock framework or adapt Discord interfaces.</p>
+<h3 id="not-selected-slack-testing-library">3.4 Not selected:
+slack-testing-library</h3>
+<p>This TypeScript library runs a local HTTP interception server and has
+an attractive user-oriented vocabulary such as <code>openHome</code>,
+<code>mentionApp</code>, and <code>interactWith</code>. Source
+inspection shows a narrower fit than the README summary suggests:</p>
+<ul>
+<li><code>src/util/server.ts:26</code> implements HTTP request handling,
+not Socket Mode.</li>
+<li>The server parses request bodies as query strings and defaults to
+<code>{ok: true}</code> for unhandled calls.</li>
+<li><code>src/slack-testing-library.ts:377</code> explicitly rejects
+interacting with buttons when the active screen is a channel.</li>
+<li>Several observation paths use delayed retry polling.</li>
+</ul>
+<p>Its checkout’s last commit is dated 2021-09-25. That date alone is
+not a disqualifier; the missing Socket Mode path and channel-interaction
+restriction are the practical reasons not to choose it for this project.
+Retain its user-oriented scenario vocabulary as inspiration.</p>
+<h3 id="not-selected-skellington-closetslack-mock">3.5 Not selected:
+Skellington-Closet/slack-mock</h3>
+<p><code>src/mocker/web.js:13</code> uses
+<code>nock('https://slack.com')</code> to intercept requests inside a
+Node process. That interception does not capture HTTP requests made by a
+separate Go process. <code>src/index.js</code> exposes a singleton and
+RTM helpers; <code>package.json</code> declares older Node dependencies
+and a pretest script that runs a formatter with <code>--fix</code>.</p>
+<p>The inspected last commit is dated 2018-03-16. This is useful
+historical prior art, but integrating it would require extra machinery
+while still leaving the Socket Mode requirement unmet. Do not run its
+default tests as a harmless read-only probe: its <code>pretest</code>
+mutates source formatting.</p>
+<h2 id="testing-architecture-and-ownership">4. Testing architecture and
+ownership</h2>
+<p>The word “offline” means no real Slack account, credentials, or
+external application traffic during tests. Initial checkout and
+dependency preparation may use the network. Once dependencies are
+prepared, test execution should work with external networking
+unavailable.</p>
+<p>Separate five layers. Most assertions live in the fastest layer that
+can establish the behavior, with a smaller cross-layer suite proving
+that the pieces are wired together.</p>
+<table>
+<colgroup>
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Layer</th>
+<th>Executes</th>
+<th>Replaces</th>
+<th>Main evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>L0: domain</td>
+<td>Go validation and configuration</td>
+<td>Network and JS</td>
+<td>Exact values and typed errors</td>
+</tr>
+<tr class="even">
+<td>L1: JS host</td>
+<td>Real Goja and real bot scripts</td>
+<td>Message and response services</td>
+<td>Captured operations, lifecycle barriers</td>
+</tr>
+<tr class="odd">
+<td>L2: wire</td>
+<td>Actual Go Slack SDK and our transport</td>
+<td>Slack HTTP/WebSocket service</td>
+<td>Wire frames, headers, request counts, ACK timing</td>
+</tr>
+<tr class="even">
+<td>L3: process</td>
+<td>Actual CLI, transport, JS host</td>
+<td>Slack using desplega mock</td>
+<td>Conversation state, command receipts, process exit</td>
+</tr>
+<tr class="odd">
+<td>L4: visual</td>
+<td>L3 plus local browser</td>
+<td>Slack client rendering</td>
+<td>Screenshots paired with structural assertions</td>
+</tr>
+</tbody>
+</table>
+<pre class="text"><code>L0: input ----------------------&gt; domain validation
+L1: fixture script -&gt; Goja ------&gt; fake MessageService / Responder
+L2: transport + real SDK --------&gt; precise local HTTP/WS fixture
+L3: actual slack-bot process ----&gt; desplega SlackMock
+                                      ^          |
+                                      |          v
+                               scenario driver  state / journal
+L4: browser --------------------&gt; local mock UI</code></pre>
+<p>Do not replace our transport in L3. A process test that injects
+<code>Invocation</code> directly into the JS host cannot establish that
+Socket Mode parsing or credentials were wired correctly. Conversely, L1
+should not require Bun or a socket listener merely to test a rejected
+promise.</p>
+<h2 id="required-seams-in-the-implementation">5. Required seams in the
+implementation</h2>
+<p>These are proposed requirements for the implementation owner, not
+changes made by this document.</p>
+<h3 id="domain-and-js-seams">5.1 Domain and JS seams</h3>
+<p>The observed main-thread files already introduce
+<code>slackbot.MessageService.Post</code>,
+<code>slackbot.Responder.Reply</code>, typed <code>Invocation</code>,
+and <code>jsslack.Options.Messages</code>. Tests should use those narrow
+contracts directly. A responder is per invocation because its response
+URL is a capability tied to that interaction; do not put one mutable
+response URL on a shared fake.</p>
+<p>A useful fake records immutable copies of calls and offers explicit
+barriers:</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode go"><code class="sourceCode go"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co">// Sketch: final names follow the implementation.</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="kw">type</span> RecordedPost <span class="kw">struct</span> <span class="op">{</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    Input slackbot<span class="op">.</span>PostMessage</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>    Sequence <span class="dt">uint64</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="kw">type</span> BlockingMessages <span class="kw">struct</span> <span class="op">{</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>    Entered <span class="kw">chan</span> RecordedPost</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>    Release <span class="kw">chan</span> <span class="kw">struct</span><span class="op">{}</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>    Result slackbot<span class="op">.</span>MessageRef</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>    Err <span class="dt">error</span></span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a><span class="kw">var</span> _ slackbot<span class="op">.</span>MessageService <span class="op">=</span> <span class="op">(*</span>BlockingMessages<span class="op">)(</span><span class="ot">nil</span><span class="op">)</span></span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a><span class="co">// Post sends an observation, then selects on Release or ctx.Done().</span></span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a><span class="co">// It must remain context-aware even when the test fails early.</span></span></code></pre></div>
+<p>Use a buffered channel or bounded recorder so observation cannot
+accidentally block the behavior being tested. Return detached data;
+never pass Goja values through the fake service. Protect recorder state
+when several workers can write to it.</p>
+<h3 id="http-and-websocket-endpoint-injection">5.2 HTTP and WebSocket
+endpoint injection</h3>
+<p>The real Slack SDK needs a configurable API base URL and HTTP client.
+In the inspected SDK, <code>slack.OptionAPIURL</code> and
+<code>slack.OptionHTTPClient</code> supply these seams;
+<code>socketmode.OptionDialer</code> supplies the WebSocket dialer.
+Verify the same options in the version actually added to the
+application.</p>
+<p>The HTTP client must cover Web API and response-URL requests. The
+WebSocket dialer must cover the URL returned by
+<code>apps.connections.open</code>. Replacing only the REST base URL is
+insufficient if another path can still dial an external address.</p>
+<p>For test execution, supply a loopback-only transport/dialer with
+proxy lookup disabled and redirects checked at every hop. Validate the
+actual dial destination, not merely the configured base URL. A test
+should deliberately return an external WebSocket or response URL and
+assert rejection without a network attempt. Local TLS tests use a
+private test CA or the <code>httptest</code> client; do not disable
+certificate verification globally.</p>
+<p>The standalone CLI needs explicit local endpoint configuration or a
+clearly defined test entry point using the real composition root. Prefer
+useful host flags such as <code>--api-base-url</code> and explicitly
+enabled local mode, while retaining normal production defaults. These
+flags are proposed; they are not claimed to exist yet. Credentials
+remain explicit token-file inputs. No new environment reads are
+necessary.</p>
+<h3 id="time-metrics-and-observations">5.3 Time, metrics, and
+observations</h3>
+<p>Use a controllable clock for host-owned dedupe expiry, pacing, and
+retry scheduling. SDK-owned timers may need real-time tests; do not
+assume the SDK exposes a fake clock.</p>
+<p>Record receive, admission, ACK-written, handler-started,
+handler-finished, API-attempted, and shutdown-finished events using
+monotonic time or a sequence counter in the test recorder. Production
+logs can expose the corresponding correlation IDs, but assertions should
+avoid parsing prose log messages where a structured event is
+available.</p>
+<p>Expose queue capacity, worker limits, and timeouts as explicit
+settings. Tests should not use unsafe access to private fields to force
+these conditions. An observation hook must report behavior rather than
+change it.</p>
+<h2 id="harness-layout-and-reproducibility">6. Harness layout and
+reproducibility</h2>
+<p>Suggested new test paths, all inside the existing Go module:</p>
+<pre class="text"><code>pkg/slackbot/model_test.go                 L0 rules
+internal/jsslack/host_test.go              L1 script loading
+internal/jsslack/dispatch_test.go          L1 behavior and ownership
+internal/slacktransport/transport_test.go  L2 HTTP and lifecycle
+internal/slacktransport/socket_test.go     L2 socket behavior
+internal/slacktestfixture/                 narrow Go test helpers
+testdata/slack/wire/                      exact protocol fixture JSON
+testdata/slack/bots/                      scenario scripts
+testdata/slack/mock/manifest.json         minimal mock app manifest
+testdata/slack/mock/revisions.json        exact mock and runtime pins
+testdata/slack/mock/scenarios.ts          L3 test driver
+testdata/slack/mock/mock-runner.ts        local mock launcher</code></pre>
+<p>Do not create another <code>go.mod</code>. A small pinned Bun
+dependency manifest for the test driver is acceptable if that becomes
+the chosen dependency workflow; it must not introduce a second
+application runtime architecture. Alternatively, the first probe can
+import the already-cloned mock by a command-line path. CI must not
+depend on a developer’s home directory.</p>
+<p><code>revisions.json</code> should record the application commit,
+selected Slack SDK version, mock commit, Bun version, and optional
+browser version. Synthetic fixture IDs remain stable
+(<code>TTEST</code>, <code>ATEST</code>, <code>CTEST</code>,
+<code>UTEST</code> where the parser permits them); IDs generated by the
+emulator are obtained from its state instead of guessed.</p>
+<p>Use one fresh mock per independent scenario or scenario group. There
+is no documented reset route in this checkout. Reusing a server without
+clearing messages, pending deliveries, faults, and waits can make tests
+pass on yesterday’s state. A new instance and separate journal file are
+simpler than inventing reset semantics.</p>
+<h2 id="first-experiment-prove-go-sdk-interoperability">7. First
+experiment: prove Go SDK interoperability</h2>
+<p>Before integrating the full CLI, write a bounded Go probe using the
+selected SDK. It should execute under a test or short-lived command,
+while the mock server is managed in tmux. Its purpose is to confirm the
+HTTP body, authentication, socket, and receipt contracts with the Go
+client.</p>
+<ol type="1">
+<li>Start the pinned mock on loopback with a minimal JSON manifest
+containing <code>/golem-ping</code> and only
+<code>app_mention</code>.</li>
+<li>Read its base URL and synthetic tokens from the test-owned launcher
+result. Pass values directly or through temporary files; do not inspect
+the operator’s environment.</li>
+<li>Call <code>auth.test</code> with the bot token and assert the
+workspace/user identity matches the mock state.</li>
+<li>Start Socket Mode with the app token; wait for a connection and
+<code>hello</code> observation with a bounded deadline.</li>
+<li>Inject one mention from the mock’s human interface.</li>
+<li>Decode the received event, ACK the exact envelope, then call
+<code>chat.postMessage</code> with the received channel and thread
+root.</li>
+<li>Assert a stored reply with the exact text and
+<code>thread_ts</code>, and an acknowledged delivery record.</li>
+<li>Inject <code>/golem-ping</code>; ACK empty and post an ephemeral
+response to its response URL. Assert the recipient and absence of a
+public channel message.</li>
+<li>Cancel the probe and assert its process/worker exit before stopping
+the mock.</li>
+</ol>
+<p><strong>Pass gate:</strong> actual Go SDK, no real credentials, one
+mention reply and one ephemeral command response, all expected ACKs,
+zero external requests, clean shutdown. A Bolt test passing upstream
+does not satisfy this gate. If the probe fails, record raw sanitized
+requests/frames and identify whether the problem is an emulator
+mismatch, SDK behavior, or our integration assumption before choosing a
+fix.</p>
+<h2 id="domain-and-javascript-test-catalog">8. Domain and JavaScript
+test catalog</h2>
+<p>Each case should execute a real fixture script when the JavaScript
+boundary matters. Do not manufacture the handler return value directly
+in Go and call it a JS test.</p>
+<h3 id="l0-pure-rules">L0: pure rules</h3>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>ID</th>
+<th>Input or operation</th>
+<th>Required assertion</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>D01</td>
+<td>Empty/whitespace and maximum-length text</td>
+<td>Explicit boundary policy; no off-by-one errors</td>
+</tr>
+<tr class="even">
+<td>D02</td>
+<td>Unicode, combining characters, emoji</td>
+<td>Document whether limit counts runes; preserve content</td>
+</tr>
+<tr class="odd">
+<td>D03</td>
+<td>Missing channel or ambiguous command/event</td>
+<td>Stable <code>invalid_argument</code>, no service call</td>
+</tr>
+<tr class="even">
+<td>D04</td>
+<td>Fractional timestamp strings</td>
+<td>Exact byte-for-byte identifier preservation</td>
+</tr>
+<tr class="odd">
+<td>D05</td>
+<td>Required/defaulted bot config</td>
+<td>Correct defaults, missing-required failure, type checks</td>
+</tr>
+<tr class="even">
+<td>D06</td>
+<td>Undeclared host/token fields mixed into input</td>
+<td>Only declared bot fields appear in config</td>
+</tr>
+<tr class="odd">
+<td>D07</td>
+<td>Invalid names, duplicates, unsupported events</td>
+<td>Clear registration failure with name/path</td>
+</tr>
+<tr class="even">
+<td>D08</td>
+<td>Nested unknown message option</td>
+<td>Reject before network; point to offending field</td>
+</tr>
+</tbody>
+</table>
+<p>The observed MVP text validator uses 1–4000 runes; treat that as an
+application policy to test, not a claim about every Slack payload
+limit.</p>
+<h3 id="l1-runtime-and-behavior">L1: runtime and behavior</h3>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>ID</th>
+<th>Scenario</th>
+<th>Required assertion</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>J01</td>
+<td>Load valid bot without services</td>
+<td>Descriptor succeeds and no network call occurs</td>
+</tr>
+<tr class="even">
+<td>J02</td>
+<td>Throw during import or export wrong value</td>
+<td>Helpful error and runtime cleanup</td>
+</tr>
+<tr class="odd">
+<td>J03</td>
+<td>Infinite import loop</td>
+<td>Bounded interruption; next test starts cleanly</td>
+</tr>
+<tr class="even">
+<td>J04</td>
+<td>Return <code>{text}</code> from command</td>
+<td>One call to that invocation’s responder</td>
+</tr>
+<tr class="odd">
+<td>J05</td>
+<td><code>await ctx.reply(...)</code></td>
+<td>One response, correct receipt shape</td>
+</tr>
+<tr class="even">
+<td>J06</td>
+<td>Explicit reply then return response</td>
+<td><code>already_replied</code>, exactly one side effect</td>
+</tr>
+<tr class="odd">
+<td>J07</td>
+<td>Return undefined</td>
+<td>No implicit response</td>
+</tr>
+<tr class="even">
+<td>J08</td>
+<td>Mention outside/inside existing thread</td>
+<td>Use root <code>ts</code>/existing <code>threadTs</code>
+respectively</td>
+</tr>
+<tr class="odd">
+<td>J09</td>
+<td>Explicit post</td>
+<td>Correct <code>channelId</code>, text, reference, optional
+thread</td>
+</tr>
+<tr class="even">
+<td>J10</td>
+<td>Throw Error/reject Error/reject primitive</td>
+<td>Useful message and available stack preserved</td>
+</tr>
+<tr class="odd">
+<td>J11</td>
+<td>API pending while another owner callback settles</td>
+<td>No owner deadlock; promise resolves</td>
+</tr>
+<tr class="even">
+<td>J12</td>
+<td>More async calls than worker limit</td>
+<td>Deterministic overload; no unbounded goroutines</td>
+</tr>
+<tr class="odd">
+<td>J13</td>
+<td>Cancel pending API, handler, and queued invocation</td>
+<td>Context reaches service; bounded cleanup</td>
+</tr>
+<tr class="even">
+<td>J14</td>
+<td>CPU-bound handler times out, then next invocation</td>
+<td>VM interrupt cleared; later handler succeeds</td>
+</tr>
+<tr class="odd">
+<td>J15</td>
+<td>Retain prior <code>ctx</code> and use in later invocation</td>
+<td>Closed context cannot post under later identity</td>
+</tr>
+<tr class="even">
+<td>J16</td>
+<td>Concurrent invocations from different users</td>
+<td>Per-invocation responder/config/state isolation</td>
+</tr>
+<tr class="odd">
+<td>J17</td>
+<td>Close twice and dispatch after close</td>
+<td>Idempotence and explicit closed-host result</td>
+</tr>
+<tr class="even">
+<td>J18</td>
+<td>Mutate descriptor/config snapshot in JS/caller</td>
+<td>No unintended mutation of future invocations</td>
+</tr>
+<tr class="odd">
+<td>J19</td>
+<td>Service error contains synthetic token/URL markers</td>
+<td>Public error and logs do not expose secrets</td>
+</tr>
+<tr class="even">
+<td>J20</td>
+<td>Async fire-and-forget operation fails</td>
+<td>Chosen error policy is observable; no silently successful delivery
+claim</td>
+</tr>
+</tbody>
+</table>
+<p>J20 requires an explicit decision: the host may await registered
+work, reject unsupported fire-and-forget use, or expose a failure event.
+Do not define the expected result merely by copying whichever behavior
+the first implementation happens to have.</p>
+<h3 id="deterministic-cancellation-example">Deterministic cancellation
+example</h3>
+<pre class="text"><code>start Dispatch in an errgroup
+wait until fake Post reports Entered
+cancel invocation context
+wait until fake Post reports context cancellation
+wait for Dispatch to return
+assert zero successful sends and no pending workers
+Close host with a bounded cleanup context</code></pre>
+<p>A timeout in the test is a failure bound, not a substitute for the
+<code>Entered</code> barrier. Do not use a fixed sleep to guess whether
+the worker started.</p>
+<h2 id="wire-test-catalog">9. Wire test catalog</h2>
+<h3 id="l2-http-contracts">L2 HTTP contracts</h3>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>ID</th>
+<th>Fixture behavior</th>
+<th>Required assertion</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>H01</td>
+<td>Accept Web API calls</td>
+<td>Correct method, path, bot token, body encoding</td>
+</tr>
+<tr class="even">
+<td>H02</td>
+<td>Accept connections.open</td>
+<td>Uses app token, never bot token</td>
+</tr>
+<tr class="odd">
+<td>H03</td>
+<td>Accept response URL</td>
+<td>Correct interaction route, ephemeral body, no unrelated bearer
+credential</td>
+</tr>
+<tr class="even">
+<td>H04</td>
+<td>HTTP 200 with <code>{ok:false,error}</code></td>
+<td>Treated as failure, mapped to useful domain error</td>
+</tr>
+<tr class="odd">
+<td>H05</td>
+<td>HTTP 429 with Retry-After</td>
+<td>One retry owner; not retried before delay; bounded attempts</td>
+</tr>
+<tr class="even">
+<td>H06</td>
+<td>Cancel during rate-limit backoff</td>
+<td>Immediate cancellation rather than waiting full delay</td>
+</tr>
+<tr class="odd">
+<td>H07</td>
+<td>Unknown/malformed Retry-After</td>
+<td>Explicit fallback policy; no tight retry loop</td>
+</tr>
+<tr class="even">
+<td>H08</td>
+<td>Request blocked before any response</td>
+<td>Context stops the request and cleanup completes</td>
+</tr>
+<tr class="odd">
+<td>H09</td>
+<td>Server records accepted post, then drops connection</td>
+<td><code>delivery_unknown</code> or equivalent; no blind duplicate
+post</td>
+</tr>
+<tr class="even">
+<td>H10</td>
+<td>Truncated/malformed JSON or HTML response</td>
+<td>Decode error, no fabricated message reference</td>
+</tr>
+<tr class="odd">
+<td>H11</td>
+<td>Wrong token type accepted by broad emulator</td>
+<td>Strict fixture still rejects it and catches wiring mistake</td>
+</tr>
+<tr class="even">
+<td>H12</td>
+<td>External redirect or external returned socket URL</td>
+<td>Dial denied; no real traffic</td>
+</tr>
+<tr class="odd">
+<td>H13</td>
+<td>Invalid payload supplied through JS</td>
+<td>Zero HTTP requests</td>
+</tr>
+<tr class="even">
+<td>H14</td>
+<td>Response URL expires or belongs to prior invocation</td>
+<td>Clear failure and no reroute to another user</td>
+</tr>
+<tr class="odd">
+<td>H15</td>
+<td>Retry one method while another is available</td>
+<td>Intended method/channel scoping of pacing verified</td>
+</tr>
+</tbody>
+</table>
+<p>For H09, record acceptance in the fixture and close the response
+connection before returning its body. That distinguishes uncertain
+delivery from a request that never reached the server. Do not model this
+with <code>{ok:false}</code>: that would test a different failure.</p>
+<h3 id="l2-socket-mode-contracts">L2 Socket Mode contracts</h3>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>ID</th>
+<th>Injected traffic</th>
+<th>Required assertion</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>W01</td>
+<td>Hello plus valid mention envelope</td>
+<td>Correct identity and typed event snapshot</td>
+</tr>
+<tr class="even">
+<td>W02</td>
+<td>Command envelope with response capability</td>
+<td>ACK ID and command routing correct</td>
+</tr>
+<tr class="odd">
+<td>W03</td>
+<td>Handler/API blocked after admission</td>
+<td>ACK observed while business work remains blocked</td>
+</tr>
+<tr class="even">
+<td>W04</td>
+<td>Same envelope sent twice</td>
+<td>Both deliveries receipted, one invocation admitted</td>
+</tr>
+<tr class="odd">
+<td>W05</td>
+<td>Same event_id under two envelope IDs</td>
+<td>One business invocation, both ACKs</td>
+</tr>
+<tr class="even">
+<td>W06</td>
+<td>Same event ID in distinct workspace context</td>
+<td>Correct tenancy validation/key policy</td>
+</tr>
+<tr class="odd">
+<td>W07</td>
+<td>Queue full</td>
+<td>Bounded admission and documented busy/drop behavior</td>
+</tr>
+<tr class="even">
+<td>W08</td>
+<td>Invalid JSON, missing envelope ID, unsupported type</td>
+<td>Defined handling, no panic or accidental side effect</td>
+</tr>
+<tr class="odd">
+<td>W09</td>
+<td>Self/bot event, wrong workspace/app</td>
+<td>Filtered; valid receiptable rejected envelopes are ACKed according
+to policy</td>
+</tr>
+<tr class="even">
+<td>W10</td>
+<td>Disconnect refresh request</td>
+<td>Reconnect and new delivery without rebuilding duplicate JS
+hosts</td>
+</tr>
+<tr class="odd">
+<td>W11</td>
+<td>Abrupt close or failed WebSocket upgrade</td>
+<td>Bounded recovery; observable error</td>
+</tr>
+<tr class="even">
+<td>W12</td>
+<td>Cancel while reconnecting</td>
+<td>Receiver and reconnect timer stop</td>
+</tr>
+<tr class="odd">
+<td>W13</td>
+<td>ACK send fails after admission</td>
+<td>Failure visible; dedupe/retry semantics defined</td>
+</tr>
+<tr class="even">
+<td>W14</td>
+<td>Dedupe cache reaches capacity/TTL</td>
+<td>Bounded size, deterministic eviction, documented replay window</td>
+</tr>
+<tr class="odd">
+<td>W15</td>
+<td>Shutdown during decode/admission/handler/API</td>
+<td>No channel-close panic; no orphan process</td>
+</tr>
+</tbody>
+</table>
+<p>For W03, use a fixture sequence counter to assert
+<code>ACK written &lt; work released</code>. Retain measured latency as
+diagnostic evidence. A functional CI guard can require ACK before an
+adjustable test budget below Slack’s deadline, but do not mistake a busy
+CI machine’s submillisecond timing for a product guarantee.</p>
+<p>W13 needs a written delivery policy. If work has already been
+admitted but ACK fails, the duplicate must not start another handler
+while the first remains active. If admission failed, its dedupe
+reservation must not suppress a later usable delivery. Test both paths
+with explicit barriers.</p>
+<h2 id="stateful-process-scenarios-with-the-deployed-mock">10. Stateful
+process scenarios with the deployed mock</h2>
+<p>L3 executes the actual CLI command and selected bot, with real Slack
+SDK transport pointed at the emulator. Scenario setup and inspection use
+the emulator’s TypeScript API or documented admin endpoints. These are
+tests of the complete composition, not additional product commands.</p>
+<h3 id="scenario-p01-offline-discovery-and-configuration">Scenario P01:
+offline discovery and configuration</h3>
+<p>Run list/help/inspect with no tokens and an empty test-owned
+credential directory. Assert deterministic bot names and fields, a
+useful malformed-script diagnostic, and zero connection attempts.
+Confirm that help and manifest generation do not open Socket Mode. Run
+from both repository root and a different working directory with an
+explicit repository path.</p>
+<h3 id="scenario-p02-slash-ping">Scenario P02: slash ping</h3>
+<p>Start the app, wait for a mock connection, inject
+<code>/golem-ping</code> as Alice in the test channel, and wait for an
+ephemeral message containing a unique scenario marker. Assert the
+response recipient, the envelope ACK, and absence of an unintended
+public message. The return from <code>slashCommand</code> may contain
+only the immediate ACK response; a later response-URL message must be
+observed separately.</p>
+<h3 id="scenario-p03-threaded-mentions">Scenario P03: threaded
+mentions</h3>
+<p>Create a top-level mention, wait for exactly one bot reply under its
+root timestamp, and verify the full thread structurally. Then have Bob
+mention the bot within the same thread. Assert that the next bot reply
+stays in the original thread rather than starting a nested or unrelated
+thread. Exact <code>channel</code> and <code>thread_ts</code>
+comparisons matter more than substring matches on text.</p>
+<h3 id="scenario-p04-no-self-reply-loop">Scenario P04: no self-reply
+loop</h3>
+<p>Use an explicit scenario subscription set that includes the message
+traffic necessary to exercise the filter, with bot echo enabled. Verify
+that bot-generated traffic is ignored by our application. The mock’s
+Bolt examples rely on Bolt’s ignoreSelf middleware; our Go host must
+implement its own filtering. Finish with an invocation-completion
+barrier and assert no further posts, rather than waiting an arbitrary
+short interval.</p>
+<h3 id="scenario-p05-membership-and-permissions-failures">Scenario P05:
+membership and permissions failures</h3>
+<p>Create a channel without the bot and attempt an explicit post through
+the app’s normal operation. Expect <code>not_in_channel</code>, one
+failed API call, no stored post, and a usable public error. Use injected
+<code>missing_scope</code> to test mapping, while clearly labeling it as
+an error-handling test rather than real scope enforcement.</p>
+<h3 id="scenario-p06-error-and-rate-limit-recovery">Scenario P06: error
+and rate-limit recovery</h3>
+<p>Using the TypeScript driver, inject one 429 for
+<code>chat.postMessage</code> with a short Retry-After. Deliver a
+mention. Assert one rejected attempt followed by one successful message,
+with no duplicate JS invocation. Then exercise cancellation during a
+longer retry delay in L2; do not make the process suite wait
+minutes.</p>
+<h3 id="scenario-p07-reconnect">Scenario P07: reconnect</h3>
+<p>Send a successful mention, request
+<code>disconnectSockets("refresh_requested")</code>, and observe the old
+connection disappear and a new connection arrive. Merely seeing
+<code>connections == 1</code> can match the old connection. After
+reconnection, deliver a new marker and verify one reply. Retain
+connection lifecycle observations; do not copy the Bolt test’s assumed
+five-second backoff into the Go test.</p>
+<h3 id="scenario-p08-process-cancellation">Scenario P08: process
+cancellation</h3>
+<p>Send SIGTERM to the actual bot process while a handler is pending.
+Assert the documented exit status, bounded shutdown, and no remaining
+socket connection. Test normal startup, failed startup, active
+operation, and disconnected states. Stop the mock after the bot so
+teardown does not manufacture unrelated transport errors.</p>
+<h3 id="scenario-p09-exact-credentials-and-endpoint-routing">Scenario
+P09: exact credentials and endpoint routing</h3>
+<p>Run with synthetic bot/app tokens stored in test-owned files. Reject
+swapping them in a strict fixture. Inspect stdout/stderr and error
+output for raw token markers, response URLs, and socket tickets. Confirm
+that only bot-declared config enters JavaScript. The broad emulator’s
+permissive app-token handling makes the L2 token test essential.</p>
+<h3 id="scenario-p10-bad-manifest-and-unknown-capability">Scenario P10:
+bad manifest and unknown capability</h3>
+<p>Use a JSON manifest declaring one command and one event, then attempt
+an undeclared command through the mock. Verify the setup failure is
+reported as a harness/configuration failure, not a bot runtime failure.
+Add a fixture that calls an unimplemented API method and require a
+visible failure; never use a mock that defaults all unknown methods to
+success as the sole oracle.</p>
+<h2 id="driver-design-and-concrete-mock-api-usage">11. Driver design and
+concrete mock API usage</h2>
+<p>Prefer a small Bun scenario driver that imports
+<code>SlackMock</code> and controls a tmux-managed application process
+through a launcher helper. This gives access to
+<code>injectFault</code>, <code>deliveries</code>, and
+<code>hub.send</code> without modifying the upstream mock to add routes.
+The helper is test orchestration, not a compatibility adapter around the
+production Slack API.</p>
+<div class="sourceCode" id="cb6"><pre
+class="sourceCode typescript"><code class="sourceCode typescript"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co">// Pseudocode: runBotInTmux/stopBot are proposed harness functions.</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> mock <span class="op">=</span> <span class="cf">await</span> SlackMock<span class="op">.</span><span class="fu">start</span>({</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>  host<span class="op">:</span> <span class="st">&quot;127.0.0.1&quot;</span><span class="op">,</span> port<span class="op">:</span> <span class="dv">0</span><span class="op">,</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>  manifest<span class="op">:</span> minimalManifestObject<span class="op">,</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>  subscribedEvents<span class="op">:</span> [<span class="st">&quot;app_mention&quot;</span>]<span class="op">,</span></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>  echoBotMessages<span class="op">:</span> <span class="kw">true</span><span class="op">,</span></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>})<span class="op">;</span></span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> bot<span class="op">;</span></span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a><span class="cf">try</span> {</span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>  bot <span class="op">=</span> <span class="cf">await</span> <span class="fu">runBotInTmux</span>({</span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>    apiBaseUrl<span class="op">:</span> mock<span class="op">.</span><span class="at">apiUrl</span><span class="op">,</span></span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>    botToken<span class="op">:</span> mock<span class="op">.</span><span class="at">bot</span><span class="op">.</span><span class="at">token</span><span class="op">,</span></span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>    appToken<span class="op">:</span> mock<span class="op">.</span><span class="at">bot</span><span class="op">.</span><span class="at">appToken</span><span class="op">,</span></span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>    teamId<span class="op">:</span> mock<span class="op">.</span><span class="at">team</span><span class="op">.</span><span class="at">id</span><span class="op">,</span></span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>  })<span class="op">;</span></span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a>  <span class="cf">await</span> mock<span class="op">.</span><span class="fu">waitForConnection</span>(<span class="dv">10_000</span>)<span class="op">;</span></span>
+<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a>  <span class="kw">const</span> <span class="bu">root</span> <span class="op">=</span> <span class="cf">await</span> mock<span class="op">.</span><span class="fu">postMessage</span>({</span>
+<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a>    channel<span class="op">:</span> <span class="st">&quot;general&quot;</span><span class="op">,</span> user<span class="op">:</span> <span class="st">&quot;alice&quot;</span><span class="op">,</span></span>
+<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a>    text<span class="op">:</span> <span class="vs">`&lt;@</span><span class="sc">${</span>mock<span class="op">.</span><span class="at">bot</span><span class="op">.</span><span class="at">userId</span><span class="sc">}</span><span class="vs">&gt; scenario-P03-unique`</span><span class="op">,</span></span>
+<span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a>  })<span class="op">;</span></span>
+<span id="cb6-21"><a href="#cb6-21" aria-hidden="true" tabindex="-1"></a>  <span class="kw">const</span> reply <span class="op">=</span> <span class="cf">await</span> mock<span class="op">.</span><span class="fu">waitForMessage</span>({</span>
+<span id="cb6-22"><a href="#cb6-22" aria-hidden="true" tabindex="-1"></a>    channel<span class="op">:</span> <span class="st">&quot;general&quot;</span><span class="op">,</span> thread_ts<span class="op">:</span> <span class="bu">root</span><span class="op">.</span><span class="at">ts</span><span class="op">,</span> from<span class="op">:</span> <span class="st">&quot;bot&quot;</span><span class="op">,</span></span>
+<span id="cb6-23"><a href="#cb6-23" aria-hidden="true" tabindex="-1"></a>    text<span class="op">:</span> <span class="st">&quot;expected response&quot;</span><span class="op">,</span></span>
+<span id="cb6-24"><a href="#cb6-24" aria-hidden="true" tabindex="-1"></a>  }<span class="op">,</span> {timeoutMs<span class="op">:</span> <span class="dv">10_000</span>})<span class="op">;</span></span>
+<span id="cb6-25"><a href="#cb6-25" aria-hidden="true" tabindex="-1"></a>  <span class="fu">assert</span>(reply<span class="op">.</span><span class="at">thread_ts</span> <span class="op">===</span> <span class="bu">root</span><span class="op">.</span><span class="at">ts</span>)<span class="op">;</span></span>
+<span id="cb6-26"><a href="#cb6-26" aria-hidden="true" tabindex="-1"></a>  <span class="co">// Also assert exact result count after app completion.</span></span>
+<span id="cb6-27"><a href="#cb6-27" aria-hidden="true" tabindex="-1"></a>  <span class="fu">assert</span>(mock<span class="op">.</span><span class="fu">deliveries</span>(<span class="st">&quot;app_mention&quot;</span>)<span class="op">.</span><span class="fu">every</span>(d <span class="kw">=&gt;</span> d<span class="op">.</span><span class="at">acked</span>))<span class="op">;</span></span>
+<span id="cb6-28"><a href="#cb6-28" aria-hidden="true" tabindex="-1"></a>} <span class="cf">finally</span> {</span>
+<span id="cb6-29"><a href="#cb6-29" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (bot) <span class="cf">await</span> <span class="fu">stopBot</span>(bot)<span class="op">;</span></span>
+<span id="cb6-30"><a href="#cb6-30" aria-hidden="true" tabindex="-1"></a>  <span class="cf">await</span> mock<span class="op">.</span><span class="fu">stop</span>()<span class="op">;</span></span>
+<span id="cb6-31"><a href="#cb6-31" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+<p>Use new instances or a scenario-specific marker to avoid an old
+result satisfying the wait. Use
+<code>mock.hub.send("events_api", payload)</code> twice with the same
+payload event ID for W05-style end-to-end coverage; each call generates
+a new envelope ID. The Go fixture remains preferable for races and
+malformed bytes.</p>
+<p>These admin endpoints exist in the inspected source and can support
+manual exploration from any language:</p>
+<table>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Method/path</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>GET /mock/state</code></td>
+<td>Workspace, app, bot IDs, connections, users, channels</td>
+</tr>
+<tr class="even">
+<td><code>POST /mock/messages</code></td>
+<td>Human message; accepts channel, user, text, thread_ts</td>
+</tr>
+<tr class="odd">
+<td><code>GET /mock/messages?...</code></td>
+<td>Query stored messages; check exact query semantics</td>
+</tr>
+<tr class="even">
+<td><code>POST /mock/commands</code></td>
+<td>Invoke a slash command</td>
+</tr>
+<tr class="odd">
+<td><code>POST /mock/actions</code></td>
+<td>Click a button on a stored message</td>
+</tr>
+<tr class="even">
+<td><code>POST /mock/views/submit</code></td>
+<td>Submit a modal</td>
+</tr>
+<tr class="odd">
+<td><code>GET /mock/api-calls?method=chat.postMessage</code></td>
+<td>Inspect API records</td>
+</tr>
+<tr class="even">
+<td><code>POST /mock/disconnect</code></td>
+<td>Request disconnect/reconnect</td>
+</tr>
+<tr class="odd">
+<td><code>GET /mock/channels/CHANNEL/threads/TS</code></td>
+<td>Retrieve a full stored thread</td>
+</tr>
+</tbody>
+</table>
+<p>Do not use <code>ephemeral=false</code> as though the query parser
+coerces it to boolean: the admin query is cast from URL strings. Prefer
+the typed API or direct structural inspection for assertions involving
+ephemeral messages.</p>
+<h3 id="manual-runbook">Manual runbook</h3>
+<p>The following mock commands are supported by the inspected checkout.
+Run them only when implementing or exercising the harness; they were not
+executed during this design task. Reserve a dedicated local port and
+session name first. Do not kill a main-thread server simply because it
+occupies the example port.</p>
+<div class="sourceCode" id="cb7"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># From a dedicated terminal, after verifying port 14040 is free:</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="ex">tmux</span> new-session <span class="at">-d</span> <span class="at">-s</span> slack-mock-local-test <span class="dt">\</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">-c</span> /home/manuel/code/others/slack/desplega-slack-mock <span class="dt">\</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>  <span class="st">&#39;bun src/cli.ts serve --host 127.0.0.1 --port 14040&#39;</span></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a><span class="ex">tmux</span> capture-pane <span class="at">-p</span> <span class="at">-t</span> slack-mock-local-test <span class="at">-S</span> <span class="at">-100</span></span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a><span class="ex">curl</span> <span class="at">--fail</span> http://127.0.0.1:14040/mock/state</span></code></pre></div>
+<p>The test driver should create synthetic credential files and pass
+their paths to the actual <code>go run ./cmd/slack-bot ...</code>
+invocation in another tmux session. The exact application flags are
+finalized by the implementation owner; this guide does not supply a
+command that pretends the transport already exists.</p>
+<div class="sourceCode" id="cb8"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="ex">curl</span> <span class="at">--fail</span> <span class="at">-X</span> POST http://127.0.0.1:14040/mock/commands <span class="dt">\</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">-H</span> <span class="st">&#39;content-type: application/json&#39;</span> <span class="dt">\</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">-d</span> <span class="st">&#39;{&quot;command&quot;:&quot;/golem-ping&quot;,&quot;channel&quot;:&quot;general&quot;,&quot;user&quot;:&quot;alice&quot;}&#39;</span></span></code></pre></div>
+<p>For human review, open <code>http://127.0.0.1:14040/c/general</code>.
+Stop the test bot first. For the owned mock process, follow the
+workspace’s cleanup convention <code>lsof-who -p 14040 -k</code>, then
+remove the dedicated tmux session if still present. Automated launchers
+must register equivalent cleanup on failure and signals. Prefer
+dynamically assigned ports in automated runs; expose readiness through a
+machine-readable file or line, not a sleep.</p>
+<h2 id="later-ui-and-feature-coverage">12. Later UI and feature
+coverage</h2>
+<p>Add these only when their corresponding product features enter
+scope.</p>
+<ul>
+<li><strong>Buttons:</strong> create a persistent Block Kit message;
+inject an action using its exact <code>action_id</code>; assert ACK,
+authorized user context, and <code>chat.update</code> targeting the same
+reference. Unknown action IDs fail without an accidental post.</li>
+<li><strong>Ephemeral updates:</strong> distinguish response-URL
+replacement from persistent <code>chat.update</code>. A test must not
+permit a persistent-message operation merely because the emulator’s
+state model happens to accept it.</li>
+<li><strong>Modals:</strong> open with a fresh trigger, submit invalid
+values, assert <code>response_action: errors</code> in the ACK and
+preservation of the view. Submit valid values and assert close/update
+plus exactly one business side effect. Expired triggers and validation
+deadline failures belong in dedicated cases.</li>
+<li><strong>Direct messages:</strong> include <code>message.im</code> in
+the explicit manifest, create/open a DM, and verify correct channel
+identity and absence of channel-wide output.</li>
+<li><strong>History:</strong> fixture pagination, missing access,
+deleted root, empty thread, and rate-limited continuation. Do not infer
+full history API fidelity from a single stored thread example.</li>
+<li><strong>Durable inbox:</strong> restart after admission and before
+execution; restart after external acceptance and before local
+completion; specify replay and uncertain-delivery behavior. The mock’s
+journal stores fake Slack state, not our application’s durable
+inbox.</li>
+</ul>
+<p>For visual review, pair each screenshot with the exact message JSON
+and scenario ID. Use the emulator’s <code>screenshot</code> or
+<code>frames</code> command after the structural assertions pass. Pin
+viewport, browser, theme, and seed data. A screenshot demonstrates the
+emulator rendering; it is not evidence that Slack received an ACK or
+that the official Slack UI will render identically.</p>
+<h2 id="test-execution-ci-gates-and-failure-artifacts">13. Test
+execution, CI gates, and failure artifacts</h2>
+<h3 id="fast-gate">Fast gate</h3>
+<p>Run L0 and L1 on every change. Run L2 when transport or lifecycle
+changes. Focused Go commands can be:</p>
+<div class="sourceCode" id="cb9"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="ex">go</span> test ./pkg/slackbot ./internal/jsslack</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="ex">go</span> test <span class="at">-race</span> ./pkg/slackbot ./internal/jsslack</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Once the proposed package exists:</span></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a><span class="ex">go</span> test ./internal/slacktransport</span></code></pre></div>
+<p>These are implementation-time commands, not reported results of this
+document. Run <code>go test ./...</code>, <code>go build ./...</code>,
+and the repository’s lint gate at integration milestones. No new runtime
+code was changed by this side task, so executing the main thread’s
+unfinished tests here would not establish a useful baseline.</p>
+<h3 id="process-gate">Process gate</h3>
+<p>Provision a pinned Bun runtime, mock checkout/dependency cache, Go
+toolchain/dependency cache, and tmux in the test environment. Cache keys
+include lockfile, tool versions, architecture, and mock revision. Test
+execution disables external egress but permits loopback. It must not
+install dependencies midway through a scenario.</p>
+<p>Keep the L3 suite separate from the default Go unit suite so missing
+Bun is not disguised as a passed skipped integration test. In the
+designated integration job, a missing dependency is a setup failure. A
+documented local command may skip optional L3 tests explicitly, but the
+CI gate must report that omission.</p>
+<p>Use a modest suite-level timeout and per-step deadlines. Start with
+10-second readiness/result bounds and a separately bounded reconnect
+test; tune after measurement rather than copying another SDK’s timers.
+Run stateful process scenarios serially until isolation is demonstrated.
+Parallel Go unit tests must have separate host instances and ephemeral
+ports.</p>
+<h3 id="flake-policy">Flake policy</h3>
+<p>A failure is retained on the first attempt. A diagnostic rerun can
+establish reproducibility, but does not erase the initial failure.
+Prefer barriers, completion receipts, request counts, and unique IDs
+over fixed sleeps. Do not repeatedly widen timeouts to mask a deadlocked
+owner or a missing ACK.</p>
+<p>For negative assertions, wait for a known completion state or
+release-and-drain barrier before asserting zero additional calls. A
+short quiet period alone cannot prove that a delayed goroutine will
+never post.</p>
+<h3 id="artifacts">Artifacts</h3>
+<p>Write artifacts to a unique per-run directory, for example
+<code>ttmp/.../artifacts/local-testing/&lt;run-id&gt;/</code> for manual
+investigation or the CI artifact directory. Retain on failure:</p>
+<ul>
+<li><code>versions.json</code>: application, SDK, mock, runtime,
+scenario, and seed revisions.</li>
+<li><code>result.json</code>: pass/fail/setup-failure classification,
+expected and observed values.</li>
+<li><code>app.jsonl</code> and <code>mock.log</code>: sanitized
+structured output.</li>
+<li><code>wire.jsonl</code>: received frames, ACKs, and HTTP calls with
+correlation IDs and monotonic offsets where available.</li>
+<li><code>state.json</code>: relevant channels, messages, ephemerals,
+and views.</li>
+<li><code>journal.jsonl</code>: emulator state history if enabled.</li>
+<li><code>processes.json</code>: owned session/process IDs, start/exit
+status, cleanup outcome.</li>
+<li>Optional screenshots and their corresponding message snapshots.</li>
+</ul>
+<p>The observed mock API recorder removes body token arguments, but that
+is not a universal secrecy guarantee. Redact headers, response URLs,
+socket tickets, and credential-file contents in the harness. All
+scenario text and identities are synthetic. Full traces should never
+need real workspace data.</p>
+<h2 id="implementation-sequence-and-completion-criteria">14.
+Implementation sequence and completion criteria</h2>
+<h3 id="t1-pin-and-validate-the-mock-contract">T1: pin and validate the
+mock contract</h3>
+<p>Create the dependency inventory and minimal JSON manifest. Execute
+the interoperability probe in section 7. Record which SDK methods and
+mock endpoints actually passed. This milestone prevents a large test
+harness from being built on an assumed client compatibility.</p>
+<h3 id="t2-implement-domain-and-runtime-assertions">T2: implement domain
+and runtime assertions</h3>
+<p>Add the L0/L1 scenarios using the current public domain interfaces
+and real JS fixtures. Prioritize cancellation, worker saturation, stale
+context, rejected promises, and reply duplication. Run focused tests and
+the race detector. Any missing semantic decision, such as
+fire-and-forget error propagation, is resolved explicitly before writing
+its expected assertion.</p>
+<h3 id="t3-implement-the-precise-wire-fixture">T3: implement the precise
+wire fixture</h3>
+<p>Support only <code>auth.test</code>,
+<code>apps.connections.open</code>, <code>chat.postMessage</code>,
+response URLs, and scripted socket frames initially. Add request
+recording, context-aware blocking, dropped responses, 429s, explicit
+reconnect control, and ACK barriers. Use <code>slacktest</code>
+constructor overrides where they help, or a direct httptest fixture. Do
+not implement a second stateful Slack clone.</p>
+<h3 id="t4-connect-the-full-process">T4: connect the full process</h3>
+<p>Build the Bun driver and tmux lifecycle helpers, with dynamic ports
+and readiness receipts. Implement P01–P10 using actual application
+commands. Keep synthetic credentials isolated and ensure no endpoint
+escapes loopback. Save failure artifacts before cleanup.</p>
+<h3 id="t5-install-the-ci-gates-and-optional-visual-checks">T5: install
+the CI gates and optional visual checks</h3>
+<p>Make setup failures explicit, document cache preparation, and add the
+integration job. Add screenshot tests only for UI features whose
+structure already has assertions. Record emulator limitations alongside
+the supported feature list.</p>
+<p>The local-testing milestone is complete when a fresh prepared
+environment can execute the defined MVP layers without Slack
+credentials; wrong-token routing, missing ACKs, duplicate events,
+blocked work, reconnect, and shutdown each have a failing-then-passing
+test; the process suite uses the real composition root; and a failed run
+produces enough evidence to reproduce the boundary failure.</p>
+<p>Real Slack validation remains a later, separately authorized step for
+installation scopes, platform behavior, and official-client rendering.
+Local test success must be described as local test success.</p>
+<h2 id="source-references-and-analysis-record">15. Source references and
+analysis record</h2>
+<h3 id="immutable-upstream-references">Immutable upstream
+references</h3>
+<ul>
+<li><a
+href="https://github.com/slack-go/slack/blob/4b9cec9bdb1eaca3b66968b02c9f08fecd860285/slacktest/server.go">slack-go
+test server</a></li>
+<li><a
+href="https://github.com/slack-go/slack/blob/4b9cec9bdb1eaca3b66968b02c9f08fecd860285/slacktest/handlers.go">slack-go
+default handlers</a></li>
+<li><a
+href="https://github.com/slack-go/slack/blob/4b9cec9bdb1eaca3b66968b02c9f08fecd860285/socketmode/socket_mode_managed_conn_test.go">slack-go
+custom socket tests</a></li>
+<li><a
+href="https://github.com/desplega-ai/slack-mock/blob/6397b31a9c5e04a3ba52dd6e82f16ab8b5b10eac/src/server.ts">desplega
+server and admin router</a></li>
+<li><a
+href="https://github.com/desplega-ai/slack-mock/blob/6397b31a9c5e04a3ba52dd6e82f16ab8b5b10eac/src/socket-mode.ts">desplega
+Socket Mode hub</a></li>
+<li><a
+href="https://github.com/desplega-ai/slack-mock/blob/6397b31a9c5e04a3ba52dd6e82f16ab8b5b10eac/src/web-api.ts">desplega
+Web API model</a></li>
+<li><a
+href="https://github.com/desplega-ai/slack-mock/blob/6397b31a9c5e04a3ba52dd6e82f16ab8b5b10eac/test/socket-mode.test.ts">desplega
+protocol tests</a></li>
+<li><a
+href="https://github.com/desplega-ai/slack-mock/blob/6397b31a9c5e04a3ba52dd6e82f16ab8b5b10eac/test/faults.test.ts">desplega
+fault tests</a></li>
+<li><a
+href="https://github.com/chrishutchinson/slack-testing-library/blob/3f450bb5abcf00991a5ebe8cbeef98a60e1d4530/src/util/server.ts">HTTP
+testing library server</a></li>
+<li><a
+href="https://github.com/chrishutchinson/slack-testing-library/blob/3f450bb5abcf00991a5ebe8cbeef98a60e1d4530/src/slack-testing-library.ts">HTTP
+testing library interaction limitations</a></li>
+<li><a
+href="https://github.com/Skellington-Closet/slack-mock/blob/7bf3eb5073a8a2c071ece360a7b8729390a37024/src/mocker/web.js">Skellington
+Nock interception</a></li>
+</ul>
+<p>Official Slack protocol references and archived copies remain in the
+<a href="../sources/README.md">ticket source inventory</a>, particularly
+Socket Mode, interaction handling, and Web API rate limits. The mock
+repositories are examples and test infrastructure, not the authority for
+production protocol rules.</p>
+<h3 id="research-receipt">Research receipt</h3>
+<p>The active user request was: “Create a separate design doc that
+writes out a full local testing plan. you can clone and analyze the
+projects in ~/code/others/slack/ if you want.” Four shallow clones
+succeeded at the paths and commits listed above. Source searches and
+targeted reads established the recommendations and limitations. A few
+combined inspection commands referenced a file in the wrong checkout and
+returned <code>No such file or directory</code>; the corresponding files
+were then read from the correct projects. No conclusions depend on those
+failed reads.</p>
+<p>No upstream tests or runtime experiments were executed. No
+application files, shared implementation diary, existing guide, or Git
+index were edited by this side-conversation design task. This separate
+document is the handoff to the main implementation thread.</p>
+<p>Document validation: docmgr frontmatter and ticket doctor passed;
+Pandoc parsed the Markdown successfully; relative links and fenced-block
+balance were checked. These are documentation checks, not mock
+interoperability results.</p>
+</body>
+</html>

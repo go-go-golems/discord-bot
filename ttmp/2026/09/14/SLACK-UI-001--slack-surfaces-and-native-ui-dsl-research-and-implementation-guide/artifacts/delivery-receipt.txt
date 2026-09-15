@@ -1,0 +1,27 @@
+Inputs and final artifact:
+- Frozen source: design-doc/01-slack-surfaces-and-ui-dsl-intern-guide.md (unchanged).
+- Reading copy: various/print/01-slack-surfaces-and-ui-dsl-intern-guide.md.
+- Initial local PDF: artifacts/SLACK-UI-001-slack-surfaces-and-ui-dsl-guide.pdf (17 pages, letter).
+- Corrected final local PDF: artifacts/final/SLACK-UI-001 Slack UI Research Guide.pdf (20 pages, letter, 249143 bytes; SHA-256 ee19bcb3898de628e2551974ad8480a5c0dff2fb82007f44e25e25486855c4ba).
+- Graphviz source and rendered diagrams: various/print/assets/message-flow.dot/.svg/.png and modal-sequence.dot/.svg/.png.
+
+Changes made:
+- Replaced the two Mermaid blocks only in the reading copy with Graphviz-rendered PNG diagrams, preserving all node and edge content.
+- Corrected reading-copy archive links from ../sources/... to ../../sources/...; the frozen primary guide was not edited.
+
+Validation performed and limitations:
+- Initial PDF was rendered with Pandoc and XeLaTeX at 17 pages. Corrected final bundle is 20 pages using the upload command settings below.
+- Visually inspected the contents/front matter, message-flow diagram, modal-sequence diagram, narrow reference table, pseudocode, and JavaScript code pages at 110 dpi. Diagrams and code are legible; no clipping or overflow was observed in inspected pages.
+- The bundle upload regenerates the PDF from the reading copy. The corrected final was generated with the exact upload settings and independently checked at 20 pages; the final local artifact is the same settings-generated PDF family as the delivered document (PDF metadata timestamps can vary between runs).
+
+Upload result and destination (retain OK: uploaded):
+- OK: uploaded SLACK-UI-001 Slack Surfaces and UI DSL Guide.pdf -> /ai/2026/09/14/SLACK-UI-001
+- Exact command/settings: `remarquee upload bundle <ticket>/various/print --name "SLACK-UI-001 Slack UI Research Guide" --remote-dir "/ai/2026/09/14/SLACK-UI-001" --toc-depth 2 --geometry "margin=0.72in" --mainfont "DejaVu Sans" --monofont "DejaVu Sans Mono" --non-interactive`
+- OK: uploaded SLACK-UI-001 Slack UI Research Guide.pdf -> /ai/2026/09/14/SLACK-UI-001
+- Upload used `remarquee upload bundle` with `--non-interactive`, no `--force`; no overwrite was requested.
+
+Diary/evidence paths and commit, if assigned:
+- This receipt and the PDF are under artifacts/; no commit made, per delegation.
+
+Blockers or decisions needed:
+- None for delivery. Cloud upload confirms cloud receipt, not physical device synchronization. The first remote document remains intact; the corrected document uses the newly authorized name and does not overwrite it.

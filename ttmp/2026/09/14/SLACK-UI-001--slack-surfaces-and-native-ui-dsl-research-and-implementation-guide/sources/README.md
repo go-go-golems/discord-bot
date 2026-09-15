@@ -148,3 +148,11 @@ Markdown wrappers add docmgr metadata and resolve root-relative Slack links. `.o
 | rendered-work-objects-implementation | [Slack](https://docs.slack.dev/messaging/work-objects-implementation/) | [capture](web/rendered-work-objects-implementation.md) | Captured |
 | rendered-composition | [Slack](https://docs.slack.dev/reference/block-kit/composition-objects/) | [capture](web/rendered-composition.md) | Captured |
 | rendered-blocks | [Slack](https://docs.slack.dev/reference/block-kit/blocks/) | [capture](web/rendered-blocks.md) | Captured |
+
+## Local documentation
+
+These captures supplement the code snapshots with the existing UI tutorial, offline testing plan, and vault ownership article. Local Markdown was converted to HTML with Pandoc and processed by Defuddle; exact originals are retained. `local-docs/catalog.json` records origin paths and hashes.
+
+- [01-using-the-go-side-ui-dsl-for-discord-bots.md](local-docs/01-using-the-go-side-ui-dsl-for-discord-bots.md) — `/home/manuel/workspaces/2026-09-10/add-slack-support/discord-bot/pkg/doc/tutorials/using-the-go-side-ui-dsl-for-discord-bots.md`
+- [02-02-full-local-testing-plan-and-slack-mock-evaluation.md](local-docs/02-02-full-local-testing-plan-and-slack-mock-evaluation.md) — `/home/manuel/workspaces/2026-09-10/add-slack-support/discord-bot/ttmp/2026/09/10/DISCORD-SLACK-001--add-slack-support-to-discord-bot/design-doc/02-full-local-testing-plan-and-slack-mock-evaluation.md`
+- [03-goja-runtime-ownership-and-context-propagation.md](local-docs/03-goja-runtime-ownership-and-context-propagation.md) — `/home/manuel/code/wesen/go-go-golems/go-go-parc/Research/KB/Tribal/goja-runtime-ownership-and-context-propagation.md`

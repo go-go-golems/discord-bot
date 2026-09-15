@@ -1,0 +1,16 @@
+digraph message_flow {
+  graph [rankdir=LR, bgcolor="white", pad=0.25, nodesep=0.35, ranksep=0.65, fontname="DejaVu Sans"];
+  node [shape=box, style="rounded,filled", fillcolor="#eef4ff", color="#315a9d", fontname="DejaVu Sans", fontsize=11, margin="0.16,0.10"];
+  edge [color="#315a9d", penwidth=1.2, arrowsize=0.8, fontname="DejaVu Sans", fontsize=9];
+  JS [label="Bot JavaScript"];
+  UI [label="Slack UI builders"];
+  DTO [label="Validated Go payload"];
+  HTTP [label="Slack API client"];
+  SL [label="Slack message or modal"];
+  WS [label="Socket Mode envelope"];
+  DEC [label="Typed interaction decoder"];
+  HOST [label="Existing Goja host"];
+  ACK [label="Deadline-bound acknowledgment", fillcolor="#fff4df", color="#a36b00"];
+  JS -> UI -> DTO -> HTTP -> SL -> WS -> DEC -> HOST -> JS;
+  DEC -> ACK;
+}

@@ -4,6 +4,7 @@ import hashlib,json,re
 r=Path(__file__).resolve().parents[1];guide=r/'design-doc/01-slack-surfaces-and-ui-dsl-intern-guide.md';text=guide.read_text();errors=[]
 for p in [guide,r/'index.md',r/'sources/README.md']:
  for target in re.findall(r'\]\(([^)]+)\)',p.read_text()):
+  target=target.removeprefix('<').removesuffix('>')
   if target.startswith(('http:','https:','#','mailto:')):continue
   path=target.split('#')[0]
   if path and not (p.parent/path).exists():errors.append(f'{p.name}: missing {path}')

@@ -10,10 +10,10 @@ Intent: long-term
 Owners: []
 RelatedFiles: []
 ExternalSources: []
-Summary: ""
+Summary: "Chronological research decisions, failures, evidence, and delivery."
 LastUpdated: 2026-09-14T22:50:30.724326162-04:00
-WhatFor: ""
-WhenToUse: ""
+WhatFor: "Review how the Slack UI recommendation was derived."
+WhenToUse: "Review or resume SLACK-UI-001."
 ---
 
 # Investigation diary
@@ -123,3 +123,63 @@ Archived the Slack surface documentation and traced the interactions needed for 
 - Plain message fallback is an explicit host policy; unsupported block fields are not silently accepted.
 
 Source-integrity check during this step found two missing links to the original timed-out capture filenames: `web/41-reference-methods-slackLists.create.md` and `web/49-messaging-work-objects-implementation.md`. Both had recovered browser captures, but the catalog continuation skipped their recovery metadata. Corrected the catalog and README links to the rendered captures, then reran the check.
+
+## Step 3: Validate and deliver the research handoff
+
+Completed the source archive and delivered the corrected 20-page reading copy to reMarkable. The research guide is approximately 8,000 words with 41 footnotes; it recommends a small core implementation and leaves all implementation tasks open.
+
+### Prompt Context
+**User prompt (verbatim):** "continue"
+**Assistant interpretation:** Finish the interrupted research delivery and commits.
+**Inferred user intent:** Receive the completed ticket and readable guide without additional approval loops.
+**Commit (code):** d2ef195 — "docs(slack): research surfaces and design pragmatic UI DSL"
+
+### What I did
+- Added three relevant local documents: the existing Discord UI tutorial, the prior local-testing plan, and the vault ownership article, with exact originals and Pandoc-to-Defuddle conversions.
+- Ran scripts/05-check-research.py: authored links, 41 footnotes, 117 distinct official source URLs, and recorded hashes passed.
+- Ran docmgr doctor --ticket SLACK-UI-001 --stale-after 30: all checks passed.
+- Delegated mechanical rendering and upload under the remarkable-upload skill; kept the primary guide frozen during finalization.
+- Created a reading copy with Graphviz-rendered versions of the two Mermaid diagrams and visually checked representative pages.
+
+### Why
+- A self-contained archive makes future implementation independent of live documentation changes.
+- The final delivered rendering must use the same settings as the validated local reading artifact.
+
+### What worked
+- SDK probe, reference integrity, and docmgr validation passed.
+- The corrected final PDF is 20 pages with diagrams, tables, prose, pseudocode, and API references.
+- Cloud upload reported: `OK: uploaded SLACK-UI-001 Slack UI Research Guide.pdf -> /ai/2026/09/14/SLACK-UI-001`.
+
+### What didn't work
+- The first uploaded reading copy retained archive links relative to the primary guide, rather than its print directory. The local correction therefore differed from the initial cloud artifact.
+- Corrected those links and regenerated with the same settings used by the bundle uploader. Uploaded under a new name instead of overwriting the earlier document or risking annotation loss. The earlier upload remains; the final name above is authoritative.
+- The initial custom render was 17 pages; the actual bundle settings produce 20. Validation was repeated on the corrected bundle output rather than relying on the earlier rendering.
+
+### What I learned
+- A successful upload alone does not establish that the locally inspected PDF used the uploader's render settings.
+- The surface catalog needed browser rendering, while individual references generally worked with direct Defuddle extraction.
+
+### What was tricky to build
+- Preserving readable diagrams and relative source links when moving a Markdown document into a print directory.
+- Keeping documentation breadth separate from implementation commitments: only research and delivery tasks are checked.
+
+### What warrants a second pair of eyes
+- Review the proposed ACK lifecycle before implementation and verify newer surface schemas only when adopting them.
+- Visual review sampled contents, diagrams, a narrow table, pseudocode, and JavaScript pages; it was not an exhaustive page-by-page typography audit.
+
+### What should be done in the future
+- Implement the first rich-message phase when authorized, then action routing and the modal editor.
+- Treat the newer surfaces as optional use-case-driven work.
+
+### Code review instructions
+- Start with design-doc/01-slack-surfaces-and-ui-dsl-intern-guide.md and tasks.md.
+- Run `python <ticket>/scripts/05-check-research.py` and `docmgr doctor --ticket SLACK-UI-001 --stale-after 30` from the repository root.
+- Consult artifacts/delivery-receipt.txt for exact render/upload settings and final PDF SHA-256.
+
+### Technical details
+- Final local artifact: `artifacts/final/SLACK-UI-001 Slack UI Research Guide.pdf`.
+- SHA-256: `ee19bcb3898de628e2551974ad8480a5c0dff2fb82007f44e25e25486855c4ba`.
+- The uploader regenerates from the same reading copy and settings; metadata timestamps may differ between PDF generations.
+- No runtime feature code, private credential files, or live bot process was changed. No repo push was requested for this ticket.
+
+Final link-check correction: adding the PDF link exposed that the small checker did not recognize CommonMark angle-bracket destinations containing spaces. It reported `index.md: missing <artifacts/final/SLACK-UI-001 Slack UI Research Guide.pdf>`. Updated the checker to remove the angle delimiters before resolving the path; the PDF link itself was valid.

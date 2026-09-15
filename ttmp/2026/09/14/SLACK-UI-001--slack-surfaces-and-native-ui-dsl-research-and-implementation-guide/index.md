@@ -10,10 +10,10 @@ Intent: long-term
 Owners: []
 RelatedFiles: []
 ExternalSources: []
-Summary: ""
+Summary: "Research complete; pragmatic core implementation planned."
 LastUpdated: 2026-09-14T22:50:30.006245744-04:00
-WhatFor: ""
-WhenToUse: ""
+WhatFor: "Navigate the Slack UI research and implementation handoff."
+WhenToUse: "Review or resume SLACK-UI-001."
 ---
 
 # Slack surfaces and native UI DSL
@@ -40,4 +40,4 @@ Baseline discord-bot revision: 5c700b2. Pinned Slack SDK: v0.17.3. Official Slac
 
 ## Delivery
 
-The guide is being rendered for reMarkable. The final delivery receipt will be recorded in the diary and artifacts. Implementation tasks remain open.
+Delivered the corrected 20-page **SLACK-UI-001 Slack UI Research Guide** to `/ai/2026/09/14/SLACK-UI-001`. See [final PDF](<artifacts/final/SLACK-UI-001 Slack UI Research Guide.pdf>) and [delivery receipt](artifacts/delivery-receipt.txt). The earlier differently named upload remains intact; use the corrected guide. This confirms cloud upload, not physical device sync. Implementation tasks remain open.
