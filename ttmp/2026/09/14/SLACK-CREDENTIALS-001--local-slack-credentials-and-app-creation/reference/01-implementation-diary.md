@@ -716,3 +716,118 @@ go run ./cmd/slack-bot bots run ping --profile go-go-golems --log-level debug
 ```
 
 It resolves `go-go-golems-T0C1UJMCPGA`, uses the stored app ID `A0C1YJCCCP6`, verifies `auth.test`, and then enters the Socket Mode event loop. Credentials remain private to the Go transport.
+
+## Step 14: Publish the deep-dive project report and align operator documentation
+
+The user requested a textbook-style deep technical report for the Obsidian vault and asked that repository and CLI documentation stay aligned. The report covers the implemented Slack runtime, credentials, app installation, Socket Mode flow, JavaScript contract, testing boundaries, UI scope, and next steps. The README and embedded help now expose the same live command sequence.
+
+### Prompt Context
+
+**User prompt (verbatim):** "write a detailed project report for the obsidian vault as a deep dive technical analysis blog post using a textbook writing style (no analogies, see skill). Commit and push the bsidian vault when done (go-go-parc vault)."
+
+**Follow-up (verbatim):** "make sure to update the documentation for the repo and CLI and all that"
+
+**Assistant interpretation:** Create a durable vault report, update operator-facing repository/CLI documentation, and commit and push the vault while keeping the report technically grounded and free of analogies.
+
+**Inferred user intent:** Preserve the architecture and operating knowledge in a future-readable document, then make the commands discoverable where developers actually start.
+
+### What I did
+
+- Wrote `Projects/2026/09/14/PROJECT REPORT - Discord Bot Slack Support - Deep Dive Technical Analysis.md` in the go-go-parc vault.
+- Added architecture and sequence diagrams, concrete JavaScript and HTTP examples, file references, API references, failure modes, test evidence, and the current no-UI-DSL boundary.
+- Updated `README.md` with Slack inspection, simulation, and real runtime commands.
+- Updated `pkg/slackdoc/slack-offline.md` with manifest update limitations and unsupported rich Slack surfaces.
+
+### Why
+
+The ticket diary is an implementation record; the vault report is durable project knowledge. README and embedded CLI help must give operators a short path to the same behavior described in the report.
+
+### What worked
+
+The report is 334 lines and uses the vault's `PROJECT REPORT` frontmatter and dated Projects layout. It contains Mermaid diagrams and textbook-style prose without analogy-based explanations.
+
+### What didn't work
+
+The first two large `apply_patch` attempts failed because raw code-block lines were not prefixed as patch additions. No partial vault report was created by those failures. The report was then written successfully in three smaller patches.
+
+### What I learned
+
+Large markdown additions are safer as several validated patches when code blocks contain many lines; each patch must preserve the patch grammar on every line.
+
+### What was tricky to build
+
+The report had to describe both the private `apps.developerInstall` installation path and the documented runtime APIs without presenting the private endpoint as a stable public contract.
+
+### What warrants a second pair of eyes
+
+Review the report's claims against the current repository HEAD and verify that the CLI examples match the installed profile and current Slack app manifest behavior.
+
+### What should be done in the future
+
+Add the manifest-update command and a small set of additional Slack bot examples when development requires changing commands or rich surfaces.
+
+### Code review instructions
+
+Read the vault report alongside `README.md`, `pkg/slackdoc/slack-offline.md`, and the ticket design docs. Stage only the intended report in the vault repository.
+
+### Technical details
+
+The report references app `A0C1YJCCCP6`, workspace `T0C1UJMCPGA`, profile `go-go-golems`, and installation `go-go-golems-T0C1UJMCPGA`; it contains no token values. Vault publication and repository documentation commits are separate review boundaries.
+
+## Step 13: Start the live bot in tmux
+
+The user requested an interactive live session. The bot is running in detached tmux session `slack-bot-live` from the repository root, using the installed `go-go-golems` profile and the pinned Go wrapper.
+
+### Prompt Context
+
+**User prompt (verbatim):** "run it in tmux or so, and i'll interact with it."
+
+**Assistant interpretation:** Start the real `ping` runtime as a long-lived process in tmux and verify that it remains alive for Slack interaction.
+
+**Inferred user intent:** Send a mention or slash command from Slack and observe the bot's response without blocking the coding session.
+
+### What I did
+
+- Started session `slack-bot-live` with `bots run ping --profile go-go-golems --log-level debug`.
+- Captured the pane and confirmed the bot loaded successfully.
+- Confirmed the Go runner and compiled `slack-bot` child process remain alive.
+
+### Why
+
+tmux keeps the event loop attached to a controllable terminal while allowing the user to interact with Slack independently.
+
+### What worked
+
+The pane reports `DBG loaded Slack bot bot=ping`; the process remains running without startup errors. No credentials appear in the pane.
+
+### What didn't work
+
+The runtime does not emit a connection-success line after loading, so readiness is inferred from the live process and absence of errors. Event interaction is the next observable check.
+
+### What I learned
+
+The command can be left running independently of the current shell; its tmux session is named `slack-bot-live`.
+
+### What was tricky to build
+
+The regular `go run` command initially encountered the parent workspace's stale Go version declarations; the repository wrapper selected the cached Go 1.26.4 toolchain successfully.
+
+### What warrants a second pair of eyes
+
+Send a controlled `/golem-ping` command or `@mention` in a channel where the bot is present, then inspect the pane for handler diagnostics.
+
+### What should be done in the future
+
+Add explicit startup logging for successful `auth.test` and Socket Mode connection if operators need positive readiness evidence.
+
+### Code review instructions
+
+Use `tmux capture-pane -pt slack-bot-live` to inspect the session. Stop it with `tmux kill-session -t slack-bot-live` after interactive testing.
+
+### Technical details
+
+The process was started with:
+
+```sh
+ttmp/2026/09/10/DISCORD-SLACK-001--add-slack-support-to-discord-bot/scripts/04-go-offline.sh run ./cmd/slack-bot bots run ping --profile go-go-golems --log-level debug
+```

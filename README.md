@@ -42,6 +42,30 @@ discord-bot bots list --bot-repository ./examples/discord-bots
 discord-bot bots help ping --bot-repository ./examples/discord-bots
 ```
 
+### Slack bots
+
+The repository also contains a Go-hosted Slack runtime under `cmd/slack-bot`.
+It discovers JavaScript bots from `examples/slack-bots`, exposes the typed
+`require("slack")` API, and supports offline inspection/simulation alongside
+real Slack Socket Mode execution. A local profile stores management, app, and
+workspace-installation credentials under `~/.config/go-go-slack/`.
+
+```bash
+# Inspect and simulate without Slack credentials
+go run ./cmd/slack-bot bots list
+go run ./cmd/slack-bot bots manifest ping
+go run ./cmd/slack-bot bots simulate ping \
+  --event-file examples/slack-bots/fixtures/mention.json
+
+# Run an installed Slack app
+go run ./cmd/slack-bot bots run ping --profile go-go-golems --log-level debug
+```
+
+The setup workflow is documented in the built-in help topic
+`slack-offline`: import a configuration-token pair, create an app from the
+manifest, install it into a workspace, and then run the selected profile.
+`bots run-local` remains available for loopback-only Socket Mode fixtures.
+
 ### 3. Run a bot
 
 ```bash

@@ -37,6 +37,10 @@ Installed app `A0C1YJCCCP6` for profile `go-go-golems` in workspace `T0C1UJMCPGA
 
 ## 2026-09-14
 
+Started the real `ping` runtime in tmux session `slack-bot-live` using the stored `go-go-golems` installation for interactive Slack testing.
+
+## 2026-09-14
+
 Added bots run and a remote Slack transport that resolve stored installation credentials, verify auth.test workspace identity, dispatch JavaScript through Socket Mode ingress, and allow only Slack HTTPS response URLs for slash replies.
 
 ### Related Files
