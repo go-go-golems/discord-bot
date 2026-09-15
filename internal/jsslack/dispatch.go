@@ -30,7 +30,27 @@ type outcome struct {
 
 // Dispatch serializes complete invocations, while network work and promise settlement
 // run outside the owner. A timeout is bounded even for CPU-bound JavaScript.
-func (h *Host) Dispatch(ctx context.Context, input slackbot.Invocation, responder slackbot.Responder) error {
+func (h *Host) Dispatch(ctx context.Context, input slackbot.Invocation, responder slackbot.Responder) (dispatchErr error) {
+	started := time.Now()
+	logger := h.logger.With().Str("bot", h.descriptor.Name).Str("invocation", input.ID).
+		Str("command", input.Command).Str("event", input.Event).Logger()
+	logger.Debug().Msg("Slack dispatch started")
+	defer func() {
+		if dispatchErr == nil {
+			logger.Debug().Dur("duration_ms", time.Since(started)).Msg("Slack dispatch completed")
+			return
+		}
+		failure := logger.Warn().Dur("duration_ms", time.Since(started))
+		var domainErr *slackbot.Error
+		if errors.As(dispatchErr, &domainErr) {
+			failure = failure.Str("error_code", domainErr.Code)
+		} else if errors.Is(dispatchErr, context.DeadlineExceeded) {
+			failure = failure.Str("error_code", "deadline_exceeded")
+		} else {
+			failure = failure.Str("error_code", "handler_error")
+		}
+		failure.Msg("Slack dispatch failed")
+	}()
 	if err := input.Validate(); err != nil {
 		return err
 	}
@@ -63,6 +83,7 @@ func (h *Host) Dispatch(ctx context.Context, input slackbot.Invocation, responde
 		}
 		fn, ok := h.handlers[key]
 		if !ok {
+			h.logger.Warn().Str("bot", h.descriptor.Name).Str("invocation", input.ID).Str("handler", key).Msg("No registered Slack handler")
 			return nil, slackbot.Fail("not_found", "dispatch", "no handler for "+key)
 		}
 		var err error

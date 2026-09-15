@@ -101,6 +101,7 @@ func (c *Client) Run(ctx context.Context, dispatcher slackbot.Dispatcher) error 
 	if identity.TeamID != c.opts.TeamID {
 		return errors.New("authenticated workspace does not match configured team")
 	}
+	c.opts.Logger.Info().Str("team_id", identity.TeamID).Str("bot_user_id", identity.UserID).Str("app_id", c.opts.AppID).Msg("Slack authentication succeeded")
 	group, workerCtx := errgroup.WithContext(ctx)
 	ingress, err := slackbot.NewIngress(workerCtx, slackbot.IngressOptions{
 		TeamID: c.opts.TeamID, AppID: c.opts.AppID, SelfUserID: identity.UserID, AllowedChannels: c.opts.AllowedChannels,
@@ -141,6 +142,7 @@ func (c *Client) Run(ctx context.Context, dispatcher slackbot.Dispatcher) error 
 				if !ok {
 					return errors.New("Socket Mode event stream closed")
 				}
+				c.opts.Logger.Debug().Str("socket_event", string(event.Type)).Msg("Slack Socket Mode event")
 				if event.Type == socketmode.EventTypeInvalidAuth {
 					return errors.New("Socket Mode authentication failed")
 				}
@@ -167,7 +169,7 @@ func (c *Client) Run(ctx context.Context, dispatcher slackbot.Dispatcher) error 
 							err = ack.replay(ackCtx, payload)
 						}
 					}
-					c.opts.Logger.Debug().Str("admission", string(decision)).Msg("Slack receipt")
+					c.opts.Logger.Debug().Str("envelope_id", event.Request.EnvelopeID).Str("request_type", string(event.Request.Type)).Str("command", envelope.Invocation.Command).Str("event", envelope.Invocation.Event).Str("admission", string(decision)).Msg("Slack receipt")
 				}
 				cancel()
 				if err != nil {

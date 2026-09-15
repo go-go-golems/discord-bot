@@ -491,3 +491,51 @@ The implementation changed the authoritative design from a research-only handoff
 
 - Upload destination: `/ai/2026/09/15/SLACK-UI-001`.
 - Local PDF: `artifacts/final-v3/SLACK-UI-001-Slack-UI-Implementation-Guide-v3.pdf`.
+
+## Step 10: Log live identity, connection, and command dispatch
+
+The live test exposed insufficient diagnostics: the user saw a pong while the showcase process only logged an unidentified receipt and generic failure. Added metadata logs so the next invocation can be traced to its local bot, installed app, and handler route.
+
+### Prompt Context
+**User prompt (verbatim):** "can you log more?"
+**Assistant interpretation:** Add practical diagnostics and restart the live bot.
+**Inferred user intent:** Determine which application and handler are answering Slack commands.
+
+### What I did
+- Logged profile, script, bot, app ID and workspace at startup.
+- Logged successful authentication and Socket Mode lifecycle event types.
+- Added envelope IDs and command/event names to admission logs.
+- Added dispatch start/completion, duration, classified failures, and missing handler route logs.
+- Restarted the showcase in tmux session `slack-ui-showcase`.
+
+### Why
+- Startup alone did not prove a socket connection. Generic failure logs did not identify the missing route.
+- Raw payloads, tokens, submitted values and arbitrary JavaScript error messages are unnecessary for this diagnosis.
+
+### What worked
+- `GOCACHE=/tmp/go-build-cache-slack-ui GOWORK=off go test ./internal/jsslack ./pkg/slackcli` passed.
+- Focused transport ACK tests passed.
+- Live startup reported app `A0C1YJCCCP6`, workspace `T0C1UJMCPGA`, bot user `U0C1NREFWBV`, then `connecting`, `connected`, and `hello`.
+
+### What didn't work
+- The earlier attribution of pong to another process was unsupported. The source of that reply remains unconfirmed until a new interaction is traced.
+
+### What I learned
+- The selected local script and the registered Slack app manifest are separate state; a successful socket connection does not register new commands.
+
+### What was tricky to build
+- Dispatch errors can contain arbitrary script data. Logging classifies errors and records the route separately instead of dumping raw errors.
+
+### What warrants a second pair of eyes
+- Confirm the next user command's receipt and dispatch logs agree with the Slack response.
+
+### What should be done in the future
+- Register the showcase slash command in the installed app before testing that route.
+
+### Code review instructions
+- Review `pkg/slackcli/run_remote.go`, `internal/slacktransport/run.go`, and `internal/jsslack/dispatch.go`.
+- Capture the tmux pane after a user-triggered command.
+
+### Technical details
+- Dispatch duration is logged as `duration_ms`; unknown command routes produce `error_code=not_found`.
+- Logs omit tokens, response URLs, message text, and form values.
