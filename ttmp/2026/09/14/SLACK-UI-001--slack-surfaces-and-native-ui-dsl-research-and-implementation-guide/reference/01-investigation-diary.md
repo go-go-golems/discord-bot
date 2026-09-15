@@ -440,3 +440,54 @@ The third implementation checkpoint completes the agreed first UI path. A button
 - ACK deadline: three seconds from receipt creation, with the caller context additionally respected.
 - Explicit view submissions bypass the ingress automatic ACK; ordinary block actions continue to use the existing automatic empty ACK.
 - Successful interactive ACK payloads are retained in a five-minute process-local replay map keyed by Socket Mode envelope ID; a duplicate envelope replays the same payload without re-running JavaScript.
+
+## Step 9: Refresh and upload the implemented guide
+
+The implementation changed the authoritative design from a research-only handoff into a guide that documents the shipped seven-layer UI slice. I refreshed the printable reading copy, generated the v3 PDF, and uploaded that copy to reMarkable.
+
+### Prompt Context
+
+**User prompt (verbatim):** "just upload, it's fine"
+
+**Assistant interpretation:** Upload the current rendered guide immediately and skip another round of visual inspection or other delivery checks.
+
+### What I did
+
+- Ran `scripts/07-refresh-reading-copy.py` to synchronize the reading copy with the implemented guide and replace Mermaid blocks with the archived diagrams.
+- Generated `artifacts/final-v3/SLACK-UI-001-Slack-UI-Implementation-Guide-v3.pdf`.
+- Uploaded the reading-copy bundle with `remarquee upload bundle` to `/ai/2026/09/15/SLACK-UI-001`.
+- Recorded the upload result and artifact checksum in `artifacts/delivery-receipt.txt`.
+
+### What worked
+
+- ReMarkable reported: `OK: uploaded SLACK-UI-001 Slack UI Implementation Guide v3.pdf -> /ai/2026/09/15/SLACK-UI-001`.
+- The local v3 PDF is 19 pages and has SHA-256 `70cc99cdf523c40839edc8377ad7e6cd3bc86250d476f88d372904620e29e0b6`.
+
+### What didn't work
+
+- Nothing failed during this delivery step. Additional checks were intentionally skipped at the user's direction.
+
+### What I learned
+
+- The printable copy must be refreshed after implementation because the guide's API references and file references change with the runtime surface.
+
+### What was tricky to build
+
+- The bundle needs the refreshed relative links and the rendered diagram assets to remain readable when Pandoc is run from the ticket's print directory.
+
+### What warrants a second pair of eyes
+
+- None for this upload step; the user accepted the current artifact without another inspection pass.
+
+### What should be done in the future
+
+- Keep the v3 receipt alongside the ticket and regenerate the bundle if the implementation guide changes.
+
+### Code review instructions
+
+- Review the final guide, reading copy, and delivery receipt together with commit `docs(slack): refresh implemented UI guide delivery`.
+
+### Technical details
+
+- Upload destination: `/ai/2026/09/15/SLACK-UI-001`.
+- Local PDF: `artifacts/final-v3/SLACK-UI-001-Slack-UI-Implementation-Guide-v3.pdf`.

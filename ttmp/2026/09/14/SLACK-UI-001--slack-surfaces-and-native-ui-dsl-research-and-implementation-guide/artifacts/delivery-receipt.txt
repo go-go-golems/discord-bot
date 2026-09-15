@@ -1,14 +1,15 @@
 Inputs and final artifact:
-- Frozen source: design-doc/01-slack-surfaces-and-ui-dsl-intern-guide.md (unchanged).
-- Reading copy: various/print/01-slack-surfaces-and-ui-dsl-intern-guide.md.
+- Authoritative guide: design-doc/01-slack-surfaces-and-ui-dsl-intern-guide.md.
+- Reading copy: various/print/01-slack-surfaces-and-ui-dsl-intern-guide.md (refreshed after implementation).
 - Initial local PDF: artifacts/SLACK-UI-001-slack-surfaces-and-ui-dsl-guide.pdf (17 pages, letter).
 - Corrected final local PDF: artifacts/final/SLACK-UI-001 Slack UI Research Guide.pdf (20 pages, letter, 249143 bytes; SHA-256 ee19bcb3898de628e2551974ad8480a5c0dff2fb82007f44e25e25486855c4ba).
 - Revised v2 final local PDF: artifacts/final-v2/SLACK-UI-001-Slack-UI-Research-Guide-v2.pdf (21 pages, letter, 251018 bytes; SHA-256 6bb3cc6156adc95ff9830428d1d2a53413b6a046915ffdfe5dd0e082697e3853).
 - Graphviz source and rendered diagrams: various/print/assets/message-flow.dot/.svg/.png and modal-sequence.dot/.svg/.png.
 
 Changes made:
-- Replaced the two Mermaid blocks only in the reading copy with Graphviz-rendered PNG diagrams, preserving all node and edge content.
-- Corrected reading-copy archive links from ../sources/... to ../../sources/...; the frozen primary guide was not edited.
+- Replaced the two Mermaid blocks in the reading copy with Graphviz-rendered PNG diagrams, preserving all node and edge content.
+- Corrected reading-copy archive links from ../sources/... to ../../sources/....
+- Refreshed the reading copy after the seven-layer implementation so the delivered guide documents the actual builders, routing, modal, and ACK APIs.
 
 Validation performed and limitations:
 - Initial PDF was rendered with Pandoc and XeLaTeX at 17 pages. The prior corrected bundle was 20 pages. The revised v2 bundle is 21 pages using the upload command settings below.
@@ -24,7 +25,23 @@ Upload result and destination (retain OK: uploaded):
 - Upload used `remarquee upload bundle` with `--non-interactive`, no `--force`; no overwrite was requested.
 
 Diary/evidence paths and commit, if assigned:
-- This receipt and the PDF are under artifacts/; no commit made, per delegation.
+- Historical v2 receipt was recorded before the implementation refresh commit.
+
+## v3 implementation refresh (2026-09-15)
+
+The authoritative guide and reading copy were refreshed after implementing the agreed seven-layer Slack UI slice. The refreshed bundle includes the actual rich-message, action, modal, view-submission, ACK, and offline simulation APIs. Layer 8 remains explicitly deferred.
+
+Local artifact:
+- `artifacts/final-v3/SLACK-UI-001-Slack-UI-Implementation-Guide-v3.pdf`
+- 19 pages, 251009 bytes
+- SHA-256: `70cc99cdf523c40839edc8377ad7e6cd3bc86250d476f88d372904620e29e0b6`
+
+Upload result and destination:
+- OK: uploaded `SLACK-UI-001 Slack UI Implementation Guide v3.pdf` -> `/ai/2026/09/15/SLACK-UI-001`
+- The upload used `remarquee upload bundle` with `--non-interactive`, the reading-copy directory, and the DejaVu Sans/Sans Mono font settings.
+
+Delivery decision:
+- The user explicitly authorized uploading the current rendered copy and asked to skip additional checks. No further visual or research checks were run after this upload.
 
 Blockers or decisions needed:
 - None for delivery. Cloud upload confirms cloud receipt, not physical device synchronization. Prior remote documents remain intact; v2 uses a new name and does not overwrite them.
