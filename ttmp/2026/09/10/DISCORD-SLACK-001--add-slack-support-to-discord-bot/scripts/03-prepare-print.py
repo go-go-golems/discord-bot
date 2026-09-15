@@ -1,6 +1,11 @@
 from pathlib import Path
+import argparse
+parser = argparse.ArgumentParser()
+parser.add_argument('--input', default='design-doc/01-slack-support-architecture-and-intern-implementation-guide.md')
+parser.add_argument('--output-name', default='01-Slack Support - Intern Implementation Guide.md')
+args = parser.parse_args()
 root=Path(__file__).resolve().parents[1]
-s=(root/'design-doc/01-slack-support-architecture-and-intern-implementation-guide.md').read_text()
+s=(root/args.input).read_text()
 # A print derivative: prevent code and ASCII diagrams splitting across pages,
 # and convert tables to records so long code identifiers cannot overlap columns.
 s=s.replace('../sources/', '../../sources/')
@@ -22,6 +27,6 @@ while i<len(lines):
         out.append(''); continue
     out.append(line); i+=1
 outdir=root/'various'/'print'; outdir.mkdir(parents=True,exist_ok=True)
-p=outdir/'01-Slack Support - Intern Implementation Guide.md'
+p=outdir/args.output_name
 p.write_text('\n'.join(out)+'\n')
 print(p)

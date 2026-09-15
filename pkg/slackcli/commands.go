@@ -5,6 +5,7 @@ import (
 	"context"
 	"encoding/json"
 	"io"
+	"net/http"
 	"os"
 	"time"
 
@@ -23,6 +24,10 @@ import (
 )
 
 type settings struct {
+	ConfigTokenFile     string `glazed:"config-token-file"`
+	CredentialsFile     string `glazed:"credentials-file"`
+	ConfigDir           string `glazed:"config-dir"`
+	Profile             string `glazed:"profile"`
 	LocalConnectionFile string `glazed:"local-connection-file"`
 	LogLevel            string `glazed:"log-level"`
 	Repository          string `glazed:"bot-repository"`
@@ -35,6 +40,7 @@ type command struct {
 	*cmds.CommandDescription
 	operation string
 	logger    zerolog.Logger
+	appClient *http.Client
 }
 
 var _ cmds.WriterCommand = (*command)(nil)
@@ -42,12 +48,20 @@ var _ cmds.WriterCommand = (*command)(nil)
 // Offline commands produce one JSON document; run-local waits for cancellation. These are writer commands, not
 // structured-row commands, and do not depend on Glazed's evolving output flags.
 func NewBotsCommand(logger zerolog.Logger) (*cobra.Command, error) {
-	root := &cobra.Command{Use: "bots", Short: "Inspect and simulate Slack bots offline"}
-	for _, op := range []string{"list", "inspect", "manifest", "simulate", "run-local"} {
-		desc := cmds.NewCommandDescription(op, cmds.WithShort(op+" a Slack bot (offline)"), cmds.WithFlags(
+	return newBotsCommand(logger, appHTTPClient())
+}
+
+func newBotsCommand(logger zerolog.Logger, appClient *http.Client) (*cobra.Command, error) {
+	root := &cobra.Command{Use: "bots", Short: "Inspect, create and run Slack bots"}
+	for _, op := range []string{"list", "inspect", "manifest", "create-app", "simulate", "run-local"} {
+		short := op + " a Slack bot (offline)"
+		if op == "create-app" {
+			short = "Create a Slack app from the bot's manifest using the Slack API"
+		}
+		desc := cmds.NewCommandDescription(op, cmds.WithShort(short), cmds.WithFlags(
 			fields.New("log-level", fields.TypeString, fields.WithDefault("info"), fields.WithHelp("Log level (debug, info, warn, error)")),
 			fields.New("bot-repository", fields.TypeString, fields.WithDefault("examples/slack-bots"), fields.WithHelp("Repository of Slack bot entrypoints")),
-			fields.New("timeout-ms", fields.TypeInteger, fields.WithDefault(5000), fields.WithHelp("Inspection and invocation deadline in milliseconds")),
+			fields.New("timeout-ms", fields.TypeInteger, fields.WithDefault(5000), fields.WithHelp("Inspection, invocation and API request deadline in milliseconds")),
 		))
 		if op != "list" {
 			cmds.WithArguments(fields.New("name", fields.TypeString, fields.WithIsArgument(true), fields.WithRequired(true), fields.WithHelp("Bot name")))(desc)
@@ -55,12 +69,20 @@ func NewBotsCommand(logger zerolog.Logger) (*cobra.Command, error) {
 		if op == "run-local" {
 			cmds.WithFlags(fields.New("local-connection-file", fields.TypeString, fields.WithRequired(true), fields.WithHelp("JSON local mock connection file; never exposed to JavaScript")), fields.New("bot-config-file", fields.TypeString, fields.WithHelp("Optional declared bot configuration JSON")))(desc)
 		}
+		if op == "create-app" {
+			cmds.WithFlags(
+				fields.New("config-token-file", fields.TypeString, fields.WithHelp("File containing an app-configuration access token from api.slack.com/apps")),
+				fields.New("credentials-file", fields.TypeString, fields.WithHelp("Optional new private file for returned app credentials (0600; refuses overwrite)")),
+				fields.New("config-dir", fields.TypeString, fields.WithHelp("Local Slack profile and credentials directory (default: user config directory)")),
+				fields.New("profile", fields.TypeString, fields.WithHelp("Named local profile (alternative to --config-token-file)")),
+			)(desc)
+		}
 		if op == "simulate" {
 			cmds.WithFlags(fields.New("event-file", fields.TypeString, fields.WithRequired(true), fields.WithHelp("JSON invocation fixture")), fields.New("bot-config-file", fields.TypeString, fields.WithHelp("Optional JSON object of declared bot configuration")))(desc)
 		}
 		// Use the pinned Glazed parser directly: its high-level builder calls
 		// os.Exit on domain errors. The application owns errors and output here.
-		domain := &command{desc, op, logger}
+		domain := &command{CommandDescription: desc, operation: op, logger: logger, appClient: appClient}
 		c := cli.NewCobraCommandFromCommandDescription(desc)
 		parser, err := cli.NewCobraParserFromSections(desc.Schema, &cli.CobraParserConfig{
 			SkipCommandSettingsSection: true,
@@ -112,6 +134,8 @@ func (c *command) RunIntoWriter(ctx context.Context, vals *values.Values, w io.W
 		return err
 	}
 	switch c.operation {
+	case "create-app":
+		return c.createApp(ctx, d, s, w)
 	case "run-local":
 		var connection struct {
 			APIURL, BotToken, AppToken, TeamID, AppID, UserID string

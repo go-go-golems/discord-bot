@@ -31,6 +31,68 @@ Use `--bot-repository PATH` to select another repository, `--timeout-ms 5000` to
 
 Repositories contain root `.js` entries or immediate child `index.js` entries. Helpers below a bot directory are not discovered. A candidate entry executes during inspection; scripts are trusted local code, not an untrusted-code sandbox. The runtime exposes the Slack registration module and local CommonJS imports, without outbound host capabilities during inspection. Required runtime config does not prevent inspection.
 
+## Create a Slack app
+
+`bots manifest NAME` prints the generated manifest without contacting Slack.
+`bots create-app NAME` sends that same manifest directly to `apps.manifest.create`;
+the official Slack CLI is not required:
+
+```sh
+go run ./cmd/slack-bot bots create-app ping \
+  --config-token-file /tmp/access-token.txt \
+  --credentials-file /tmp/ping-app-credentials.json \
+  --timeout-ms 30000
+```
+
+Get the configuration access token at <https://api.slack.com/apps>, below the app
+list: **Your App Configuration Tokens → Generate Token**. Select the workspace.
+Use the access token, not its refresh token. It expires after 12 hours. The
+optional local profile store and explicit rotation command are available. These credentials belong to a user
+and workspace; adding a bot OAuth scope does not issue a configuration token.
+
+The command prints the app ID, settings URL and OAuth authorization URL. Follow
+the latter to install the app. Creation does not install it or generate a Socket
+Mode token. The optional credentials file captures the returned app credentials
+with mode 0600 and refuses to overwrite an existing file. Without that flag,
+credentials are omitted from stdout and can be obtained from app settings.
+The configuration token never enters JavaScript or the output.
+
+Each successful invocation creates a new app. Requests are not automatically
+retried. If the outcome is unknown, check the dashboard before trying again.
+A reserved credentials file can remain empty after failure; choose a new path
+after resolving the failure. Explicit token files do not depend on environment
+variables or the Slack CLI login store.
+
+## Local credential profiles
+
+The optional local store keeps profile names in `~/.config/go-go-slack/config.yaml`
+and secrets in `credentials.json` (both private files). It is intended for one
+developer using one workstation. Import a configuration access/refresh pair,
+then use the profile for app creation:
+
+```sh
+slack-bot credentials import-management \
+  --profile ping-dev --management owner \
+  --access-token-file /tmp/access-token.txt \
+  --refresh-token-file /tmp/refresh-token.txt
+slack-bot profiles list
+slack-bot credentials status --profile ping-dev
+slack-bot credentials refresh --profile ping-dev
+slack-bot bots create-app ping --profile ping-dev
+```
+
+Refresh is explicit and replaces both tokens together. If it fails, import a
+new pair. Installation and runtime bot tokens remain manual; this store does
+not run a daemon or contact Slack during status/list commands.
+
+After manual installation, runtime tokens can be stored with:
+
+```sh
+slack-bot credentials import-runtime --profile ping-dev \
+  --installation dev --team-id T_DEV \
+  --bot-token-file /tmp/bot-token.txt --app-token-file /tmp/app-token.txt
+```
+
 ## JavaScript authoring
 
 ```javascript

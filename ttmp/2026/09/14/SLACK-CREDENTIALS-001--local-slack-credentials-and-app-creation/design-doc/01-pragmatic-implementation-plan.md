@@ -204,6 +204,8 @@ Require an existing app reference. Store the app token with that app and the bot
 
 Installation remains manual: follow the OAuth URL, approve in the intended workspace, and obtain the bot token and Socket Mode token through Slack settings. This ticket only stores them. It does not enable external connections in `run-local`, implement a callback server, or send test messages.
 
+The implemented `credentials import-runtime` command stores those two token files against an existing profile installation and checks the supplied app/workspace association. It still does not contact Slack to verify the IDs.
+
 ## Saving files and handling errors
 
 Read the current complete document, modify its maps, write a new temporary file in the same directory with mode `0600`, close it, and rename it over the destination. Use this simple helper for both files. Saving the entire credentials document keeps access and refresh tokens together and preserves other profiles.

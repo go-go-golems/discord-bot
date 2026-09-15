@@ -1,0 +1,263 @@
+package slackcli
+
+import (
+	"encoding/json"
+	"fmt"
+	"io"
+	"net/http"
+	"net/url"
+	"os"
+	"path/filepath"
+	"sort"
+	"strings"
+	"time"
+
+	"github.com/go-go-golems/discord-bot/internal/slackconfig"
+	"github.com/pkg/errors"
+	"github.com/rs/zerolog"
+	"github.com/spf13/cobra"
+)
+
+func defaultConfigDir() string {
+	d, err := os.UserConfigDir()
+	if err != nil {
+		return filepath.Join(".", ".config", "go-go-slack")
+	}
+	return filepath.Join(d, "go-go-slack")
+}
+
+func NewCredentialsCommand(logger zerolog.Logger, client *http.Client) *cobra.Command {
+	root := &cobra.Command{Use: "credentials", Short: "Manage local Slack credentials"}
+	root.AddCommand(newImportManagementCommand(), newProfilesCommand(), newStatusCommand(), newRefreshCommand(client))
+	root.AddCommand(newImportRuntimeCommand())
+	return root
+}
+
+func newImportRuntimeCommand() *cobra.Command {
+	var dir, profile, installation, teamID, botFile, appFile string
+	c := &cobra.Command{Use: "import-runtime", Short: "Import bot and Socket Mode tokens", RunE: func(cmd *cobra.Command, _ []string) error {
+		if profile == "" || installation == "" || teamID == "" {
+			return errors.New("--profile, --installation, and --team-id are required")
+		}
+		bot, err := readSecretFile(botFile)
+		if err != nil {
+			return err
+		}
+		app, err := readSecretFile(appFile)
+		if err != nil {
+			return err
+		}
+		store := slackconfig.New(dir)
+		cfg, cr, err := store.Load()
+		if err != nil {
+			return err
+		}
+		name, p, err := slackconfig.ResolveProfile(cfg, profile)
+		if err != nil {
+			return err
+		}
+		if p.App == "" {
+			return errors.Errorf("profile %q has no app; create or link one first", name)
+		}
+		if existing, ok := cfg.Installations[installation]; ok && (existing.App != p.App || (existing.TeamID != "" && existing.TeamID != teamID)) {
+			return errors.Errorf("installation %q belongs to another app or workspace", installation)
+		}
+		cfg.Installations[installation] = slackconfig.Installation{App: p.App, TeamID: teamID}
+		p.Installation = installation
+		cfg.Profiles[name] = p
+		ac := cr.Apps[p.App]
+		ac.AppToken = app
+		cr.Apps[p.App] = ac
+		cr.Installations[installation] = slackconfig.InstallationCredential{BotToken: bot, AppToken: app}
+		if err := store.Save(cfg, cr); err != nil {
+			return err
+		}
+		return json.NewEncoder(cmd.OutOrStdout()).Encode(map[string]any{"profile": name, "installation": installation, "team_id": teamID})
+	}}
+	configDirFlag(c, &dir)
+	c.Flags().StringVar(&profile, "profile", "", "Profile name")
+	c.Flags().StringVar(&installation, "installation", "", "Installation name")
+	c.Flags().StringVar(&teamID, "team-id", "", "Slack workspace/team ID")
+	c.Flags().StringVar(&botFile, "bot-token-file", "", "Bot token file")
+	c.Flags().StringVar(&appFile, "app-token-file", "", "Socket Mode app token file")
+	return c
+}
+
+// NewProfilesCommand exposes profile listing at the root, alongside the credentials group.
+func NewProfilesCommand() *cobra.Command { return newProfilesCommand() }
+
+func configDirFlag(cmd *cobra.Command, target *string) {
+	cmd.Flags().StringVar(target, "config-dir", defaultConfigDir(), "Local Slack configuration directory")
+}
+func newImportManagementCommand() *cobra.Command {
+	var dir, profile, management, access, refresh string
+	c := &cobra.Command{Use: "import-management", Short: "Import a configuration token pair", RunE: func(cmd *cobra.Command, _ []string) error {
+		if profile == "" || management == "" {
+			return errors.New("--profile and --management are required")
+		}
+		a, e := readSecretFile(access)
+		if e != nil {
+			return e
+		}
+		r, e := readSecretFile(refresh)
+		if e != nil {
+			return e
+		}
+		s := slackconfig.New(dir)
+		cfg, cr, e := s.Load()
+		if e != nil {
+			return e
+		}
+		cfg.Profiles[profile] = mergeProfile(cfg.Profiles[profile], profile, management)
+		cr.Management[management] = slackconfig.ManagementCredential{AccessToken: a, RefreshToken: r}
+		if cfg.DefaultProfile == "" {
+			cfg.DefaultProfile = profile
+		}
+		return s.Save(cfg, cr)
+	}}
+	configDirFlag(c, &dir)
+	c.Flags().StringVarP(&profile, "profile", "p", "", "Profile name")
+	c.Flags().StringVar(&management, "management", "", "Management identity name")
+	c.Flags().StringVar(&access, "access-token-file", "", "Configuration access-token file")
+	c.Flags().StringVar(&refresh, "refresh-token-file", "", "Configuration refresh-token file")
+	return c
+}
+func mergeProfile(p slackconfig.Profile, _ string, management string) slackconfig.Profile {
+	p.Management = management
+	return p
+}
+func newProfilesCommand() *cobra.Command {
+	var dir string
+	c := &cobra.Command{Use: "profiles", Short: "List configured Slack profiles"}
+	configDirFlag(c, &dir)
+	c.RunE = func(cmd *cobra.Command, _ []string) error {
+		cfg, _, e := slackconfig.New(dir).Load()
+		if e != nil {
+			return e
+		}
+		names := make([]string, 0, len(cfg.Profiles))
+		for n := range cfg.Profiles {
+			names = append(names, n)
+		}
+		sort.Strings(names)
+		return json.NewEncoder(cmd.OutOrStdout()).Encode(names)
+	}
+	return c
+}
+func newStatusCommand() *cobra.Command {
+	var dir, profile string
+	c := &cobra.Command{Use: "status", Short: "Show safe credential status", RunE: func(cmd *cobra.Command, _ []string) error {
+		cfg, cr, e := slackconfig.New(dir).Load()
+		if e != nil {
+			return e
+		}
+		name, p, e := slackconfig.ResolveProfile(cfg, profile)
+		if e != nil {
+			return e
+		}
+		m := cr.Management[p.Management]
+		out := map[string]any{"profile": name, "management": p.Management, "app": p.App, "installation": p.Installation, "has_access_token": m.AccessToken != "", "has_refresh_token": m.RefreshToken != "", "expires_at": m.ExpiresAt}
+		return json.NewEncoder(cmd.OutOrStdout()).Encode(out)
+	}}
+	configDirFlag(c, &dir)
+	c.Flags().StringVar(&profile, "profile", "", "Profile name")
+	return c
+}
+func readSecretFile(path string) (string, error) {
+	if path == "" {
+		return "", errors.New("token file is required")
+	}
+	b, e := os.ReadFile(path)
+	if e != nil {
+		return "", errors.Wrap(e, "read token file")
+	}
+	v := strings.TrimSpace(string(b))
+	if v == "" || strings.ContainsAny(v, " \t\r\n") {
+		return "", errors.New("token file must contain one token")
+	}
+	return v, nil
+}
+
+func newRefreshCommand(client *http.Client) *cobra.Command {
+	var dir, profile string
+	c := &cobra.Command{Use: "refresh", Short: "Refresh a management token pair", RunE: func(cmd *cobra.Command, _ []string) error {
+		store := slackconfig.New(dir)
+		cfg, cr, err := store.Load()
+		if err != nil {
+			return err
+		}
+		name, p, err := slackconfig.ResolveProfile(cfg, profile)
+		if err != nil {
+			return err
+		}
+		old, ok := cr.Management[p.Management]
+		if !ok || old.RefreshToken == "" {
+			return errors.Errorf("profile %q has no refresh token; import a new pair", name)
+		}
+		if client == nil {
+			client = appHTTPClient()
+		}
+		form := url.Values{"refresh_token": []string{old.RefreshToken}}
+		req, err := http.NewRequestWithContext(cmd.Context(), http.MethodPost, "https://slack.com/api/tooling.tokens.rotate", strings.NewReader(form.Encode()))
+		if err != nil {
+			return err
+		}
+		req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+		resp, err := client.Do(req)
+		if err != nil {
+			return errors.New("credential refresh failed; import a new pair")
+		}
+		defer resp.Body.Close()
+		if resp.StatusCode != http.StatusOK {
+			return errors.Errorf("credential refresh returned HTTP %d; import a new pair", resp.StatusCode)
+		}
+		body, err := io.ReadAll(io.LimitReader(resp.Body, 64*1024+1))
+		if err != nil || len(body) > 64*1024 {
+			return errors.New("credential refresh returned an unreadable response; import a new pair")
+		}
+		var result struct {
+			OK           bool   `json:"ok"`
+			AccessToken  string `json:"token"`
+			RefreshToken string `json:"refresh_token"`
+			TeamID       string `json:"team_id"`
+			UserID       string `json:"user_id"`
+			IAT          int64  `json:"iat"`
+			Exp          int64  `json:"exp"`
+			Error        string `json:"error"`
+		}
+		if err := json.Unmarshal(body, &result); err != nil {
+			return errors.New("credential refresh returned invalid JSON; import a new pair")
+		}
+		if !result.OK || result.AccessToken == "" || result.RefreshToken == "" {
+			code := result.Error
+			if code == "" {
+				code = "unknown_error"
+			}
+			return errors.Errorf("credential refresh failed: %s; import a new pair", code)
+		}
+		if old.TeamID != "" && result.TeamID != "" && old.TeamID != result.TeamID {
+			return errors.New("credential refresh workspace mismatch; import a new pair")
+		}
+		if old.UserID != "" && result.UserID != "" && old.UserID != result.UserID {
+			return errors.New("credential refresh user mismatch; import a new pair")
+		}
+		updated := old
+		updated.AccessToken = result.AccessToken
+		updated.RefreshToken = result.RefreshToken
+		updated.TeamID = result.TeamID
+		updated.UserID = result.UserID
+		if result.Exp > 0 {
+			updated.ExpiresAt = time.Unix(result.Exp, 0).UTC().Format(time.RFC3339)
+		} else if result.IAT > 0 {
+			updated.ExpiresAt = fmt.Sprintf("issued:%d", result.IAT)
+		}
+		cr.Management[p.Management] = updated
+		if err := store.Save(cfg, cr); err != nil {
+			return errors.Wrap(err, "save refreshed credentials")
+		}
+		return json.NewEncoder(cmd.OutOrStdout()).Encode(map[string]any{"profile": name, "management": p.Management, "expires_at": updated.ExpiresAt})
+	}}
+	configDirFlag(c, &dir)
+	c.Flags().StringVar(&profile, "profile", "", "Profile name")
+	return c
+}
