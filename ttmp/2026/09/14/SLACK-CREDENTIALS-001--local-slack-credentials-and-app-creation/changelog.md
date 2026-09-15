@@ -21,3 +21,12 @@ Implemented pragmatic two-file profile store, management import/status/refresh c
 ## 2026-09-14
 
 Completed manual runtime-token import and full validation. All repository tests pass with loopback access; build, vet, focused tests, help, and docmgr doctor pass.
+
+## 2026-09-14
+
+Documented and implemented a pragmatic local bots install command using the Slack CLI observed apps.developerInstall method; it persists bot and Socket Mode tokens in the existing profile store and falls back to manual installation if the private method is unavailable.
+
+### Related Files
+
+- /home/manuel/workspaces/2026-09-10/add-slack-support/discord-bot/pkg/slackcli/install_app.go — developer-install request and credential persistence
+- /home/manuel/workspaces/2026-09-10/add-slack-support/discord-bot/ttmp/2026/09/14/SLACK-CREDENTIALS-001--local-slack-credentials-and-app-creation/design-doc/02-local-app-installation-with-slack-cli-developerinstall.md — contract and limitations

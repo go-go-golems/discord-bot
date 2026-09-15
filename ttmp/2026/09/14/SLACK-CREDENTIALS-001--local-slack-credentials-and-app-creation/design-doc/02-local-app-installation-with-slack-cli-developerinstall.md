@@ -8,7 +8,13 @@ Topics:
 DocType: design-doc
 Intent: long-term
 Owners: []
-RelatedFiles: []
+RelatedFiles:
+    - Path: repo://pkg/slackcli/commands.go
+      Note: install operation and Glazed flags
+    - Path: repo://pkg/slackcli/install_app.go
+      Note: isolated developerInstall API call and token persistence
+    - Path: repo://pkg/slackcli/install_app_test.go
+      Note: fake transport request and persistence tests
 ExternalSources: []
 Summary: ""
 LastUpdated: 2026-09-14T22:10:02.469741992-04:00

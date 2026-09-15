@@ -219,6 +219,122 @@ Full tests passed in tmux with loopback access; build and vet passed; CLI help a
 
 The unprivileged full-test attempt was blocked by the sandbox's IPv6 listener restriction, then passed with the required socket-enabled tmux run.
 
+## Step 5: Record the local developer-install design
+
+The next requested capability is an install verb that follows the local Slack CLI flow. Source inspection of the open-source Slack CLI showed that its local install path calls the Web API method `apps.developerInstall`, receives both `api_access_tokens.bot` and `api_access_tokens.app_level`, and exports them as `SLACK_BOT_TOKEN` and `SLACK_APP_TOKEN`. Slack's public API reference does not document this method, so the design keeps it explicitly local and provides a manual fallback.
+
+### Prompt Context
+
+**User prompt (verbatim):** "ok, implement it for our purposes, add a design doc documenting all this information you found, add the tasks to the ticket, then implment, commit at appropriate intervals and keep a detailed diary as you work (using the diary format from the skill)"
+
+**Assistant interpretation:** Add a pragmatic profile-based install command, document the evidence and limitations, track the work in the active ticket, and implement it with focused tests and commits.
+
+**Inferred user intent:** Make local Slack app setup require as little manual token copying as practical without turning this project into a hosted OAuth service.
+
+### What I did
+
+- Read the Slack CLI source under `/home/manuel/code/others/slack-cli`, including `internal/api/app.go` and `internal/pkg/apps/install.go`.
+- Added design doc `design-doc/02-local-app-installation-with-slack-cli-developerinstall.md` with the observed request/response contract, credential mapping, pseudocode, test plan, and browser-OAuth comparison.
+- Added four ticket tasks for documenting, implementing, persisting tokens, and testing the feature.
+
+### Why
+
+The endpoint is useful for the user's single-workstation workflow, but its undocumented status must be visible to anyone maintaining the command. Recording the Slack CLI evidence also makes it possible to update the isolated call if Slack changes it.
+
+### What worked
+
+Documentation and task additions were committed as `d1831cf` (`docs(slack): design local developer app installation`).
+
+### What didn't work
+
+No design-time command or Slack request was executed. The design intentionally avoids treating the private endpoint as a supported public OAuth contract.
+
+### What I learned
+
+The Slack CLI does not need an HTTPS callback for local developer installation. It sends the app ID, bot scopes, outgoing domains, and optional team ID directly with a developer token, then receives runtime tokens in the response.
+
+### What was tricky to build
+
+The app-level token belongs to the app record, while the bot token belongs to a specific app/workspace installation. The design preserves that distinction in the existing two-file store.
+
+### What warrants a second pair of eyes
+
+Review whether relying on `apps.developerInstall` is acceptable for this local tool and whether the fallback text is clear enough if Slack removes or restricts the method.
+
+### What should be done in the future
+
+Implement the isolated request, persist both token types, update help, and validate without contacting Slack in automated tests.
+
+### Code review instructions
+
+Read the new design doc and compare its wire example with `/home/manuel/code/others/slack-cli/internal/api/app.go`. Confirm that no user or app token is included in the ticket or command output.
+
+### Technical details
+
+The planned request is `POST https://slack.com/api/apps.developerInstall` with a bearer management access token and JSON fields `app_id`, `bot_scopes`, `outgoing_domains`, and `team_id`. The implementation will derive `bot_scopes` from `Manifest(d)` and use a deterministic `<profile>-<team-id>` installation key.
+
+## Step 6: Implement and test profile-based app installation
+
+The implementation adds `slack-bot bots install NAME`, which resolves an existing profile and app, calls the observed developer-install endpoint once, and saves the returned bot and app-level tokens in the existing store. The output contains only identifiers and names; the tokens remain in the private credentials file.
+
+### Prompt Context
+
+See Step 5 for the verbatim implementation request and the design decision it authorized.
+
+**Assistant interpretation:** Complete the install command and its documentation/tests, then record a reviewable commit and validation results.
+
+**Inferred user intent:** After creating an app, install it into a selected workspace with one concise local command and have the credentials ready for future runtime wiring.
+
+### What I did
+
+- Added `team-id` settings and an `install` operation to `pkg/slackcli/commands.go`.
+- Added `pkg/slackcli/install_app.go`, including manifest-derived scopes, bounded response handling, app-ID/token checks, deterministic installation records, and secret-free output.
+- Added `pkg/slackcli/install_app_test.go` with wire assertions, persistence checks, setup failures, Slack errors, mismatches, missing tokens, and no-overwrite behavior.
+- Updated `pkg/slackdoc/slack-offline.md` with the command and its undocumented-endpoint fallback.
+
+### Why
+
+The command reuses the existing profile store and manifest generator, avoiding duplicate scope configuration and keeping management, app, and installation credentials separate.
+
+### What worked
+
+The focused offline command passed:
+
+```text
+ttmp/2026/09/10/DISCORD-SLACK-001--add-slack-support-to-discord-bot/scripts/04-go-offline.sh test ./pkg/slackcli ./internal/slackconfig ./cmd/slack-bot
+ok github.com/go-go-golems/discord-bot/pkg/slackcli
+ok github.com/go-go-golems/discord-bot/internal/slackconfig
+ok github.com/go-go-golems/discord-bot/cmd/slack-bot
+```
+
+### What didn't work
+
+The first test run failed because invalid-setup cases omitted `--bot-repository`; bot discovery therefore failed before the intended profile/team validation with `open .../pkg/slackcli/examples/slack-bots: no such file or directory`. Adding the repository fixture path made those tests exercise the intended errors. No production code change was required for that failure.
+
+### What I learned
+
+Glazed resolves the bot descriptor before operation-specific validation, so tests for command argument errors still need a valid descriptor path.
+
+### What was tricky to build
+
+`Manifest` stores scopes as a concrete `[]string` inside `map[string]any`; the install helper must preserve that representation while extracting `oauth_config.scopes.bot`.
+
+### What warrants a second pair of eyes
+
+Check that saving the app-level token in `creds.Apps[profile.App]` and also mirroring it in the installation credential is useful for the current runtime and does not create ambiguity for future transport wiring.
+
+### What should be done in the future
+
+Run the full offline build, vet, focused help checks, and docmgr validation. A real Slack install should be treated as an optional smoke test because the endpoint is undocumented and mutates a workspace.
+
+### Code review instructions
+
+Review `pkg/slackcli/install_app.go`, `pkg/slackcli/install_app_test.go`, `pkg/slackcli/commands.go`, and the updated help. Verify the test fake asserts the bearer token and that output assertions reject both synthetic runtime token values.
+
+### Technical details
+
+The successful response requires `ok:true`, a matching or omitted `app_id`, and non-empty `api_access_tokens.bot` and `api_access_tokens.app_level`. HTTP failures, malformed responses, and timeouts return “outcome unknown” guidance without retrying. The installation key is `<profile>-<team-id>` and the profile's installation reference is updated only after a successful response and local save.
+
 ### What I learned
 
 No cloud-scale reliability feature was needed to meet the local workflow: manual re-import is an adequate recovery path.
@@ -242,3 +358,67 @@ Start at `23e819b`, inspect the seven checked tasks, and run `04-go-offline.sh t
 ### Technical details
 
 Commit contains 14 files and 1,169 insertions. No supplied token file was read during automated validation, and no real Slack API mutation was performed by the tests.
+
+## Step 7: Commit the developer-install implementation and close validation tasks
+
+The install implementation is now committed, and the four follow-up ticket tasks are checked. The remaining validation is repository-level hygiene; no live Slack request is required because the endpoint mutates a workspace and the automated tests use a fake transport.
+
+### Prompt Context
+
+See Step 5 for the verbatim user request. This step records the commit and validation boundary requested there.
+
+**Assistant interpretation:** Commit the implementation at a meaningful boundary, run the required offline checks, and leave the ticket with an auditable task list and diary.
+
+**Inferred user intent:** Be able to review and use the local install flow without exposing credentials or depending on a live Slack test during development.
+
+### What I did
+
+- Committed the implementation as `457b257` (`feat(slack): install local apps via developerInstall`).
+- Checked tasks `e7em`, `46bm`, `7wca`, and `aytz` with `docmgr task check`.
+- Added a changelog entry linking the implementation and design doc.
+- Ran focused tests, offline build, vet, CLI help, and `git diff --check`.
+
+### Why
+
+The code commit and documentation/task updates form a reviewable boundary. The ticket remains active for future OAuth or production-install work; all current pragmatic tasks are complete.
+
+### What worked
+
+The focused package gate passed after the fixture correction:
+
+```text
+04-go-offline.sh test ./pkg/slackcli ./internal/slackconfig ./cmd/slack-bot
+ok github.com/go-go-golems/discord-bot/pkg/slackcli
+ok github.com/go-go-golems/discord-bot/internal/slackconfig
+ok github.com/go-go-golems/discord-bot/cmd/slack-bot
+```
+
+`04-go-offline.sh build -buildvcs=false ./...`, `04-go-offline.sh vet ./...`, the `bots install --help` smoke check, and `git diff --check` passed. The task command reported all four new tasks complete.
+
+### What didn't work
+
+No live Slack installation was attempted in this implementation pass. That is deliberate: `apps.developerInstall` is undocumented and workspace-mutating, while fake transport tests cover the request and persistence behavior deterministically.
+
+### What I learned
+
+The local command can provide the same low-copy workflow as Slack CLI while remaining explicit about its private API dependency and preserving a manual OAuth/dashboard fallback.
+
+### What was tricky to build
+
+The command must validate the local app/profile association before making the request, but cannot verify workspace identity remotely without adding another API dependency. The explicit `--team-id` keeps that boundary visible.
+
+### What warrants a second pair of eyes
+
+Review whether the mirrored `AppToken` in the installation credential should remain for future runtime selection or be reduced to the app record only. Also review Slack API changes before relying on this private method for routine setup.
+
+### What should be done in the future
+
+Wire the selected installation into a real Socket Mode transport, or create a separate ticket for documented browser OAuth installation if the workflow needs to support other users/workspaces.
+
+### Code review instructions
+
+Start with commits `d1831cf` and `457b257`, then inspect the design doc, `pkg/slackcli/install_app.go`, and its fake-transport tests. Run the offline wrapper commands above and `docmgr doctor --ticket SLACK-CREDENTIALS-001`.
+
+### Technical details
+
+The persisted installation key is `<profile>-<team-id>`. The app record receives `app_token`; the installation record receives `bot_token` and a copy of `app_token` for current runtime convenience. Output is JSON metadata only. HTTP, JSON, Slack `ok:false`, app-ID mismatch, missing token, and save failures are surfaced without token values or retries.
