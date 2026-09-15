@@ -193,3 +193,14 @@ module.exports=defineBot(({configure,command})=>{configure({name:"ui-test"}); co
 	require.Equal(t, "n1", button["value"])
 	require.Equal(t, "danger", button["style"])
 }
+
+func TestActionRegistrationAndDispatch(t *testing.T) {
+	f := &fakeServices{}
+	h := loadTestHost(t, `const {defineBot}=require("slack");
+module.exports=defineBot(({configure,action})=>{configure({name:"actions"}); action("note.edit", async ctx=>({text:ctx.action.actionId+":"+ctx.action.value+":"+ctx.action.selectedOption.value}));});`, Options{})
+	i := command()
+	i.Command = ""
+	i.Action = &slackbot.Action{Type: "static_select", ActionID: "note.edit", Value: "n1", SelectedOption: map[string]any{"value": "n1"}}
+	require.NoError(t, h.Dispatch(context.Background(), i, f))
+	require.Equal(t, "note.edit:n1:n1", f.replies[0].Text)
+}

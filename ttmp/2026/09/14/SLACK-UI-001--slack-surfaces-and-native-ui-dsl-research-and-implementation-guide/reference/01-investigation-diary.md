@@ -329,3 +329,56 @@ The first production code checkpoint extends the existing text-only message cont
 ### Technical details
 - Checkpoint tests: `GOCACHE=/tmp/go-build-cache-slack-ui GOWORK=off go test ./internal/jsslack`; `GOCACHE=/tmp/go-build-cache-slack-ui GOWORK=off go test ./... -run '^$'`; `git diff --check`.
 - No Slack credentials, network calls, or live bot processes were used.
+
+## Step 7: Route button and static-select actions
+
+The second implementation checkpoint adds the first interactive path. Socket Mode `interactive` envelopes containing `block_actions` are decoded into a small Slack-independent action value, acknowledged through the existing receipt object, and dispatched to a JavaScript handler registered by action ID. This keeps ordinary action acknowledgment in transport while leaving modal response-bearing ACKs for the next phase.
+
+### Prompt Context
+**Prompt source:** Continued implementation after the Phase 1 checkpoint; the active user request remains the earlier instruction to implement the agreed layers 1–7.
+**Assistant interpretation:** Implement Phase 2 from the ticket guide: button and static-select routing using the existing ingress and host lifecycle.
+
+### What I did
+- Added a normalized `slackbot.Action` attached to an invocation, including action type, action ID, block ID, value, selected option(s), and source message timestamps.
+- Added `action(actionId, handler)` registration and `ctx.action` exposure in the JavaScript runtime.
+- Extended Socket Mode decoding for `interactive` `block_actions` requests and preserved a validated response URL when Slack supplies one.
+- Included interactive requests in the receipt's response-payload capability and routed handler results through the existing reply/message path.
+- Added unit coverage for action dispatch and interactive payload decoding, plus TypeScript and offline-guide updates.
+
+### Why
+- Button and static-select callbacks use the same Slack `block_actions` envelope, so one normalized action contract covers both without a general interaction framework.
+- The action ID is the stable application routing key; values and selected options remain data supplied by Slack and are not interpreted by the transport.
+- Ordinary actions can use the existing empty Socket Mode ACK. Modal submissions still need explicit response-bearing ACK choices and are intentionally deferred to Phase 3.
+
+### What worked
+- `GOCACHE=/tmp/go-build-cache-slack-ui GOWORK=off go test ./internal/jsslack ./internal/slacktransport -run 'TestAction|TestDecodeBlockAction|TestSlackUIBuilders'` passed.
+- `GOCACHE=/tmp/go-build-cache-slack-ui GOWORK=off go test ./... -run '^$'` compiled every package successfully.
+- `git diff --check` passed.
+
+### What didn't work
+- No new code failure remained after correcting the action type mapping; the first test exposed that the transport had used the outer `block_actions` type instead of the element's `static_select` type.
+
+### What I learned
+- Slack's outer interactive type and inner action element type are separate discriminators. The runtime must preserve both concepts and route on `action_id`.
+- Response URLs can be carried privately by the transport while the JavaScript context receives only detached action data.
+
+### What was tricky to build
+- Channel IDs may be present under either `channel.id` or `container.channel_id`; message timestamps likewise have message and container forms. The decoder chooses the explicit message value and falls back to the container snapshot.
+- Existing invocation validation assumed only commands and events. It now counts command, event, and action kinds and allows channel-less action contexts for later view work.
+
+### What warrants a second pair of eyes
+- Verify the ACK-before-handler timing on a real Socket Mode fixture; the existing ingress still owns the admission queue and receipt boundary.
+- Review the action response behavior when Slack omits `response_url`; the current fallback posts through the source channel when a handler returns a message.
+
+### What should be done in the future
+- Add modal builders, view registration, submitted-state decoding, and explicit single-use deadline-aware ACK responses in Phase 3.
+- Add a normalized local interactive fixture to `bots simulate` so action payloads and acknowledgments can be replayed without a socket server.
+
+### Code review instructions
+- Review `pkg/slackbot/model.go`, `internal/slacktransport/run.go`, `internal/jsslack/module.go`, and `internal/jsslack/dispatch.go` together because they define one cross-package action contract.
+- Run the focused action tests and compile-only repository check above. The existing full Socket Mode integration test still needs an environment that permits its IPv6 `httptest` listener.
+
+### Technical details
+- Action routing key: `action:<action_id>`.
+- Automatic receipt capability: `accepts_response_payload` is honored for both slash commands and interactive envelopes.
+- No scheduler, worker reservation, durable state, or new execution budget was added.

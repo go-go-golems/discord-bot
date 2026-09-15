@@ -26,3 +26,13 @@ Implemented Phase 1 rich messages and native Slack UI builders; added detached B
 - /home/manuel/workspaces/2026-09-10/add-slack-support/discord-bot/internal/jsslack/ui_module.go — Native slack/ui builder module
 - /home/manuel/workspaces/2026-09-10/add-slack-support/discord-bot/internal/slacktransport/client.go — Lossless Block Kit transport
 - /home/manuel/workspaces/2026-09-10/add-slack-support/discord-bot/pkg/slackbot/model.go — Rich message and block contracts
+
+## 2026-09-15
+
+Implemented Phase 2 block-action routing for button and static-select interactions; Socket Mode now normalizes action payloads, acknowledges interactive envelopes, and exposes ctx.action/action registrations.
+
+### Related Files
+
+- /home/manuel/workspaces/2026-09-10/add-slack-support/discord-bot/pkg/slackbot/model.go — Normalized action contract
+- /home/manuel/workspaces/2026-09-10/add-slack-support/discord-bot/internal/jsslack/module.go — JavaScript action registration
+- /home/manuel/workspaces/2026-09-10/add-slack-support/discord-bot/internal/slacktransport/run.go — Interactive block_actions decoding and acknowledgment capability

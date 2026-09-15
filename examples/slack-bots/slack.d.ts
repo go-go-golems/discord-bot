@@ -9,6 +9,7 @@ declare module "slack" {
     id: string; teamId: string; channelId: string; userId: string;
     command: string; text: string;
     event: {type: string; text: string; ts: string; threadTs: string; channelId: string; userId: string};
+    action?: {type: string; actionId: string; blockId?: string; value?: string; selectedOption?: Record<string, JSONValue>; selectedOptions?: JSONValue[]; messageTs?: string; threadTs?: string};
     config: Record<string, string | boolean | number>;
     reply(message: MessagePayload): Promise<MessageRef | {delivered: true; via: "response_url"}>;
     slack: {messages: {post(message: PostMessage): Promise<MessageRef>}};
@@ -19,6 +20,7 @@ declare module "slack" {
     configure(spec: {name: string; description?: string; run?: {fields: Record<string, {type: "string" | "bool" | "number"; default?: string | boolean | number; required?: boolean; help?: string}>}}): void;
     command(name: string, spec: {description: string}, handler: (ctx: Context) => MessagePayload | void | Promise<MessagePayload | void>): void;
     event(name: "app_mention", handler: (ctx: Context) => MessagePayload | void | Promise<MessagePayload | void>): void;
+    action(actionId: string, handler: (ctx: Context) => MessagePayload | void | Promise<MessagePayload | void>): void;
   }
   export function defineBot(register: (api: Registration) => void): object;
 }

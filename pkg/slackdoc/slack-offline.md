@@ -156,10 +156,14 @@ return ui.message("A notification fallback")
   .build();
 ```
 
-The current release does not yet route button/select actions or expose modal
-views, Home tabs, shortcuts, message actions, attachments, files, rich-text
-blocks, or canvases. The UI work is being implemented in phases; the Discord UI
-DSL is inspiration for construction style only because Slack's payloads and
+Block action callbacks are now normalized from Socket Mode and routed by
+`action_id`. Register one with `action("note.edit", handler)`. Ordinary button
+and static-select actions are acknowledged by the transport before dispatch;
+the handler receives `ctx.action` with the action ID, block ID, value, and
+selected-option data. The current release does not yet expose modal views,
+Home tabs, shortcuts, message actions, attachments, files, rich-text blocks, or
+canvases. The UI work is being implemented in phases; the Discord UI DSL is
+inspiration for construction style only because Slack's payloads and
 acknowledgment rules are different.
 
 Text must contain 1–4000 characters. Message options reject unknown fields. Context operations fail after an invocation closes. Native network operations are promises, backed by a bounded errgroup (16 concurrent operations per invocation) and settled on the VM owner. Await the operations whose result matters; only the handler's return/rejection determines the JS invocation result. Unawaited side effects should not be used for critical work.

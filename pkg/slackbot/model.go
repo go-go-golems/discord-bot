@@ -113,26 +113,60 @@ type RichResponder interface {
 	ReplyMessage(context.Context, MessagePayload) error
 }
 type Invocation struct {
-	ID        string `json:"id"`
-	TeamID    string `json:"teamId"`
-	ChannelID string `json:"channelId"`
-	UserID    string `json:"userId"`
-	Command   string `json:"command,omitempty"`
-	Event     string `json:"event,omitempty"`
-	Text      string `json:"text"`
-	TS        string `json:"ts,omitempty"`
-	ThreadTS  string `json:"threadTs,omitempty"`
+	ID        string  `json:"id"`
+	TeamID    string  `json:"teamId"`
+	ChannelID string  `json:"channelId"`
+	UserID    string  `json:"userId"`
+	Command   string  `json:"command,omitempty"`
+	Event     string  `json:"event,omitempty"`
+	Text      string  `json:"text"`
+	TS        string  `json:"ts,omitempty"`
+	ThreadTS  string  `json:"threadTs,omitempty"`
+	Action    *Action `json:"action,omitempty"`
 }
 
+// Action is the normalized subset of a Slack block action needed by a local
+// bot. Selection fields remain detached JSON so the transport can preserve
+// Slack's different element-specific values without exposing SDK objects.
+type Action struct {
+	Type            string         `json:"type"`
+	ActionID        string         `json:"actionId"`
+	BlockID         string         `json:"blockId,omitempty"`
+	Value           string         `json:"value,omitempty"`
+	SelectedOption  map[string]any `json:"selectedOption,omitempty"`
+	SelectedOptions []any          `json:"selectedOptions,omitempty"`
+	MessageTS       string         `json:"messageTs,omitempty"`
+	ThreadTS        string         `json:"threadTs,omitempty"`
+	ResponseURL     string         `json:"-"`
+}
+
+func (a Action) ID() string { return a.ActionID }
+
 func (i Invocation) Validate() error {
-	if i.TeamID == "" || i.ChannelID == "" || i.UserID == "" {
-		return Fail("invalid_argument", "dispatch", "teamId, channelId and userId are required")
+	if i.TeamID == "" || i.UserID == "" {
+		return Fail("invalid_argument", "dispatch", "teamId and userId are required")
 	}
-	if (i.Command == "") == (i.Event == "") {
-		return Fail("invalid_argument", "dispatch", "provide exactly one command or event")
+	kinds := 0
+	if i.Command != "" {
+		kinds++
+	}
+	if i.Event != "" {
+		kinds++
+	}
+	if i.Action != nil {
+		kinds++
+	}
+	if kinds != 1 {
+		return Fail("invalid_argument", "dispatch", "provide exactly one command, event or action")
+	}
+	if i.Command != "" && i.ChannelID == "" {
+		return Fail("invalid_argument", "dispatch", "channelId is required for commands")
 	}
 	if i.Event != "" && (i.Event != "app_mention" || i.TS == "") {
 		return Fail("invalid_argument", "dispatch", "only app_mention with a string ts is supported")
+	}
+	if i.Action != nil && i.Action.ID() == "" {
+		return Fail("invalid_argument", "dispatch", "action id is required")
 	}
 	return nil
 }
@@ -157,6 +191,7 @@ type Descriptor struct {
 	Run         RunSchema `json:"run"`
 	Commands    []Command `json:"commands"`
 	Events      []string  `json:"events"`
+	Actions     []string  `json:"actions,omitempty"`
 }
 
 var namePattern = regexp.MustCompile(`^[a-z][a-z0-9-]*$`)

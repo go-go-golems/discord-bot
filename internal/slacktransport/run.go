@@ -87,7 +87,7 @@ func (c *Client) Run(ctx context.Context, dispatcher slackbot.Dispatcher) error 
 				}
 				ackCtx, cancel := context.WithTimeout(workerCtx, 2*time.Second)
 				envelope, decodeErr := c.decode(*event.Request)
-				ack := &receipt{socket: c.socket, acceptsResponse: event.Request.AcceptsResponsePayload && event.Request.Type == socketmode.RequestTypeSlashCommands}
+				ack := &receipt{socket: c.socket, acceptsResponse: event.Request.AcceptsResponsePayload && (event.Request.Type == socketmode.RequestTypeSlashCommands || event.Request.Type == socketmode.RequestTypeInteractive)}
 				if decodeErr != nil {
 					err = ack.Ack(ackCtx, event.Request.EnvelopeID, false)
 					c.opts.Logger.Debug().Msg("Dropped unsupported or malformed Slack envelope")
@@ -150,6 +150,69 @@ func (c *Client) decode(r socketmode.Request) (slackbot.Envelope, error) {
 		}
 		e.AppID = p.AppID
 		e.Invocation = slackbot.Invocation{ID: r.EnvelopeID, TeamID: p.TeamID, ChannelID: p.ChannelID, UserID: p.UserID, Command: p.Command, Text: p.Text}
+	case socketmode.RequestTypeInteractive:
+		var p struct {
+			Type string `json:"type"`
+			Team struct {
+				ID string `json:"id"`
+			} `json:"team"`
+			User struct {
+				ID string `json:"id"`
+			} `json:"user"`
+			Channel struct {
+				ID string `json:"id"`
+			} `json:"channel"`
+			APIAppID    string `json:"api_app_id"`
+			ResponseURL string `json:"response_url"`
+			CallbackID  string `json:"callback_id"`
+			Message     struct {
+				TS string `json:"ts"`
+			} `json:"message"`
+			Container struct {
+				ChannelID string `json:"channel_id"`
+				MessageTS string `json:"message_ts"`
+				ThreadTS  string `json:"thread_ts"`
+			} `json:"container"`
+			Actions []struct {
+				ActionID        string           `json:"action_id"`
+				BlockID         string           `json:"block_id"`
+				Type            string           `json:"type"`
+				Value           string           `json:"value"`
+				SelectedOption  map[string]any   `json:"selected_option"`
+				SelectedOptions []map[string]any `json:"selected_options"`
+			} `json:"actions"`
+		}
+		if err := json.Unmarshal(r.Payload, &p); err != nil || p.Type != "block_actions" || len(p.Actions) == 0 {
+			return e, errors.New("unsupported interactive payload")
+		}
+		channelID := p.Channel.ID
+		if channelID == "" {
+			channelID = p.Container.ChannelID
+		}
+		threadTS := p.Container.ThreadTS
+		messageTS := p.Message.TS
+		if messageTS == "" {
+			messageTS = p.Container.MessageTS
+		}
+		var responder slackbot.Responder
+		if p.ResponseURL != "" {
+			var capabilityErr error
+			responder, capabilityErr = c.responseCapability(p.ResponseURL)
+			if capabilityErr != nil {
+				return e, capabilityErr
+			}
+		}
+		a := p.Actions[0]
+		selected := make([]any, len(a.SelectedOptions))
+		for i := range a.SelectedOptions {
+			selected[i] = a.SelectedOptions[i]
+		}
+		e.AppID = p.APIAppID
+		e.Responder = responder
+		e.Invocation = slackbot.Invocation{
+			ID: r.EnvelopeID, TeamID: p.Team.ID, ChannelID: channelID, UserID: p.User.ID,
+			Action: &slackbot.Action{Type: a.Type, ActionID: a.ActionID, BlockID: a.BlockID, Value: a.Value, SelectedOption: a.SelectedOption, SelectedOptions: selected, MessageTS: messageTS, ThreadTS: threadTS, ResponseURL: p.ResponseURL},
+		}
 	default:
 		return e, errors.New("unsupported envelope")
 	}

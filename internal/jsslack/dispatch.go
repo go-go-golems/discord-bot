@@ -53,6 +53,8 @@ func (h *Host) Dispatch(ctx context.Context, input slackbot.Invocation, responde
 		key := "command:" + input.Command
 		if input.Event != "" {
 			key = "event:" + input.Event
+		} else if input.Action != nil {
+			key = "action:" + input.Action.ID()
 		}
 		fn, ok := h.handlers[key]
 		if !ok {
@@ -135,7 +137,7 @@ func claimReply(s *invocationState) error {
 	return nil
 }
 func (h *Host) sendReply(s *invocationState, message slackbot.MessagePayload) (any, error) {
-	if s.input.Command != "" {
+	if s.input.Command != "" || s.input.Action != nil {
 		if s.responder == nil {
 			return nil, slackbot.Fail("unavailable", "reply", "no response capability")
 		}
@@ -212,6 +214,18 @@ func (h *Host) buildContext(vm *goja.Runtime, s *invocationState) *goja.Object {
 		must(vm, c.Set(key, detached))
 	}
 	must(vm, c.Set("event", map[string]any{"type": s.input.Event, "text": s.input.Text, "ts": s.input.TS, "threadTs": s.input.ThreadTS, "channelId": s.input.ChannelID, "userId": s.input.UserID}))
+	if s.input.Action != nil {
+		action := map[string]any{
+			"type": s.input.Action.Type, "actionId": s.input.Action.ActionID,
+			"blockId": s.input.Action.BlockID, "value": s.input.Action.Value,
+			"selectedOption":  s.input.Action.SelectedOption,
+			"selectedOptions": s.input.Action.SelectedOptions,
+			"messageTs":       s.input.Action.MessageTS, "threadTs": s.input.Action.ThreadTS,
+		}
+		must(vm, c.Set("action", action))
+	} else {
+		must(vm, c.Set("action", goja.Undefined()))
+	}
 	must(vm, c.Set("reply", func(call goja.FunctionCall) goja.Value {
 		var message slackbot.MessagePayload
 		must(vm, decode(vm, call.Argument(0), &message))

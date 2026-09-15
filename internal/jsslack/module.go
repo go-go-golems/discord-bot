@@ -83,6 +83,15 @@ func (h *Host) loader(vm *goja.Runtime, module *goja.Object) {
 			h.descriptor.Events = append(h.descriptor.Events, name)
 			return goja.Undefined()
 		}))
+		must(vm, api.Set("action", func(c goja.FunctionCall) goja.Value {
+			name, ok := c.Argument(0).Export().(string)
+			if !ok || strings.TrimSpace(name) == "" || len(name) > 255 {
+				panic(vm.NewTypeError("action requires a non-empty action id"))
+			}
+			h.register(vm, "action:"+name, c.Argument(1))
+			h.descriptor.Actions = append(h.descriptor.Actions, name)
+			return goja.Undefined()
+		}))
 		result, err := fn(goja.Undefined(), api)
 		must(vm, err)
 		if _, ok := result.Export().(*goja.Promise); ok {
@@ -90,6 +99,7 @@ func (h *Host) loader(vm *goja.Runtime, module *goja.Object) {
 		}
 		sort.Slice(h.descriptor.Commands, func(i, j int) bool { return h.descriptor.Commands[i].Name < h.descriptor.Commands[j].Name })
 		sort.Strings(h.descriptor.Events)
+		sort.Strings(h.descriptor.Actions)
 		h.definition = vm.NewObject()
 		return h.definition
 	}))

@@ -12,6 +12,7 @@ import (
 
 	"github.com/go-go-golems/discord-bot/pkg/slackbot"
 	"github.com/gorilla/websocket"
+	"github.com/slack-go/slack/socketmode"
 	"github.com/stretchr/testify/require"
 	"golang.org/x/sync/errgroup"
 )
@@ -85,4 +86,22 @@ func TestSocketAckWhileHandlerBlockedAndEventRedelivered(t *testing.T) {
 		t.Fatal("handler did not start")
 	}
 	require.EqualValues(t, 1, dispatch.count.Load())
+}
+
+func TestDecodeBlockAction(t *testing.T) {
+	c := &Client{responseHosts: map[string]struct{}{"hooks.slack.com": {}}}
+	r := socketmode.Request{Type: socketmode.RequestTypeInteractive, EnvelopeID: "env-1", Payload: []byte(`{
+		"type":"block_actions","api_app_id":"A","team":{"id":"T"},"user":{"id":"U"},
+		"channel":{"id":"C"},"response_url":"https://hooks.slack.com/actions/1",
+		"message":{"ts":"123.000001"},"actions":[{"type":"static_select","action_id":"note.edit","block_id":"note-actions","selected_option":{"text":{"type":"plain_text","text":"Edit"},"value":"n1"}}]
+	}`)}
+	e, err := c.decode(r)
+	require.NoError(t, err)
+	require.Equal(t, "A", e.AppID)
+	require.NotNil(t, e.Responder)
+	require.Equal(t, "T", e.Invocation.TeamID)
+	require.Equal(t, "C", e.Invocation.ChannelID)
+	require.Equal(t, "note.edit", e.Invocation.Action.ActionID)
+	require.Equal(t, "static_select", e.Invocation.Action.Type)
+	require.Equal(t, "n1", e.Invocation.Action.SelectedOption["value"])
 }
