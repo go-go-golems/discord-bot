@@ -16,7 +16,7 @@ RelatedFiles:
     - Path: repo://pkg/slackcli/create_app_test.go
       Note: Focused request tests
 ExternalSources: []
-Summary: Implement named local profiles, private credential files, explicit refresh, and profile-based app creation. Manual recovery is sufficient.
+Summary: Implement named local profiles, private credential files, explicit refresh, profile-based app creation, and local developer installation with the Slack CLI's observed developerInstall method.
 LastUpdated: 2026-09-14T21:31:18.814835481-04:00
 WhatFor: ""
 WhenToUse: ""
@@ -30,11 +30,12 @@ Make it convenient to create Slack apps using saved local credentials and select
 
 This ticket replaces the implementation scope proposed in DISCORD-SLACK-001 design document 03. The earlier document remains historical research, not the implementation specification. Existing manifest and create-app code should be reused.
 
-Planning is complete; the credential manager is not implemented. The existing create-app changes are present in the working tree and need to be finished as the first implementation task.
+The pragmatic credential manager and profile-based app creation are implemented. The local install verb follows the Slack CLI's observed `apps.developerInstall` request to obtain bot and Socket Mode tokens; documented browser OAuth remains a separate future workflow.
 
 ## Key Links
 
 - [Implementation plan](design-doc/01-pragmatic-implementation-plan.md)
+- [Developer-install design](design-doc/02-local-app-installation-with-slack-cli-developerinstall.md)
 - [Tasks](tasks.md)
 - [Diary](reference/01-implementation-diary.md)
 - [Archived API sources](sources/README.md)
