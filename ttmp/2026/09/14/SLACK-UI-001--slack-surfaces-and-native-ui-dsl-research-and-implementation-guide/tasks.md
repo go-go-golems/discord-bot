@@ -13,3 +13,7 @@
 - [ ] Update CLI inspection/simulation, TypeScript, embedded help, and example docs with implementation <!-- t:g02f -->
 - [ ] Optional: add App Home, shortcuts, or external options when a bot needs them <!-- t:q34o -->
 - [ ] Optional: evaluate newer blocks, files, canvases, Lists, Work Objects, and agent sessions for a concrete bot <!-- t:i942 -->
+
+## Scope decision
+
+Layers 1–7 are in scope for this ticket: raw Block Kit values, helpers, rich messages, action routing, basic modals, typed builders, and deadline-aware acknowledgment handling. Layer 8—an interaction scheduler, worker reservation, priority policy, or separate bounded interactive execution path—is explicitly deferred.

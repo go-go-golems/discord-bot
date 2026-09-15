@@ -32,7 +32,7 @@ Research and design for extending the existing local Slack host with a small nat
 
 ## Findings
 
-The current Slack API is text-only and drops interactive envelopes. Slack modal submissions need semantic acknowledgment before the interaction deadline. The pinned SDK supports the core slice, but loses fields when decoding newer unknown blocks. The design keeps existing local state and execution machinery with a documented busy/retry limitation.
+The current Slack API is text-only and drops interactive envelopes. Slack modal submissions need semantic acknowledgment before the interaction deadline. The pinned SDK supports the core slice, but loses fields when decoding newer unknown blocks. The design covers layers 1–7: raw Block Kit values, helpers, rich messages, action routing, basic modals, typed builders, and deadline-aware ACK handling. Layer 8—an interaction scheduler or separate worker-execution policy—is explicitly deferred.
 
 ## Evidence and scope
 

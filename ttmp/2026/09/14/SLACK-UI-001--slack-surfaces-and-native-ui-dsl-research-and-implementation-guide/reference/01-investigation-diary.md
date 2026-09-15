@@ -183,3 +183,49 @@ Completed the source archive and delivered the corrected 20-page reading copy to
 - No runtime feature code, private credential files, or live bot process was changed. No repo push was requested for this ticket.
 
 Final link-check correction: adding the PDF link exposed that the small checker did not recognize CommonMark angle-bracket destinations containing spaces. It reported `index.md: missing <artifacts/final/SLACK-UI-001 Slack UI Research Guide.pdf>`. Updated the checker to remove the angle delimiters before resolving the path; the PDF link itself was valid.
+
+## Step 4: Narrow the execution design while keeping ACK semantics
+
+The implementation scope was clarified after reviewing the complexity scale. Layers 1–7 remain in scope because raw Block Kit values, helpers, builders, interaction routing, modal behavior, and ACK handling form one coherent local UI path. Scheduler behavior is a separate performance concern and is explicitly deferred.
+
+### Prompt Context
+**User prompt (verbatim):** "Mark 8 explicitly deferred and remove the worker reservation and bounded interactive execution. We basically want to do 1-7, because the ACK handling is at the core of it and warrants the compelxity."
+**Assistant interpretation:** Update the design, tasks, and delivery copy to preserve the ACK state machine while removing scheduler-like execution machinery.
+**Inferred user intent:** Keep protocol correctness where Slack requires it, and avoid inventing a second worker system for a local bot.
+
+### What I did
+- Made layers 1–7 explicit in the scope section and added a task-file scope decision.
+- Removed worker reservation, interactive worker-slot pseudocode, bounded interactive execution, busy worker responses, and errgroup tracking specific to interactions.
+- Kept the Go-owned single-use ACK, response-kind validation, deadline rejection, duplicate semantic ACK replay, and existing invocation lifecycle.
+- Updated the design decision record to name “deadline-aware acknowledgments with existing execution.”
+
+### Why
+- Slack's modal and suggestion protocols require response-bearing ACK handling. That complexity belongs in the transport contract.
+- Worker pools, admission budgets, and scheduling solve a different problem and are unnecessary for the current local bot.
+
+### What worked
+- The design now says explicitly that layers 1–7 are in scope and layer 8 is deferred.
+- The pseudocode dispatches interactive work through the existing host path and lets the ACK object reject late responses.
+
+### What didn't work
+- No implementation or live Slack behavior was changed in this documentation-only adjustment.
+
+### What I learned
+- The right boundary is “complex ACK, simple execution.” A late ACK should fail normally; the framework does not need to pre-reserve a worker or manufacture a busy response.
+
+### What was tricky to build
+- Removing scheduler language without weakening the deadline and duplicate-response invariants required changing both the prose and the pseudocode, not only the decision record.
+
+### What warrants a second pair of eyes
+- Review the semantic duplicate ACK behavior once the transport is implemented. It is part of the ACK contract, while execution scheduling remains deferred.
+
+### What should be done in the future
+- Re-upload the revised guide and implement phases 1–3 under the clarified scope. Revisit scheduling only after measurements from real local use.
+
+### Code review instructions
+- Search the guide for “worker”, “bounded”, and “scheduler”; scheduler language should describe the deferred boundary, not an implementation requirement.
+- Run the ticket integrity script, `docmgr doctor`, and the same reMarkable rendering workflow.
+
+### Technical details
+- The existing invocation gate and ordinary handler timeout remain unchanged.
+- Interactive ACK deadline state belongs to the single-use ACK object; it is not a new handler execution budget.
