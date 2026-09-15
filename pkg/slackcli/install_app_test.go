@@ -69,7 +69,7 @@ func TestInstallAppRejectsInvalidSetupAndResponse(t *testing.T) {
 		expected string
 		calls    int
 	}{
-		{name: "missing profile", args: []string{"install", "ping", "--team-id", "T1"}, expected: "--profile is required", calls: 0},
+		{name: "missing profile", args: []string{"install", "ping", "--team-id", "T1", "--config-dir", "DIR"}, expected: "no profile selected", calls: 0},
 		{name: "missing team", args: []string{"install", "ping", "--profile", "dev", "--config-dir", "DIR"}, expected: "--team-id is required", calls: 0},
 		{name: "slack error", args: []string{"install", "ping", "--profile", "dev", "--team-id", "T1", "--config-dir", "DIR"}, body: `{"ok":false,"error":"not_allowed"}`, status: 200, expected: "not_allowed", calls: 1},
 		{name: "mismatch", args: []string{"install", "ping", "--profile", "dev", "--team-id", "T1", "--config-dir", "DIR"}, body: `{"ok":true,"app_id":"A_OTHER","api_access_tokens":{"bot":"xoxb-secret","app_level":"xapp-secret"}}`, status: 200, expected: "expected", calls: 1},

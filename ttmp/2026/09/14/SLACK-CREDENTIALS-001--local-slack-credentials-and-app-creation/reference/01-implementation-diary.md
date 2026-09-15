@@ -422,3 +422,63 @@ Start with commits `d1831cf` and `457b257`, then inspect the design doc, `pkg/sl
 ### Technical details
 
 The persisted installation key is `<profile>-<team-id>`. The app record receives `app_token`; the installation record receives `bot_token` and a copy of `app_token` for current runtime convenience. Output is JSON metadata only. HTTP, JSON, Slack `ok:false`, app-ID mismatch, missing token, and save failures are surfaced without token values or retries.
+
+## Step 8: Align install profile selection with the documented default
+
+Review found that the first implementation required `--profile` even though the design and existing store support a configured `default_profile`. The command now passes an empty profile name to `ResolveProfile`, allowing the default while still returning `no profile selected` when neither a flag nor a default exists.
+
+### Prompt Context
+
+See Step 5 for the verbatim implementation request. This is a follow-up correction within the same requested scope.
+
+**Assistant interpretation:** Remove an unnecessary typing requirement and keep command behavior consistent with the profile store.
+
+**Inferred user intent:** Minimize local setup commands while retaining explicit selection when multiple profiles exist.
+
+### What I did
+
+- Removed the unconditional `--profile` check in `pkg/slackcli/install_app.go`.
+- Updated the missing-profile test to use an isolated config directory and assert the resolver error.
+
+### Why
+
+`default_profile` is already written by management import and is safe for a single-user workflow. Requiring the flag would contradict the documented profile resolution behavior.
+
+### What worked
+
+The focused offline gate passed again after the correction:
+
+```text
+04-go-offline.sh test ./pkg/slackcli ./internal/slackconfig ./cmd/slack-bot
+ok github.com/go-go-golems/discord-bot/pkg/slackcli
+ok github.com/go-go-golems/discord-bot/internal/slackconfig
+ok github.com/go-go-golems/discord-bot/cmd/slack-bot
+```
+
+### What didn't work
+
+The initial test of missing-profile behavior omitted `--config-dir`, so it loaded the developer's real default store and reached the fake HTTP response instead of the intended resolver error. Isolating the test directory fixed the test without changing runtime behavior.
+
+### What I learned
+
+Tests for profile absence must control both the profile flag and config-directory source; otherwise a user's default profile can make the test non-deterministic.
+
+### What was tricky to build
+
+The command must keep `--team-id` mandatory even when the profile is defaulted, because the workspace target cannot be inferred safely from local token metadata.
+
+### What warrants a second pair of eyes
+
+Review the default-profile behavior with a multi-workspace configuration before using the command without `--profile`.
+
+### What should be done in the future
+
+If no default is desired, expose a profile listing/status workflow rather than guessing by map iteration order.
+
+### Code review instructions
+
+Compare the profile resolver call in `install_app.go` with the design doc's CLI contract and run the focused test command above.
+
+### Technical details
+
+The correction changes only pre-request validation. No Slack request is made when profile resolution fails, and all token redaction assertions remain unchanged.

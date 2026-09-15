@@ -31,9 +31,6 @@ type developerInstallResponse struct {
 }
 
 func (c *command) installApp(ctx context.Context, d slackbot.Descriptor, s settings, w io.Writer) error {
-	if s.Profile == "" {
-		return errors.New("--profile is required for app installation")
-	}
 	if strings.TrimSpace(s.TeamID) == "" {
 		return errors.New("--team-id is required for app installation")
 	}
