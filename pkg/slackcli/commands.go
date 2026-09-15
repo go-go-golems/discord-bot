@@ -180,7 +180,7 @@ func (c *command) RunIntoWriter(ctx context.Context, vals *values.Values, w io.W
 				return err
 			}
 		}
-		host, err := slackhost.Load(ctx, d.ScriptPath, slackhost.Options{Messages: client, Config: config, Timeout: timeout, Logger: c.logger.Level(level)})
+		host, err := slackhost.Load(ctx, d.ScriptPath, slackhost.Options{Messages: client, Views: client, Config: config, Timeout: timeout, Logger: c.logger.Level(level)})
 		if err != nil {
 			return err
 		}
@@ -202,7 +202,10 @@ func (c *command) RunIntoWriter(ctx context.Context, vals *values.Values, w io.W
 			}
 		}
 		recorder := &slackbot.Recorder{}
-		h, err := slackhost.Load(ctx, d.ScriptPath, slackhost.Options{Messages: recorder, Config: config, Timeout: timeout, Logger: c.logger.Level(level)})
+		if invocation.Interaction != nil {
+			invocation.Interaction.Ack = recorder
+		}
+		h, err := slackhost.Load(ctx, d.ScriptPath, slackhost.Options{Messages: recorder, Views: recorder, Config: config, Timeout: timeout, Logger: c.logger.Level(level)})
 		if err != nil {
 			return err
 		}

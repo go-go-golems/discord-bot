@@ -36,3 +36,23 @@ Implemented Phase 2 block-action routing for button and static-select interactio
 - /home/manuel/workspaces/2026-09-10/add-slack-support/discord-bot/pkg/slackbot/model.go — Normalized action contract
 - /home/manuel/workspaces/2026-09-10/add-slack-support/discord-bot/internal/jsslack/module.go — JavaScript action registration
 - /home/manuel/workspaces/2026-09-10/add-slack-support/discord-bot/internal/slacktransport/run.go — Interactive block_actions decoding and acknowledgment capability
+
+## 2026-09-15
+
+Implemented Phase 3 modal flow and offline simulation support: modal/text-input builders, views.open, view callback routing, values extraction, single-use deadline-aware ACKs, and recorded open_view/ack operations.
+
+### Related Files
+
+- /home/manuel/workspaces/2026-09-10/add-slack-support/discord-bot/internal/jsslack/dispatch.go — Modal open, view state extraction, and ACK methods
+- /home/manuel/workspaces/2026-09-10/add-slack-support/discord-bot/internal/slacktransport/run.go — Interactive receipt state and view submission decoding
+- /home/manuel/workspaces/2026-09-10/add-slack-support/discord-bot/pkg/slackbot/recording.go — Offline ACK and modal operation recording
+- /home/manuel/workspaces/2026-09-10/add-slack-support/discord-bot/pkg/slackcli/commands.go — Interactive fixture simulation wiring
+
+## 2026-09-15
+
+Added process-local replay of successful interactive ACK payloads for duplicate Socket Mode envelope IDs, preventing duplicate view handlers while preserving the five-minute in-memory scope.
+
+### Related Files
+
+- /home/manuel/workspaces/2026-09-10/add-slack-support/discord-bot/internal/slacktransport/client.go — ACK replay map
+- /home/manuel/workspaces/2026-09-10/add-slack-support/discord-bot/internal/slacktransport/run.go — Duplicate envelope replay

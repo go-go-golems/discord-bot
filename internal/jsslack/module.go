@@ -92,6 +92,15 @@ func (h *Host) loader(vm *goja.Runtime, module *goja.Object) {
 			h.descriptor.Actions = append(h.descriptor.Actions, name)
 			return goja.Undefined()
 		}))
+		must(vm, api.Set("view", func(c goja.FunctionCall) goja.Value {
+			name, ok := c.Argument(0).Export().(string)
+			if !ok || strings.TrimSpace(name) == "" || len(name) > 255 {
+				panic(vm.NewTypeError("view requires a non-empty callback id"))
+			}
+			h.register(vm, "view:"+name, c.Argument(1))
+			h.descriptor.Views = append(h.descriptor.Views, name)
+			return goja.Undefined()
+		}))
 		result, err := fn(goja.Undefined(), api)
 		must(vm, err)
 		if _, ok := result.Export().(*goja.Promise); ok {
@@ -100,6 +109,7 @@ func (h *Host) loader(vm *goja.Runtime, module *goja.Object) {
 		sort.Slice(h.descriptor.Commands, func(i, j int) bool { return h.descriptor.Commands[i].Name < h.descriptor.Commands[j].Name })
 		sort.Strings(h.descriptor.Events)
 		sort.Strings(h.descriptor.Actions)
+		sort.Strings(h.descriptor.Views)
 		h.definition = vm.NewObject()
 		return h.definition
 	}))

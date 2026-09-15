@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/dop251/goja"
@@ -18,6 +19,8 @@ type invocationState struct {
 	responder slackbot.Responder
 	replied   bool // owner-only
 	workers   errgroup.Group
+	ackMu     sync.Mutex
+	ackChosen bool
 }
 type outcome struct {
 	pending bool
@@ -55,6 +58,8 @@ func (h *Host) Dispatch(ctx context.Context, input slackbot.Invocation, responde
 			key = "event:" + input.Event
 		} else if input.Action != nil {
 			key = "action:" + input.Action.ID()
+		} else if input.Interaction != nil {
+			key = "view:" + input.Interaction.CallbackID
 		}
 		fn, ok := h.handlers[key]
 		if !ok {
@@ -99,6 +104,9 @@ func (h *Host) Dispatch(ctx context.Context, input slackbot.Invocation, responde
 			return o.err
 		}
 		if !o.pending {
+			if s.input.Interaction != nil && !s.hasAckChosen() {
+				return slackbot.Fail("ack_required", "ack", "view handler must choose an acknowledgment")
+			}
 			if o.message != nil {
 				// Claim the reply slot on the owner; perform network I/O outside it.
 				_, err = h.call(ctx, "slack.auto-reply", func(*goja.Runtime) (any, error) { return nil, claimReply(s) })
@@ -166,6 +174,22 @@ func (h *Host) sendReply(s *invocationState, message slackbot.MessagePayload) (a
 	ref, err := h.messages.Post(s.ctx, slackbot.PostMessage{ChannelID: s.input.ChannelID, Text: message.Text, Blocks: message.Blocks, ThreadTS: thread})
 	return map[string]any{"channelId": ref.ChannelID, "ts": ref.TS}, err
 }
+
+func (s *invocationState) chooseAck() bool {
+	s.ackMu.Lock()
+	defer s.ackMu.Unlock()
+	if s.ackChosen {
+		return false
+	}
+	s.ackChosen = true
+	return true
+}
+
+func (s *invocationState) hasAckChosen() bool {
+	s.ackMu.Lock()
+	defer s.ackMu.Unlock()
+	return s.ackChosen
+}
 func publicError(err error, op string) error {
 	var domain *slackbot.Error
 	if errors.As(err, &domain) {
@@ -226,6 +250,77 @@ func (h *Host) buildContext(vm *goja.Runtime, s *invocationState) *goja.Object {
 	} else {
 		must(vm, c.Set("action", goja.Undefined()))
 	}
+	if s.input.Interaction != nil {
+		interaction := s.input.Interaction
+		must(vm, c.Set("view", map[string]any{"type": interaction.Type, "callbackId": interaction.CallbackID, "privateMetadata": interaction.PrivateMetadata, "id": interaction.ViewID, "hash": interaction.ViewHash}))
+		values := vm.NewObject()
+		all := map[string]map[string]any{}
+		for blockID, actions := range interaction.Values {
+			all[blockID] = actions
+		}
+		must(vm, values.Set("all", all))
+		must(vm, values.Set("text", func(call goja.FunctionCall) goja.Value {
+			blockID, actionID := call.Argument(0).String(), call.Argument(1).String()
+			field, ok := interaction.Values[blockID][actionID]
+			if !ok {
+				return goja.Undefined()
+			}
+			fieldMap, ok := field.(map[string]any)
+			if !ok {
+				return goja.Undefined()
+			}
+			if value, ok := fieldMap["value"].(string); ok {
+				return vm.ToValue(value)
+			}
+			return goja.Undefined()
+		}))
+		must(vm, c.Set("values", values))
+		ack := vm.NewObject()
+		must(vm, ack.Set("accept", func(goja.FunctionCall) goja.Value {
+			if !s.chooseAck() {
+				panic(jsError(vm, slackbot.Fail("ack_already_sent", "ack", "interaction acknowledgment was already chosen")))
+			}
+			return h.async(vm, s, "ack", func() (any, error) {
+				if interaction.Ack == nil {
+					return nil, slackbot.Fail("unavailable", "ack", "no interaction acknowledgment capability")
+				}
+				return nil, interaction.Ack.Respond(s.ctx, slackbot.InteractionResponse{Kind: "accept"})
+			})
+		}))
+		must(vm, ack.Set("errors", func(call goja.FunctionCall) goja.Value {
+			if !s.chooseAck() {
+				panic(jsError(vm, slackbot.Fail("ack_already_sent", "ack", "interaction acknowledgment was already chosen")))
+			}
+			var errs map[string]string
+			must(vm, decode(vm, call.Argument(0), &errs))
+			return h.async(vm, s, "ack", func() (any, error) {
+				if interaction.Ack == nil {
+					return nil, slackbot.Fail("unavailable", "ack", "no interaction acknowledgment capability")
+				}
+				return nil, interaction.Ack.Respond(s.ctx, slackbot.InteractionResponse{Kind: "errors", Errors: errs})
+			})
+		}))
+		must(vm, c.Set("ack", ack))
+	} else {
+		must(vm, c.Set("view", goja.Undefined()))
+		must(vm, c.Set("values", goja.Undefined()))
+		must(vm, c.Set("ack", goja.Undefined()))
+	}
+	must(vm, c.Set("openModal", func(call goja.FunctionCall) goja.Value {
+		if s.input.Action == nil || s.input.Action.TriggerID == "" {
+			panic(jsError(vm, slackbot.Fail("unavailable", "views.open", "no modal trigger is available")))
+		}
+		if h.views == nil {
+			panic(jsError(vm, slackbot.Fail("unavailable", "views.open", "no view service")))
+		}
+		var view slackbot.ModalView
+		must(vm, decode(vm, call.Argument(0), &view))
+		must(vm, view.Validate())
+		return h.async(vm, s, "views.open", func() (any, error) {
+			ref, err := h.views.Open(s.ctx, s.input.Action.TriggerID, view)
+			return map[string]any{"id": ref.ID, "hash": ref.Hash}, err
+		})
+	}))
 	must(vm, c.Set("reply", func(call goja.FunctionCall) goja.Value {
 		var message slackbot.MessagePayload
 		must(vm, decode(vm, call.Argument(0), &message))

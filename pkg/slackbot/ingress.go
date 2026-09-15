@@ -106,8 +106,25 @@ func (p *Ingress) Admit(ctx context.Context, e Envelope, ack Acknowledger) (Admi
 	}
 	decision := p.admit(e, time.Now())
 	// Transport owns the ACK context and its deadline. The worker uses p.ctx instead.
-	if err := ack.Ack(ctx, e.ID, decision == Busy); err != nil {
-		return decision, errors.Wrap(err, "acknowledge envelope")
+	// View submissions choose their response-bearing ACK from JavaScript. The
+	// transport receipt is carried on the invocation and enforces single-use and
+	// deadline rules; admitting it here must not accept the submission early.
+	if e.Invocation.Interaction == nil {
+		if err := ack.Ack(ctx, e.ID, decision == Busy); err != nil {
+			return decision, errors.Wrap(err, "acknowledge envelope")
+		}
+	}
+	if e.Invocation.Interaction != nil && e.Invocation.Interaction.Ack == nil {
+		return decision, errors.New("interactive invocation requires an acknowledger")
+	}
+	if e.Invocation.Interaction == nil {
+		return decision, nil
+	}
+	if decision == Busy || decision == Dropped || decision == Duplicate || decision == Closed {
+		// Leave explicit interactive envelopes unacknowledged when they cannot be
+		// admitted; Slack may retry them and the handler never accepts data it did
+		// not process.
+		return decision, nil
 	}
 	return decision, nil
 }

@@ -105,3 +105,35 @@ func TestDecodeBlockAction(t *testing.T) {
 	require.Equal(t, "static_select", e.Invocation.Action.Type)
 	require.Equal(t, "n1", e.Invocation.Action.SelectedOption["value"])
 }
+
+func TestDecodeViewSubmissionPreservesState(t *testing.T) {
+	c := &Client{}
+	r := socketmode.Request{Type: socketmode.RequestTypeInteractive, EnvelopeID: "env-view", Payload: []byte(`{
+		"type":"view_submission","api_app_id":"A","team":{"id":"T"},"user":{"id":"U"},
+		"view":{"id":"V1","hash":"H1","callback_id":"note.edit","private_metadata":"n1","state":{"values":{"title":{"title_input":{"type":"plain_text_input","value":"Meeting"}}}}}
+	}`)}
+	e, err := c.decode(r)
+	require.NoError(t, err)
+	require.NotNil(t, e.Invocation.Interaction)
+	require.Equal(t, "note.edit", e.Invocation.Interaction.CallbackID)
+	require.Equal(t, "Meeting", e.Invocation.Interaction.Values["title"]["title_input"].(map[string]any)["value"])
+}
+
+func TestInteractionReceiptRejectsLateResponse(t *testing.T) {
+	r := &receipt{deadline: time.Now().Add(-time.Second)}
+	err := r.Respond(context.Background(), slackbot.InteractionResponse{Kind: "accept"})
+	require.ErrorContains(t, err, "ack_expired")
+}
+
+func TestAckReplayExpiresAndReturnsPayload(t *testing.T) {
+	c := &Client{ackReplay: map[string]ackReplay{}}
+	c.rememberAck("env-1", map[string]any{"response_action": "errors"})
+	payload, ok := c.replayAck("env-1")
+	require.True(t, ok)
+	require.Equal(t, "errors", payload.(map[string]any)["response_action"])
+	c.ackMu.Lock()
+	c.ackReplay["expired"] = ackReplay{payload: nil, expires: time.Now().Add(-time.Second)}
+	c.ackMu.Unlock()
+	_, ok = c.replayAck("expired")
+	require.False(t, ok)
+}

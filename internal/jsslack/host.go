@@ -18,6 +18,7 @@ import (
 
 type Options struct {
 	Messages slackbot.MessageService
+	Views    slackbot.ViewService
 	Config   map[string]any
 	Timeout  time.Duration
 	Logger   zerolog.Logger
@@ -30,6 +31,7 @@ type Host struct {
 	gate       chan struct{}
 	timeout    time.Duration
 	messages   slackbot.MessageService
+	views      slackbot.ViewService
 	logger     zerolog.Logger
 	descriptor slackbot.Descriptor
 	config     map[string]any
@@ -68,7 +70,7 @@ func load(ctx context.Context, path string, opts Options, inspect bool) (*Host, 
 		return nil, errors.Wrap(err, "script path")
 	}
 	lifetime, cancel := context.WithCancel(ctx)
-	h := &Host{cancel: cancel, lifetime: lifetime, gate: make(chan struct{}, 1), timeout: opts.Timeout, messages: opts.Messages, logger: opts.Logger, handlers: map[string]goja.Callable{}, loading: true}
+	h := &Host{cancel: cancel, lifetime: lifetime, gate: make(chan struct{}, 1), timeout: opts.Timeout, messages: opts.Messages, views: opts.Views, logger: opts.Logger, handlers: map[string]goja.Callable{}, loading: true}
 	h.store = map[string]map[string]json.RawMessage{}
 	h.descriptor.ScriptPath = abs
 	factory, err := engine.NewRuntimeFactoryBuilder(engine.WithImplicitDefaultRegistryModules(false), engine.WithDataOnlyDefaultRegistryModules(false)).WithModules(&registrar{h}).Build()

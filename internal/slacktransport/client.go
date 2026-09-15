@@ -10,6 +10,7 @@ import (
 	"net/http"
 	"net/url"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/go-go-golems/discord-bot/pkg/slackbot"
@@ -42,7 +43,14 @@ type Client struct {
 	transport     *http.Transport
 	origin        *url.URL
 	responseHosts map[string]struct{}
+	ackMu         sync.Mutex
+	ackReplay     map[string]ackReplay
 	opts          LocalOptions
+}
+
+type ackReplay struct {
+	payload any
+	expires time.Time
 }
 
 // jsonBlock preserves a validated framework block while satisfying the Slack
@@ -60,6 +68,7 @@ func (b jsonBlock) ID() string {
 func (b jsonBlock) MarshalJSON() ([]byte, error) { return json.Marshal(map[string]any(b.Block)) }
 
 var _ slackbot.MessageService = (*Client)(nil)
+var _ slackbot.ViewService = (*Client)(nil)
 
 func NewLocal(opts LocalOptions) (*Client, error) {
 	u, err := url.Parse(opts.APIURL)
@@ -74,7 +83,7 @@ func NewLocal(opts LocalOptions) (*Client, error) {
 		return nil, errors.New("bot token, app token, team ID and app ID are required")
 	}
 	opts.AllowedChannels = append([]string(nil), opts.AllowedChannels...)
-	c := &Client{origin: u, responseHosts: map[string]struct{}{u.Host: {}}, opts: opts}
+	c := &Client{origin: u, responseHosts: map[string]struct{}{u.Host: {}}, ackReplay: map[string]ackReplay{}, opts: opts}
 	dial := func(ctx context.Context, network, address string) (net.Conn, error) {
 		if address != u.Host {
 			return nil, errors.New("local transport refused unexpected destination")
@@ -97,9 +106,34 @@ func NewRemote(opts RemoteOptions) (*Client, error) {
 	api := slack.New(opts.BotToken, slack.OptionAppLevelToken(opts.AppToken), slack.OptionHTTPClient(httpClient))
 	return &Client{
 		api: api, socket: socketmode.New(api), http: httpClient,
-		responseHosts: map[string]struct{}{"hooks.slack.com": {}, "hooks.slack-gov.com": {}},
-		opts:          LocalOptions{BotToken: opts.BotToken, AppToken: opts.AppToken, TeamID: opts.TeamID, AppID: opts.AppID, AllowedChannels: append([]string(nil), opts.AllowedChannels...), Logger: opts.Logger},
+		responseHosts: map[string]struct{}{"hooks.slack.com": {}, "hooks.slack-gov.com": {}}, ackReplay: map[string]ackReplay{},
+		opts: LocalOptions{BotToken: opts.BotToken, AppToken: opts.AppToken, TeamID: opts.TeamID, AppID: opts.AppID, AllowedChannels: append([]string(nil), opts.AllowedChannels...), Logger: opts.Logger},
 	}, nil
+}
+
+func (c *Client) rememberAck(id string, payload any) {
+	c.ackMu.Lock()
+	defer c.ackMu.Unlock()
+	now := time.Now()
+	for key, entry := range c.ackReplay {
+		if !entry.expires.After(now) {
+			delete(c.ackReplay, key)
+		}
+	}
+	c.ackReplay[id] = ackReplay{payload: payload, expires: now.Add(5 * time.Minute)}
+}
+
+func (c *Client) replayAck(id string) (any, bool) {
+	c.ackMu.Lock()
+	defer c.ackMu.Unlock()
+	entry, ok := c.ackReplay[id]
+	if !ok || !entry.expires.After(time.Now()) {
+		if ok {
+			delete(c.ackReplay, id)
+		}
+		return nil, false
+	}
+	return entry.payload, true
 }
 func (c *Client) Close() { c.transport.CloseIdleConnections() }
 func (c *Client) Post(ctx context.Context, m slackbot.PostMessage) (slackbot.MessageRef, error) {
@@ -122,6 +156,44 @@ func (c *Client) Post(ctx context.Context, m slackbot.PostMessage) (slackbot.Mes
 		return slackbot.MessageRef{}, safeError(ctx, err, "messages.post")
 	}
 	return slackbot.MessageRef{ChannelID: channel, TS: ts}, nil
+}
+
+func (c *Client) Open(ctx context.Context, triggerID string, view slackbot.ModalView) (slackbot.ViewRef, error) {
+	if err := view.Validate(); err != nil {
+		return slackbot.ViewRef{}, err
+	}
+	blocks := make([]slack.Block, 0, len(view.Blocks))
+	for _, block := range view.Blocks {
+		blocks = append(blocks, jsonBlock{Block: block})
+	}
+	request := slack.ModalViewRequest{
+		Type:            slack.VTModal,
+		Title:           textBlock(view.Title),
+		Blocks:          slack.Blocks{BlockSet: blocks},
+		PrivateMetadata: view.PrivateMetadata,
+		CallbackID:      view.CallbackID,
+	}
+	if view.Close != nil {
+		request.Close = textBlock(view.Close)
+	}
+	if view.Submit != nil {
+		request.Submit = textBlock(view.Submit)
+	}
+	response, err := c.api.OpenViewContext(ctx, triggerID, request)
+	if err != nil {
+		return slackbot.ViewRef{}, safeError(ctx, err, "views.open")
+	}
+	return slackbot.ViewRef{ID: response.View.ID, Hash: response.View.Hash}, nil
+}
+
+func textBlock(block slackbot.Block) *slack.TextBlockObject {
+	t := "plain_text"
+	if value, ok := block["type"].(string); ok && value != "" {
+		t = value
+	}
+	text, _ := block["text"].(string)
+	emoji := true
+	return &slack.TextBlockObject{Type: t, Text: text, Emoji: &emoji}
 }
 
 // Only reviewed error codes cross the service boundary; SDK error strings can contain remote content.

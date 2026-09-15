@@ -61,6 +61,12 @@ This is a design at repository revision `5c700b2`, with `slack-go/slack v0.17.3`
 
 Use the existing process, configuration, credentials store, runtime owner, and HTTP client. This ticket covers the first seven layers of the proposed progression: raw Block Kit block values, small JavaScript helpers, rich outbound messages, action routing, one basic modal flow, typed Go-owned builders, and deadline-aware ACK handling. Layer eight—an interaction scheduler or separate worker-execution policy—is explicitly deferred. Keep state in the existing process-local store for the example. Do not add a database, durable queue, distributed lock, declarative workflow interpreter, generated schema pipeline, or cross-platform compatibility layer. A restart may invalidate an old edit screen; a clear “reopen the editor” response is sufficient. Detailed documentation should reduce implementation uncertainty rather than increase the implementation's scope.
 
+### Implementation status
+
+The first seven layers are now implemented in the repository. `require("slack/ui")` provides detached Block Kit builders for messages, sections, actions, buttons, modal inputs, and modal views. `slackbot.Block` and `MessagePayload` carry validated rich messages through the existing message service; the transport uses a lossless JSON block wrapper instead of the pinned SDK's field-dropping `UnknownBlock`. Socket Mode decodes `block_actions` and `view_submission` envelopes, routes them through `action(...)` and `view(...)`, and exposes `ctx.action`, `ctx.view`, `ctx.values`, `ctx.openModal`, and the single-use `ctx.ack` methods. The offline recorder and `bots simulate` accept normalized action/view fixtures and record posts, modal opens, and ACK choices.
+
+The implementation deliberately retains the existing host invocation lifecycle. A view submission must select exactly one `accept` or `errors` response before its deadline; the Go receipt rejects late and duplicate choices. Successful interactive ACK payloads are retained in a five-minute process-local replay map keyed by Socket Mode envelope ID, so a duplicate envelope is acknowledged without running the handler a second time. There is no new scheduler, reserved worker pool, priority policy, or separate interactive execution path. App Home, shortcuts, external options, newer blocks, files, canvases, Lists, Work Objects, and agent sessions remain follow-up work.
+
 ## 2. Read the current system first
 
 The following file references are relative to the `discord-bot` repository root. Line numbers refer to the baseline revision; symbol names remain useful after edits. Relevant copies are saved under `sources/code/` in this ticket.
@@ -71,18 +77,18 @@ The following file references are relative to the `discord-bot` repository root.
 | `pkg/slackcli/commands.go:243`, `Manifest` | Bot declarations become Slack app configuration. |
 | `pkg/slackbot/model.go:26`, `Text`; `:60`, `Invocation` | The current small SDK-independent domain contract. |
 | `pkg/slackbot/ingress.go:103`, `Admit` | Admission, filtering, in-memory deduplication, queueing, and acknowledgment. |
-| `internal/slacktransport/run.go`, `decode` | Only mentions and slash commands become invocations today. |
+| `internal/slacktransport/run.go`, `decode` | Socket Mode envelopes become mention, command, block-action, or view-submission invocations. |
 | `internal/slacktransport/client.go`, `Post` | Outbound text goes through the Slack SDK. |
 | `internal/jsslack/host.go:150`, `RegisterRuntimeModule` | Native module registration and runtime ownership. |
 | `internal/jsslack/module.go:15`, `decode` | JSON boundary rejects unknown fields rather than reflecting arbitrary Go objects. |
 | `internal/jsslack/dispatch.go:30`, `Dispatch` | Whole-invocation serialization, timeouts, handler return values, and promises. |
 | `examples/slack-bots/slack.d.ts` | Complete current JavaScript contract. |
 
-The current `Text` type requires 1–4000 Unicode code points. That is our host policy, not a universal Slack limit. `PostMessage` carries channel, text, and optional thread timestamp. A slash-command reply uses a Go-owned response URL and is ephemeral; a mention reply posts into the mention's existing thread or starts a thread under that mention. Arbitrary blocks fail the current strict decoder. Adding a builder alone therefore cannot make rich messages work.
+The current `Text` type requires 1–4000 Unicode code points. That is our host policy, not a universal Slack limit. `PostMessage` carries channel, fallback text, optional blocks, and an optional thread timestamp. A slash-command reply uses a Go-owned response URL and is ephemeral; a mention reply posts into the mention's existing thread or starts a thread under that mention. The strict decoder now accepts a validated `blocks` array at the message boundary, while the transport preserves each object's fields with a small JSON wrapper.
 
-`Invocation.Validate` currently requires a channel for every invocation and permits exactly one command or `app_mention` event. A modal submission or global shortcut need not have a channel. The UI work must change this validation by invocation kind rather than invent a channel ID to satisfy it. The transport also currently discards `trigger_id`, which is needed to open a modal.
+`Invocation.Validate` permits exactly one command, `app_mention` event, block action, or view submission. Commands still require a channel; modal submissions do not. The transport preserves action trigger IDs for `views.open` and keeps response URLs inside Go-owned capabilities.
 
-Ingress calls `admit` before `Ack`. The queue worker can begin executing before the acknowledgment is sent. The current architecture separates acknowledgment from handler completion, but it does not establish a strict ACK-before-handler barrier. Unsupported interactive envelopes are acknowledged and dropped. This behavior must be changed deliberately for submissions and option loading.
+Ingress calls `admit` before the automatic ACK for ordinary envelopes. Block actions use that existing empty-ACK path. View submissions carry a Go-owned receipt through the invocation and deliberately skip the automatic ACK; the view handler must choose `ctx.ack.accept()` or `ctx.ack.errors(...)`. Unsupported interactive envelopes are acknowledged and dropped.
 
 ### Runtime ownership and the invocation gate
 

@@ -382,3 +382,61 @@ The second implementation checkpoint adds the first interactive path. Socket Mod
 - Action routing key: `action:<action_id>`.
 - Automatic receipt capability: `accepts_response_payload` is honored for both slash commands and interactive envelopes.
 - No scheduler, worker reservation, durable state, or new execution budget was added.
+
+## Step 8: Complete modal flow and offline interactive simulation
+
+The third implementation checkpoint completes the agreed first UI path. A button action can open a modal through the existing Slack client, a view submission is routed by callback ID, and JavaScript chooses a single acceptance or field-error acknowledgment. The offline recorder now makes these choices and modal opens visible in `bots simulate`, which provides a repeatable test without Slack credentials.
+
+### Prompt Context
+**Prompt source:** Continued implementation after the Phase 2 checkpoint; the active user request remains the earlier instruction to implement the agreed layers 1–7.
+**Assistant interpretation:** Finish the basic modal editor and deadline-aware ACK handling, then update CLI and documentation surfaces.
+
+### What I did
+- Added `ModalView`, `ViewService`, `Interaction`, and `InteractionAcknowledger` contracts to the SDK-independent Slack domain package.
+- Added modal and plain-text-input builders to `require("slack/ui")`, plus `ctx.openModal`, `ctx.view`, `ctx.values.text`, `ctx.ack.accept`, and `ctx.ack.errors`.
+- Added Socket Mode `view_submission` decoding and carried its receipt through ingress without an automatic ACK.
+- Implemented a mutex-protected transport receipt that rejects duplicate and late ACK choices and emits Slack's `response_action: errors` payload when requested.
+- Added Slack `views.open` conversion using the same lossless block wrapper as messages.
+- Extended the offline recorder and `bots simulate` to capture `ack` and `open_view` operations, and updated the showcase bot, declarations, help, and design guide.
+
+### Why
+- Modal submission ACKs are protocol responses, not ordinary messages. They must be selected exactly once and before Slack's deadline, while validation errors must be keyed by input block ID.
+- A local developer needs to test the complete shape of a modal without repeatedly installing or interacting with a live app. Recorded ACK and view operations make that path inspectable and deterministic.
+- The existing host owner and invocation timeout are sufficient for this local framework. Adding scheduling would increase scope without solving a demonstrated problem.
+
+### What worked
+- `GOCACHE=/tmp/go-build-cache-slack-ui GOWORK=off go test ./... -run '^$'` compiled all packages.
+- Full focused gates passed: `go test ./pkg/slackbot ./internal/jsslack ./pkg/slackcli ./pkg/slackhost` and `go test ./internal/slacktransport` with loopback networking enabled.
+- `go run ./cmd/slack-bot bots inspect ui-showcase` reports the command, action, and view registrations.
+- `go run ./cmd/slack-bot bots simulate ui-showcase` with action and view fixtures records `open_view` and `ack` operations.
+- The research integrity script, `docmgr doctor`, and `git diff --check` passed.
+
+### What didn't work
+- The default sandbox cannot run the existing transport integration test because it disallows an IPv6 `httptest` listener; the same test passed with loopback networking enabled.
+
+### What I learned
+- The simplest reliable ACK boundary is a Go-owned receipt attached to the normalized invocation. JavaScript receives only narrow methods and never sees the Socket Mode envelope or response URL.
+- Offline simulation needs service capabilities, not special fake JavaScript branches: the ordinary `ViewService` and `InteractionAcknowledger` interfaces can record exact operations.
+
+### What was tricky to build
+- A view submission has no channel and no response URL, so invocation validation and dispatch cannot reuse command or action assumptions. The callback ID is its routing key, and its state is indexed by block ID and action ID.
+- The receipt needs to reserve its single-use transition before sending the network ACK. Otherwise a handler and a timeout could both emit responses.
+
+### What warrants a second pair of eyes
+- Validate the real Socket Mode wire shape for `view_submission` and `response_action: errors` with the local mock before a live manual demonstration.
+- Review whether any future handler should be allowed to return a message after a view ACK; the current contract requires handlers to choose an ACK and leaves follow-up messaging explicit.
+
+### What should be done in the future
+- Exercise the modal editor against the development Slack app and add a concrete message-update service if the note-edit example needs to mutate its source message.
+- Keep App Home, shortcuts, external options, newer Block Kit surfaces, files, canvases, Lists, Work Objects, and agent sessions as separate use-case-driven tickets.
+
+### Code review instructions
+- Start with `pkg/slackbot/model.go`, `pkg/slackbot/recording.go`, `internal/slacktransport/run.go`, `internal/slacktransport/client.go`, `internal/jsslack/dispatch.go`, and `internal/jsslack/ui_module.go`.
+- Replay `/tmp/slack-ui-action.json` and `/tmp/slack-ui-view.json` or create equivalent fixtures under `examples/slack-bots/fixtures/` to inspect the offline operation JSON.
+- Run the full package gates listed under “What worked”; use a loopback-enabled environment for the Socket Mode integration test.
+
+### Technical details
+- ACK kinds: `accept` maps to an empty Socket Mode payload; `errors` maps to `{"response_action":"errors","errors":{...}}`.
+- ACK deadline: three seconds from receipt creation, with the caller context additionally respected.
+- Explicit view submissions bypass the ingress automatic ACK; ordinary block actions continue to use the existing automatic empty ACK.
+- Successful interactive ACK payloads are retained in a five-minute process-local replay map keyed by Socket Mode envelope ID; a duplicate envelope replays the same payload without re-running JavaScript.

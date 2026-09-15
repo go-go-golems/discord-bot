@@ -113,16 +113,17 @@ type RichResponder interface {
 	ReplyMessage(context.Context, MessagePayload) error
 }
 type Invocation struct {
-	ID        string  `json:"id"`
-	TeamID    string  `json:"teamId"`
-	ChannelID string  `json:"channelId"`
-	UserID    string  `json:"userId"`
-	Command   string  `json:"command,omitempty"`
-	Event     string  `json:"event,omitempty"`
-	Text      string  `json:"text"`
-	TS        string  `json:"ts,omitempty"`
-	ThreadTS  string  `json:"threadTs,omitempty"`
-	Action    *Action `json:"action,omitempty"`
+	ID          string       `json:"id"`
+	TeamID      string       `json:"teamId"`
+	ChannelID   string       `json:"channelId"`
+	UserID      string       `json:"userId"`
+	Command     string       `json:"command,omitempty"`
+	Event       string       `json:"event,omitempty"`
+	Text        string       `json:"text"`
+	TS          string       `json:"ts,omitempty"`
+	ThreadTS    string       `json:"threadTs,omitempty"`
+	Action      *Action      `json:"action,omitempty"`
+	Interaction *Interaction `json:"interaction,omitempty"`
 }
 
 // Action is the normalized subset of a Slack block action needed by a local
@@ -138,9 +139,67 @@ type Action struct {
 	MessageTS       string         `json:"messageTs,omitempty"`
 	ThreadTS        string         `json:"threadTs,omitempty"`
 	ResponseURL     string         `json:"-"`
+	TriggerID       string         `json:"triggerId,omitempty"`
+	CallbackID      string         `json:"callbackId,omitempty"`
 }
 
 func (a Action) ID() string { return a.ActionID }
+
+type InteractionResponse struct {
+	Kind   string            `json:"kind"`
+	Errors map[string]string `json:"errors,omitempty"`
+}
+
+type InteractionAcknowledger interface {
+	Respond(context.Context, InteractionResponse) error
+}
+
+type Interaction struct {
+	Type            string                    `json:"type"`
+	CallbackID      string                    `json:"callbackId"`
+	PrivateMetadata string                    `json:"privateMetadata,omitempty"`
+	ViewID          string                    `json:"viewId,omitempty"`
+	ViewHash        string                    `json:"viewHash,omitempty"`
+	Values          map[string]map[string]any `json:"values,omitempty"`
+	Ack             InteractionAcknowledger   `json:"-"`
+}
+
+type ModalView struct {
+	Type            string  `json:"type"`
+	Title           Block   `json:"title"`
+	Blocks          []Block `json:"blocks"`
+	Close           Block   `json:"close,omitempty"`
+	Submit          Block   `json:"submit,omitempty"`
+	PrivateMetadata string  `json:"private_metadata,omitempty"`
+	CallbackID      string  `json:"callback_id"`
+}
+
+func (v ModalView) Validate() error {
+	if v.Type == "" {
+		v.Type = "modal"
+	}
+	if v.Type != "modal" || strings.TrimSpace(v.CallbackID) == "" || len(v.Blocks) > 100 {
+		return Fail("invalid_argument", "views.open", "modal type, callback_id and at most 100 blocks are required")
+	}
+	if err := v.Title.Validate(); err != nil {
+		return Fail("invalid_argument", "views.open", "title is required")
+	}
+	for _, block := range v.Blocks {
+		if err := block.Validate(); err != nil {
+			return Fail("invalid_argument", "views.open", "modal block is invalid")
+		}
+	}
+	return nil
+}
+
+type ViewRef struct {
+	ID   string `json:"id"`
+	Hash string `json:"hash"`
+}
+
+type ViewService interface {
+	Open(context.Context, string, ModalView) (ViewRef, error)
+}
 
 func (i Invocation) Validate() error {
 	if i.TeamID == "" || i.UserID == "" {
@@ -156,8 +215,11 @@ func (i Invocation) Validate() error {
 	if i.Action != nil {
 		kinds++
 	}
+	if i.Interaction != nil {
+		kinds++
+	}
 	if kinds != 1 {
-		return Fail("invalid_argument", "dispatch", "provide exactly one command, event or action")
+		return Fail("invalid_argument", "dispatch", "provide exactly one command, event or interaction")
 	}
 	if i.Command != "" && i.ChannelID == "" {
 		return Fail("invalid_argument", "dispatch", "channelId is required for commands")
@@ -167,6 +229,9 @@ func (i Invocation) Validate() error {
 	}
 	if i.Action != nil && i.Action.ID() == "" {
 		return Fail("invalid_argument", "dispatch", "action id is required")
+	}
+	if i.Interaction != nil && strings.TrimSpace(i.Interaction.CallbackID) == "" {
+		return Fail("invalid_argument", "dispatch", "interaction callback id is required")
 	}
 	return nil
 }
@@ -192,6 +257,7 @@ type Descriptor struct {
 	Commands    []Command `json:"commands"`
 	Events      []string  `json:"events"`
 	Actions     []string  `json:"actions,omitempty"`
+	Views       []string  `json:"views,omitempty"`
 }
 
 var namePattern = regexp.MustCompile(`^[a-z][a-z0-9-]*$`)

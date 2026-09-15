@@ -76,6 +76,7 @@ func (c *command) runRemote(ctx context.Context, d slackbot.Descriptor, s settin
 	}
 	host, err := slackhost.Load(ctx, d.ScriptPath, slackhost.Options{
 		Messages: client,
+		Views:    client,
 		Config:   config,
 		Timeout:  time.Duration(s.TimeoutMS) * time.Millisecond,
 		Logger:   c.logger,

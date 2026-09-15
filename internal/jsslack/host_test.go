@@ -19,6 +19,36 @@ type fakeServices struct {
 	post    func(context.Context, slackbot.PostMessage) (slackbot.MessageRef, error)
 }
 
+type fakeViews struct {
+	mu      sync.Mutex
+	trigger string
+	views   []slackbot.ModalView
+}
+
+type fakeInteractionAck struct {
+	mu        sync.Mutex
+	responses []slackbot.InteractionResponse
+}
+
+var _ slackbot.InteractionAcknowledger = (*fakeInteractionAck)(nil)
+
+func (f *fakeInteractionAck) Respond(_ context.Context, response slackbot.InteractionResponse) error {
+	f.mu.Lock()
+	defer f.mu.Unlock()
+	f.responses = append(f.responses, response)
+	return nil
+}
+
+var _ slackbot.ViewService = (*fakeViews)(nil)
+
+func (f *fakeViews) Open(_ context.Context, trigger string, view slackbot.ModalView) (slackbot.ViewRef, error) {
+	f.mu.Lock()
+	defer f.mu.Unlock()
+	f.trigger = trigger
+	f.views = append(f.views, view)
+	return slackbot.ViewRef{ID: "V1", Hash: "H1"}, nil
+}
+
 var _ slackbot.MessageService = (*fakeServices)(nil)
 var _ slackbot.Responder = (*fakeServices)(nil)
 
@@ -203,4 +233,41 @@ module.exports=defineBot(({configure,action})=>{configure({name:"actions"}); act
 	i.Action = &slackbot.Action{Type: "static_select", ActionID: "note.edit", Value: "n1", SelectedOption: map[string]any{"value": "n1"}}
 	require.NoError(t, h.Dispatch(context.Background(), i, f))
 	require.Equal(t, "note.edit:n1:n1", f.replies[0].Text)
+}
+
+func TestModalBuilderAndOpenModal(t *testing.T) {
+	f := &fakeServices{}
+	v := &fakeViews{}
+	h := loadTestHost(t, `const {defineBot}=require("slack"); const ui=require("slack/ui");
+module.exports=defineBot(({configure,action})=>{configure({name:"modal"}); action("note.edit", async ctx=>{
+  await ctx.openModal(ui.modal("note.edit","Edit note").metadata("n1").input("title","Title",ui.textInput("title_input").initial("Old")).submit("Save").build());
+  return {text:"opened"};
+});});`, Options{Messages: f, Views: v})
+	i := command()
+	i.Command = ""
+	i.Action = &slackbot.Action{Type: "button", ActionID: "note.edit", TriggerID: "trigger-1"}
+	require.NoError(t, h.Dispatch(context.Background(), i, f))
+	require.Equal(t, "trigger-1", v.trigger)
+	require.Len(t, v.views, 1)
+	require.Equal(t, "note.edit", v.views[0].CallbackID)
+	require.Equal(t, "n1", v.views[0].PrivateMetadata)
+	require.Equal(t, "input", v.views[0].Blocks[0].Type())
+	require.Equal(t, "opened", f.replies[0].Text)
+}
+
+func TestViewSubmissionAcknowledgment(t *testing.T) {
+	ack := &fakeInteractionAck{}
+	h := loadTestHost(t, `const {defineBot}=require("slack");
+module.exports=defineBot(({configure,view})=>{configure({name:"submit"}); view("note.edit", async ctx=>{
+  const title=ctx.values.text("title","title_input");
+  if (title.length < 3) return ctx.ack.errors({title:"too short"});
+  return ctx.ack.accept();
+});});`, Options{})
+	i := command()
+	i.Command = ""
+	i.Action = nil
+	i.Interaction = &slackbot.Interaction{Type: "view_submission", CallbackID: "note.edit", Values: map[string]map[string]any{"title": {"title_input": map[string]any{"type": "plain_text_input", "value": "okay"}}}, Ack: ack}
+	require.NoError(t, h.Dispatch(context.Background(), i, nil))
+	require.Len(t, ack.responses, 1)
+	require.Equal(t, "accept", ack.responses[0].Kind)
 }

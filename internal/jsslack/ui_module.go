@@ -54,6 +54,20 @@ func uiLoader(vm *goja.Runtime, module *goja.Object) {
 		}
 		return vm.ToValue(map[string]any{"type": "actions", "block_id": blockID, "elements": elements})
 	})
+	set("textInput", func(call goja.FunctionCall) goja.Value {
+		return newSlackTextInputBuilder(vm, argString(call, 0))
+	})
+	set("input", func(call goja.FunctionCall) goja.Value {
+		blockID, label := argString(call, 0), argString(call, 1)
+		element := valueMap(vm, call.Argument(2))
+		if blockID == "" || label == "" || element == nil {
+			panic(vm.NewTypeError("slack/ui.input: block id, label, and text input are required"))
+		}
+		return vm.ToValue(map[string]any{"type": "input", "block_id": blockID, "label": map[string]any{"type": "plain_text", "text": label, "emoji": true}, "element": element})
+	})
+	set("modal", func(call goja.FunctionCall) goja.Value {
+		return newSlackModalBuilder(vm, argString(call, 0), argString(call, 1))
+	})
 	set("divider", func(goja.FunctionCall) goja.Value {
 		return vm.ToValue(map[string]any{"type": "divider"})
 	})
@@ -95,6 +109,93 @@ type slackButtonBuilder struct {
 	label    string
 	value    string
 	style    string
+}
+
+type slackTextInputBuilder struct {
+	actionID    string
+	initial     string
+	placeholder string
+	required    bool
+}
+
+func newSlackTextInputBuilder(vm *goja.Runtime, actionID string) goja.Value {
+	if actionID == "" {
+		panic(vm.NewTypeError("slack/ui.textInput: action id is required"))
+	}
+	b := &slackTextInputBuilder{actionID: actionID, required: true}
+	obj := vm.NewObject()
+	must(vm, obj.Set("initial", func(call goja.FunctionCall) goja.Value { b.initial = argString(call, 0); return obj }))
+	must(vm, obj.Set("placeholder", func(call goja.FunctionCall) goja.Value { b.placeholder = argString(call, 0); return obj }))
+	must(vm, obj.Set("required", func(goja.FunctionCall) goja.Value { b.required = true; return obj }))
+	must(vm, obj.Set("optional", func(goja.FunctionCall) goja.Value { b.required = false; return obj }))
+	must(vm, obj.Set("build", func(goja.FunctionCall) goja.Value {
+		m := map[string]any{"type": "plain_text_input", "action_id": b.actionID}
+		if b.initial != "" {
+			m["initial_value"] = b.initial
+		}
+		if b.placeholder != "" {
+			m["placeholder"] = map[string]any{"type": "plain_text", "text": b.placeholder}
+		}
+		if !b.required {
+			m["optional"] = true
+		}
+		return vm.ToValue(m)
+	}))
+	return obj
+}
+
+type slackModalBuilder struct {
+	callbackID string
+	title      string
+	metadata   string
+	blocks     []map[string]any
+	submit     string
+	close      string
+}
+
+func newSlackModalBuilder(vm *goja.Runtime, callbackID, title string) goja.Value {
+	if callbackID == "" || title == "" {
+		panic(vm.NewTypeError("slack/ui.modal: callback id and title are required"))
+	}
+	b := &slackModalBuilder{callbackID: callbackID, title: title}
+	obj := vm.NewObject()
+	must(vm, obj.Set("metadata", func(call goja.FunctionCall) goja.Value { b.metadata = argString(call, 0); return obj }))
+	must(vm, obj.Set("input", func(call goja.FunctionCall) goja.Value {
+		var block map[string]any
+		if len(call.Arguments) >= 3 {
+			blockID, label := argString(call, 0), argString(call, 1)
+			element := valueMap(vm, call.Argument(2))
+			if blockID != "" && label != "" && element != nil {
+				block = map[string]any{"type": "input", "block_id": blockID, "label": map[string]any{"type": "plain_text", "text": label, "emoji": true}, "element": element}
+			}
+		} else {
+			block = valueMap(vm, call.Argument(0))
+		}
+		if block == nil || fmt.Sprint(block["type"]) != "input" {
+			panic(vm.NewTypeError("slack/ui.modal.input: expected an input block"))
+		}
+		if len(b.blocks) >= 100 {
+			panic(vm.NewTypeError("slack/ui.modal: maximum 100 blocks exceeded"))
+		}
+		b.blocks = append(b.blocks, block)
+		return obj
+	}))
+	must(vm, obj.Set("submit", func(call goja.FunctionCall) goja.Value { b.submit = argString(call, 0); return obj }))
+	must(vm, obj.Set("close", func(call goja.FunctionCall) goja.Value { b.close = argString(call, 0); return obj }))
+	must(vm, obj.Set("build", func(goja.FunctionCall) goja.Value {
+		m := map[string]any{"type": "modal", "callback_id": b.callbackID, "title": map[string]any{"type": "plain_text", "text": b.title, "emoji": true}, "blocks": b.blocks}
+		if b.metadata != "" {
+			m["private_metadata"] = b.metadata
+		}
+		if b.submit != "" {
+			m["submit"] = map[string]any{"type": "plain_text", "text": b.submit, "emoji": true}
+		}
+		if b.close != "" {
+			m["close"] = map[string]any{"type": "plain_text", "text": b.close, "emoji": true}
+		}
+		return vm.ToValue(m)
+	}))
+	return obj
 }
 
 func newSlackButtonBuilder(vm *goja.Runtime, actionID, label string) goja.Value {

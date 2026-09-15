@@ -10,11 +10,15 @@ declare module "slack" {
     command: string; text: string;
     event: {type: string; text: string; ts: string; threadTs: string; channelId: string; userId: string};
     action?: {type: string; actionId: string; blockId?: string; value?: string; selectedOption?: Record<string, JSONValue>; selectedOptions?: JSONValue[]; messageTs?: string; threadTs?: string};
+    view?: {type: string; callbackId: string; privateMetadata?: string; id?: string; hash?: string};
+    values?: {all: Record<string, Record<string, JSONValue>>; text(blockId: string, actionId: string): string | undefined};
     config: Record<string, string | boolean | number>;
     reply(message: MessagePayload): Promise<MessageRef | {delivered: true; via: "response_url"}>;
     slack: {messages: {post(message: PostMessage): Promise<MessageRef>}};
     store: {get(key: string): JSONValue | undefined; set(key: string, value: JSONValue): void; delete(key: string): boolean; keys(): string[]};
     log: {debug(message: string): void; info(message: string): void; warn(message: string): void; error(message: string): void};
+    ack?: {accept(): Promise<void>; errors(errors: Record<string, string>): Promise<void>};
+    openModal(view: Block): Promise<{id: string; hash: string}>;
   }
   export interface Registration {
     configure(spec: {name: string; description?: string; run?: {fields: Record<string, {type: "string" | "bool" | "number"; default?: string | boolean | number; required?: boolean; help?: string}>}}): void;
@@ -44,4 +48,20 @@ declare module "slack/ui" {
     build(): {text: string; blocks: Block[]};
   }
   export function message(text: string): MessageBuilder;
+  export interface TextInputBuilder {
+    initial(value: string): TextInputBuilder;
+    placeholder(value: string): TextInputBuilder;
+    required(): TextInputBuilder;
+    optional(): TextInputBuilder;
+    build(): Block;
+  }
+  export function textInput(actionId: string): TextInputBuilder;
+  export interface ModalBuilder {
+    metadata(value: string): ModalBuilder;
+    input(blockId: string, label: string, input: TextInputBuilder): ModalBuilder;
+    submit(label: string): ModalBuilder;
+    close(label: string): ModalBuilder;
+    build(): Block;
+  }
+  export function modal(callbackId: string, title: string): ModalBuilder;
 }

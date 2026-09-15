@@ -3,6 +3,7 @@ package slacktransport
 import (
 	"context"
 	"encoding/json"
+	"sync"
 	"time"
 
 	"github.com/go-go-golems/discord-bot/pkg/slackbot"
@@ -13,7 +14,12 @@ import (
 
 type receipt struct {
 	socket          *socketmode.Client
+	id              string
 	acceptsResponse bool
+	deadline        time.Time
+	remember        func(any)
+	mu              sync.Mutex
+	used            bool
 }
 
 var _ slackbot.Acknowledger = (*receipt)(nil)
@@ -23,7 +29,63 @@ func (r *receipt) Ack(ctx context.Context, id string, busy bool) error {
 	if busy && r.acceptsResponse {
 		payload = map[string]string{"response_type": "ephemeral", "text": "Bot is busy. Please try again."}
 	}
+	return r.send(ctx, id, payload, slackbot.InteractionResponse{Kind: "auto"})
+}
+
+func (r *receipt) Respond(ctx context.Context, response slackbot.InteractionResponse) error {
+	if response.Kind != "accept" && response.Kind != "errors" {
+		return slackbot.Fail("invalid_argument", "ack", "response kind must be accept or errors")
+	}
+	if response.Kind == "errors" && len(response.Errors) == 0 {
+		return slackbot.Fail("invalid_argument", "ack", "errors response requires at least one field")
+	}
+	var payload any
+	if response.Kind == "errors" {
+		payload = map[string]any{"response_action": "errors", "errors": response.Errors}
+	}
+	return r.send(ctx, r.id, payload, response)
+}
+
+func (r *receipt) send(ctx context.Context, id string, payload any, response slackbot.InteractionResponse) error {
+	r.mu.Lock()
+	if r.used {
+		r.mu.Unlock()
+		return slackbot.Fail("ack_already_sent", "ack", "interaction acknowledgment was already chosen")
+	}
+	if !r.deadline.IsZero() && time.Now().After(r.deadline) {
+		r.mu.Unlock()
+		return slackbot.Fail("ack_expired", "ack", "interaction acknowledgment deadline has passed")
+	}
+	if response.Kind == "errors" && !r.acceptsResponse {
+		r.mu.Unlock()
+		return slackbot.Fail("ack_payload_unsupported", "ack", "Slack did not accept an acknowledgment payload")
+	}
+	r.used = true
+	r.mu.Unlock()
+	if !r.deadline.IsZero() {
+		var cancel context.CancelFunc
+		ctx, cancel = context.WithDeadline(ctx, r.deadline)
+		defer cancel()
+	}
 	if err := r.socket.AckCtx(ctx, id, payload); err != nil {
+		return slackbot.Fail("ack_failed", "ack", "could not schedule acknowledgment")
+	}
+	if r.remember != nil {
+		r.remember(payload)
+	}
+	return nil
+}
+
+func (r *receipt) replay(ctx context.Context, payload any) error {
+	if !r.deadline.IsZero() && time.Now().After(r.deadline) {
+		return slackbot.Fail("ack_expired", "ack", "interaction acknowledgment deadline has passed")
+	}
+	if !r.deadline.IsZero() {
+		var cancel context.CancelFunc
+		ctx, cancel = context.WithDeadline(ctx, r.deadline)
+		defer cancel()
+	}
+	if err := r.socket.AckCtx(ctx, r.id, payload); err != nil {
 		return slackbot.Fail("ack_failed", "ack", "could not schedule acknowledgment")
 	}
 	return nil
@@ -87,13 +149,24 @@ func (c *Client) Run(ctx context.Context, dispatcher slackbot.Dispatcher) error 
 				}
 				ackCtx, cancel := context.WithTimeout(workerCtx, 2*time.Second)
 				envelope, decodeErr := c.decode(*event.Request)
-				ack := &receipt{socket: c.socket, acceptsResponse: event.Request.AcceptsResponsePayload && (event.Request.Type == socketmode.RequestTypeSlashCommands || event.Request.Type == socketmode.RequestTypeInteractive)}
+				ack := &receipt{socket: c.socket, id: event.Request.EnvelopeID, acceptsResponse: event.Request.AcceptsResponsePayload && (event.Request.Type == socketmode.RequestTypeSlashCommands || event.Request.Type == socketmode.RequestTypeInteractive), deadline: time.Now().Add(3 * time.Second)}
+				if event.Request.Type == socketmode.RequestTypeInteractive {
+					ack.remember = func(payload any) { c.rememberAck(event.Request.EnvelopeID, payload) }
+				}
 				if decodeErr != nil {
 					err = ack.Ack(ackCtx, event.Request.EnvelopeID, false)
 					c.opts.Logger.Debug().Msg("Dropped unsupported or malformed Slack envelope")
 				} else {
+					if envelope.Invocation.Interaction != nil {
+						envelope.Invocation.Interaction.Ack = ack
+					}
 					var decision slackbot.Admission
 					decision, err = ingress.Admit(ackCtx, envelope, ack)
+					if err == nil && decision == slackbot.Duplicate && envelope.Invocation.Interaction != nil {
+						if payload, ok := c.replayAck(event.Request.EnvelopeID); ok {
+							err = ack.replay(ackCtx, payload)
+						}
+					}
 					c.opts.Logger.Debug().Str("admission", string(decision)).Msg("Slack receipt")
 				}
 				cancel()
@@ -165,6 +238,7 @@ func (c *Client) decode(r socketmode.Request) (slackbot.Envelope, error) {
 			APIAppID    string `json:"api_app_id"`
 			ResponseURL string `json:"response_url"`
 			CallbackID  string `json:"callback_id"`
+			TriggerID   string `json:"trigger_id"`
 			Message     struct {
 				TS string `json:"ts"`
 			} `json:"message"`
@@ -173,6 +247,15 @@ func (c *Client) decode(r socketmode.Request) (slackbot.Envelope, error) {
 				MessageTS string `json:"message_ts"`
 				ThreadTS  string `json:"thread_ts"`
 			} `json:"container"`
+			View struct {
+				ID              string `json:"id"`
+				Hash            string `json:"hash"`
+				CallbackID      string `json:"callback_id"`
+				PrivateMetadata string `json:"private_metadata"`
+				State           struct {
+					Values map[string]map[string]any `json:"values"`
+				} `json:"state"`
+			} `json:"view"`
 			Actions []struct {
 				ActionID        string           `json:"action_id"`
 				BlockID         string           `json:"block_id"`
@@ -182,7 +265,18 @@ func (c *Client) decode(r socketmode.Request) (slackbot.Envelope, error) {
 				SelectedOptions []map[string]any `json:"selected_options"`
 			} `json:"actions"`
 		}
-		if err := json.Unmarshal(r.Payload, &p); err != nil || p.Type != "block_actions" || len(p.Actions) == 0 {
+		if err := json.Unmarshal(r.Payload, &p); err != nil || p.Type == "" {
+			return e, errors.New("unsupported interactive payload")
+		}
+		if p.Type == "view_submission" {
+			e.AppID = p.APIAppID
+			e.Invocation = slackbot.Invocation{
+				ID: r.EnvelopeID, TeamID: p.Team.ID, UserID: p.User.ID,
+				Interaction: &slackbot.Interaction{Type: p.Type, CallbackID: p.View.CallbackID, PrivateMetadata: p.View.PrivateMetadata, ViewID: p.View.ID, ViewHash: p.View.Hash, Values: p.View.State.Values},
+			}
+			return e, e.Invocation.Validate()
+		}
+		if p.Type != "block_actions" || len(p.Actions) == 0 {
 			return e, errors.New("unsupported interactive payload")
 		}
 		channelID := p.Channel.ID
@@ -211,7 +305,7 @@ func (c *Client) decode(r socketmode.Request) (slackbot.Envelope, error) {
 		e.Responder = responder
 		e.Invocation = slackbot.Invocation{
 			ID: r.EnvelopeID, TeamID: p.Team.ID, ChannelID: channelID, UserID: p.User.ID,
-			Action: &slackbot.Action{Type: a.Type, ActionID: a.ActionID, BlockID: a.BlockID, Value: a.Value, SelectedOption: a.SelectedOption, SelectedOptions: selected, MessageTS: messageTS, ThreadTS: threadTS, ResponseURL: p.ResponseURL},
+			Action: &slackbot.Action{Type: a.Type, ActionID: a.ActionID, BlockID: a.BlockID, Value: a.Value, SelectedOption: a.SelectedOption, SelectedOptions: selected, MessageTS: messageTS, ThreadTS: threadTS, ResponseURL: p.ResponseURL, TriggerID: p.TriggerID, CallbackID: p.CallbackID},
 		}
 	default:
 		return e, errors.New("unsupported envelope")
