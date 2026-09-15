@@ -654,3 +654,65 @@ Inspect `internal/slacktransport/client.go`, `pkg/slackcli/run_remote.go`, and t
 ### Technical details
 
 `bots run` uses the profile's installation team ID and app ID, calls `auth.test` through the Slack SDK, and then invokes `Client.Run`. It accepts `--bot-config-file` for declared fields and `--timeout-ms` for host/invocation deadlines. Shutdown follows the existing context cancellation path.
+
+## Step 12: Validate the real runtime command
+
+The remote runtime implementation has passed the repository validation gate. The runtime-specific tasks are checked, and the ticket now contains the complete path from credential import and app installation through real Socket Mode execution.
+
+### Prompt Context
+
+See Step 11 for the verbatim request that authorized the runtime implementation.
+
+**Assistant interpretation:** Finish validation and task bookkeeping, leaving a command that can be run explicitly against the installed app.
+
+**Inferred user intent:** Have a dependable local development command for receiving Slack events and invoking the JavaScript bot.
+
+### What I did
+
+- Ran the full offline repository tests with loopback access.
+- Ran offline build and vet.
+- Ran `bots run --help` to verify the runtime command surface.
+- Checked runtime tasks `y3sa`, `8qti`, and `axvn`.
+- Added the runtime changelog entry.
+
+### Why
+
+The remote path reuses existing transport behavior, so full tests are the appropriate regression gate after focused CLI and transport tests.
+
+### What worked
+
+All packages passed `04-go-offline.sh test ./...`; `build -buildvcs=false ./...`, `vet ./...`, CLI help, and `docmgr doctor --ticket SLACK-CREDENTIALS-001` also passed.
+
+### What didn't work
+
+No validation failures occurred in this gate. A live runtime session was intentionally deferred because it waits for events and can send real Slack messages.
+
+### What I learned
+
+The installed profile is now sufficient to start the runtime with one command; no token file arguments or Slack CLI installation are required.
+
+### What was tricky to build
+
+The remote constructor needed to preserve strict response URL validation while allowing Slack's HTTPS webhook host for slash-command replies.
+
+### What warrants a second pair of eyes
+
+Run a supervised mention and slash-command smoke test and inspect the bot's response in the intended channel.
+
+### What should be done in the future
+
+Add an operator runbook for stopping/restarting the process and a small live smoke script if repeated local testing becomes routine.
+
+### Code review instructions
+
+Review commit `f4f36ee`, run `bots run --help`, and start the bot with the installed profile only when ready to receive real events.
+
+### Technical details
+
+The command is:
+
+```sh
+go run ./cmd/slack-bot bots run ping --profile go-go-golems --log-level debug
+```
+
+It resolves `go-go-golems-T0C1UJMCPGA`, uses the stored app ID `A0C1YJCCCP6`, verifies `auth.test`, and then enters the Socket Mode event loop. Credentials remain private to the Go transport.

@@ -34,3 +34,12 @@ Documented and implemented a pragmatic local bots install command using the Slac
 ## 2026-09-14
 
 Installed app `A0C1YJCCCP6` for profile `go-go-golems` in workspace `T0C1UJMCPGA` using the local developer-install command. Runtime credentials were saved privately; command output contained identifiers only.
+
+## 2026-09-14
+
+Added bots run and a remote Slack transport that resolve stored installation credentials, verify auth.test workspace identity, dispatch JavaScript through Socket Mode ingress, and allow only Slack HTTPS response URLs for slash replies.
+
+### Related Files
+
+- /home/manuel/workspaces/2026-09-10/add-slack-support/discord-bot/internal/slacktransport/client.go — remote Slack SDK and Socket Mode client
+- /home/manuel/workspaces/2026-09-10/add-slack-support/discord-bot/pkg/slackcli/run_remote.go — profile-based runtime command
