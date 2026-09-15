@@ -81,6 +81,22 @@ slack-bot credentials refresh --profile ping-dev
 slack-bot bots create-app ping --profile ping-dev
 ```
 
+For a local developer installation, the `bots install` verb uses the same
+undocumented method observed in the open-source Slack CLI. It needs the
+management access token in the selected profile and the target workspace ID:
+
+```sh
+slack-bot bots install ping --profile ping-dev --team-id T_DEV
+```
+
+On success it stores the workspace bot token under an installation record and
+the Socket Mode app token on the app record. It prints only profile, app ID,
+installation name, and team ID. This is a local convenience, not Slack's
+documented public OAuth installation API; it does not start an HTTPS callback
+server. If Slack rejects the method, use `slack app install` or the app
+dashboard/OAuth flow, then import the resulting tokens with
+`credentials import-runtime`.
+
 Refresh is explicit and replaces both tokens together. If it fails, import a
 new pair. Installation and runtime bot tokens remain manual; this store does
 not run a daemon or contact Slack during status/list commands.

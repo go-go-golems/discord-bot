@@ -28,6 +28,7 @@ type settings struct {
 	CredentialsFile     string `glazed:"credentials-file"`
 	ConfigDir           string `glazed:"config-dir"`
 	Profile             string `glazed:"profile"`
+	TeamID              string `glazed:"team-id"`
 	LocalConnectionFile string `glazed:"local-connection-file"`
 	LogLevel            string `glazed:"log-level"`
 	Repository          string `glazed:"bot-repository"`
@@ -52,11 +53,14 @@ func NewBotsCommand(logger zerolog.Logger) (*cobra.Command, error) {
 }
 
 func newBotsCommand(logger zerolog.Logger, appClient *http.Client) (*cobra.Command, error) {
-	root := &cobra.Command{Use: "bots", Short: "Inspect, create and run Slack bots"}
-	for _, op := range []string{"list", "inspect", "manifest", "create-app", "simulate", "run-local"} {
+	root := &cobra.Command{Use: "bots", Short: "Inspect, create, install and run Slack bots"}
+	for _, op := range []string{"list", "inspect", "manifest", "create-app", "install", "simulate", "run-local"} {
 		short := op + " a Slack bot (offline)"
 		if op == "create-app" {
 			short = "Create a Slack app from the bot's manifest using the Slack API"
+		}
+		if op == "install" {
+			short = "Install a local Slack app and save runtime tokens"
 		}
 		desc := cmds.NewCommandDescription(op, cmds.WithShort(short), cmds.WithFlags(
 			fields.New("log-level", fields.TypeString, fields.WithDefault("info"), fields.WithHelp("Log level (debug, info, warn, error)")),
@@ -75,6 +79,13 @@ func newBotsCommand(logger zerolog.Logger, appClient *http.Client) (*cobra.Comma
 				fields.New("credentials-file", fields.TypeString, fields.WithHelp("Optional new private file for returned app credentials (0600; refuses overwrite)")),
 				fields.New("config-dir", fields.TypeString, fields.WithHelp("Local Slack profile and credentials directory (default: user config directory)")),
 				fields.New("profile", fields.TypeString, fields.WithHelp("Named local profile (alternative to --config-token-file)")),
+			)(desc)
+		}
+		if op == "install" {
+			cmds.WithFlags(
+				fields.New("config-dir", fields.TypeString, fields.WithHelp("Local Slack profile and credentials directory (default: user config directory)")),
+				fields.New("profile", fields.TypeString, fields.WithHelp("Named local profile")),
+				fields.New("team-id", fields.TypeString, fields.WithHelp("Slack workspace/team ID")),
 			)(desc)
 		}
 		if op == "simulate" {
@@ -136,6 +147,8 @@ func (c *command) RunIntoWriter(ctx context.Context, vals *values.Values, w io.W
 	switch c.operation {
 	case "create-app":
 		return c.createApp(ctx, d, s, w)
+	case "install":
+		return c.installApp(ctx, d, s, w)
 	case "run-local":
 		var connection struct {
 			APIURL, BotToken, AppToken, TeamID, AppID, UserID string
