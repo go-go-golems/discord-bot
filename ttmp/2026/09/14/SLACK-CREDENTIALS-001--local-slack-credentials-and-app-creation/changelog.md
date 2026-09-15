@@ -30,3 +30,7 @@ Documented and implemented a pragmatic local bots install command using the Slac
 
 - /home/manuel/workspaces/2026-09-10/add-slack-support/discord-bot/pkg/slackcli/install_app.go — developer-install request and credential persistence
 - /home/manuel/workspaces/2026-09-10/add-slack-support/discord-bot/ttmp/2026/09/14/SLACK-CREDENTIALS-001--local-slack-credentials-and-app-creation/design-doc/02-local-app-installation-with-slack-cli-developerinstall.md — contract and limitations
+
+## 2026-09-14
+
+Installed app `A0C1YJCCCP6` for profile `go-go-golems` in workspace `T0C1UJMCPGA` using the local developer-install command. Runtime credentials were saved privately; command output contained identifiers only.

@@ -538,3 +538,62 @@ Inspect `install_app.go` request serialization and compare it with `DeveloperApp
 ### Technical details
 
 The corrected JSON contains `app_id`, `bot_scopes`, and `outgoing_domains`; it omits `team_id`. The command still saves credentials under `profile-teamID` after a successful response.
+
+## Step 10: Install the ping app in the requested workspace
+
+After the request-shape correction and the user's `go work use` update, the authorized live installation completed successfully. Slack returned the expected app ID and the command persisted the bot and Socket Mode credentials without exposing their values.
+
+### Prompt Context
+
+**User prompt (verbatim):** "ok, install ping"
+
+**Assistant interpretation:** Execute the new profile-based install command for the configured `go-go-golems` app and its known workspace, then verify the local status.
+
+**Inferred user intent:** Finish setup of the real ping app so its runtime credentials are available to the local bot workflow.
+
+### What I did
+
+- Ran `04-go-offline.sh run ./cmd/slack-bot bots install ping --profile go-go-golems --team-id T0C1UJMCPGA --timeout-ms 30000`.
+- Verified the safe status command and inspected metadata-only `config.yaml`.
+
+### Why
+
+The user explicitly requested the workspace mutation. The command uses the stored management credential, sends the corrected standalone request, and writes runtime credentials to the private credential file.
+
+### What worked
+
+Slack returned:
+
+```json
+{"app_id":"A0C1YJCCCP6","installation":"go-go-golems-T0C1UJMCPGA","profile":"go-go-golems","team_id":"T0C1UJMCPGA"}
+```
+
+Safe status confirms `has_access_token:true`, `has_refresh_token:true`, app `go-go-golems`, and installation `go-go-golems-T0C1UJMCPGA`. The metadata file now links that installation to app `A0C1YJCCCP6` and team `T0C1UJMCPGA`.
+
+### What didn't work
+
+The first live attempt, recorded in Step 9, returned `invalid_argument` because the request included `team_id`. The corrected retry succeeded.
+
+### What I learned
+
+The local profile store can now complete the management-token, app-creation, and developer-install portions of the setup without copying runtime tokens through the shell.
+
+### What was tricky to build
+
+The live command had to use the repository wrapper after plain `go run` encountered the stale Go workspace version declarations. The wrapper selected the cached toolchain while preserving the explicit network request.
+
+### What warrants a second pair of eyes
+
+Confirm the newly stored runtime credentials are used by the eventual real Socket Mode runner before relying on this installation for production messages.
+
+### What should be done in the future
+
+Add a separate runtime command that resolves this installation and connects to Socket Mode, with a local dry-run path retained for tests.
+
+### Code review instructions
+
+Review the successful command output above, the metadata diff, and Step 9's request-shape correction. Do not inspect or print the private credentials file contents.
+
+### Technical details
+
+The successful API response was accepted only after matching app ID and non-empty bot/app-level token fields. The command wrote `config.yaml` metadata and `credentials.json` secrets with the existing private atomic writer.
