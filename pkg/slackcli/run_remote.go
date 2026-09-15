@@ -86,5 +86,23 @@ func (c *command) runRemote(ctx context.Context, d slackbot.Descriptor, s settin
 		return err
 	}
 	defer func() { _ = host.Close(context.Background()) }()
+
+	if !s.SkipManifestUpdate {
+		management := creds.Management[profile.Management]
+		if management.AccessToken == "" {
+			return errors.New("manifest update requires a management access token; import one or use --skip-manifest-update")
+		}
+		c.logger.Info().Str("app_id", app.AppID).Str("bot", d.Name).Msg("Updating Slack app manifest")
+		permissionsUpdated, err := c.updateManifest(ctx, d, s, app.AppID, management.AccessToken)
+		if err != nil {
+			return err
+		}
+		c.logger.Info().Str("app_id", app.AppID).Bool("permissions_updated", permissionsUpdated).Msg("Slack app manifest updated")
+		if permissionsUpdated {
+			return errors.Errorf("manifest updated; reinstall with bots install %s --profile %s --team-id %s before running again (include the same --config-dir and --bot-repository if customized)", s.Name, profileName, installation.TeamID)
+		}
+	} else {
+		c.logger.Info().Msg("Skipping Slack app manifest update")
+	}
 	return client.Run(ctx, host)
 }

@@ -30,7 +30,8 @@ func TestOfflineCLI(t *testing.T) {
 	require.NoError(t, err)
 	var all []slackbot.Descriptor
 	require.NoError(t, json.Unmarshal([]byte(out), &all))
-	require.Len(t, all, 1)
+	require.Len(t, all, 2)
+	require.Equal(t, "ui-showcase", all[1].Name)
 	require.Equal(t, "ping", all[0].Name)
 	out, err = execute(t, "bots", "inspect", "ping", "--bot-repository", repo)
 	require.NoError(t, err)

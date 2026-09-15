@@ -135,7 +135,7 @@ func (c *Client) replayAck(id string) (any, bool) {
 	}
 	return entry.payload, true
 }
-func (c *Client) Close() { c.transport.CloseIdleConnections() }
+func (c *Client) Close() { c.http.CloseIdleConnections() }
 func (c *Client) Post(ctx context.Context, m slackbot.PostMessage) (slackbot.MessageRef, error) {
 	if err := m.Validate(); err != nil {
 		return slackbot.MessageRef{}, err

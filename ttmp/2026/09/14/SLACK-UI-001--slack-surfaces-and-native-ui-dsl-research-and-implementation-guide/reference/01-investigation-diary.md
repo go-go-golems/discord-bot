@@ -539,3 +539,68 @@ The live test exposed insufficient diagnostics: the user saw a pong while the sh
 ### Technical details
 - Dispatch duration is logged as `duration_ms`; unknown command routes produce `error_code=not_found`.
 - Logs omit tokens, response URLs, message text, and form values.
+
+## Step 11: Sync the selected bot manifest before connecting
+
+The runner previously selected JavaScript without changing Slack's app configuration. This left the app advertising /golem-ping while the process registered /ui-showcase. Remote startup now updates the app from the selected descriptor before connecting, with an explicit opt-out.
+
+### Prompt Context
+**User prompt (verbatim):** "it should force update when starting by default i think?"
+**Assistant interpretation:** Make manifest synchronization the default startup behavior.
+**Inferred user intent:** Switch local bot implementations without manually editing Slack app settings.
+
+### What I did
+- Added a bounded apps.manifest.update request using the selected profile's stored management access token.
+- Added --skip-manifest-update to the run verb. Default startup sends the complete generated manifest and reuses the app ID and runtime tokens.
+- Stop before connecting if Slack reports permissions_updated=true, with an install command to grant changed scopes.
+- Added API request, error, permission-change and default CLI wiring tests.
+- Fixed Client.Close to close the HTTP client's idle connections: remote clients do not set the local transport field.
+- Updated the CLI discovery test for the second example, README, and embedded help.
+- Archived manifest update and app lifecycle documentation with Defuddle in sources/118 and sources/119.
+- Refreshed the expired management token using credentials refresh, then restarted the tmux showcase.
+
+### Why
+- Slack command registration is remote configuration; loading the JavaScript script does not register it.
+- Sending the generated manifest makes the selected bot authoritative, including display name, events and scopes.
+- Permission changes need an explicit install; errors stop startup instead of silently running against stale configuration.
+
+### What worked
+- Full repository tests passed with GOCACHE=/tmp/go-build-cache-slack-ui GOWORK=off go test ./... -count=1.
+- go build -buildvcs=false ./... and go vet -buildvcs=false ./... passed with the same cache/workspace settings.
+- Help displays --skip-manifest-update.
+- Live sync returned app_id=A0C1YJCCCP6 and permissions_updated=false; authentication and Socket Mode connecting/connected/hello followed.
+- Stored credentials refresh succeeded without exposing either token.
+
+### What didn't work
+- Initial run-default test panicked at net/http.(*Transport).CloseIdleConnections(0x0). Fixed the remote cleanup path through http.Client.CloseIdleConnections.
+- TestOfflineCLI expected one example but discovered two. Updated the expected inventory.
+- Build and vet initially reported "error obtaining VCS status: exit status 128", even outside the sandbox. Disabling VCS stamping resolved these checks.
+- make glazed-lint reports existing raw Cobra flags in pkg/slackcli/credentials.go.
+- make govulncheck reports eight reachable vulnerabilities in existing Go 1.26.4, golang.org/x/text v0.37.0, and excelize/v2 v2.10.0 dependencies. Dependency upgrades are outside this manifest change.
+- First live sync failed with token_expired. Ran credentials refresh --profile go-go-golems and restarted successfully.
+
+### What I learned
+- Slack confirmed this command/configuration switch needed no reinstall.
+- Default manifest sync requires a current management token even when runtime tokens remain valid.
+
+### What was tricky to build
+- Runtime credentials and script configuration must be checked before changing remote configuration; the sync runs after host loading and before client.Run.
+- A changed-scope response is already an applied manifest update. The error explicitly says to reinstall instead of implying that the update failed.
+
+### What warrants a second pair of eyes
+- The update replaces the full app configuration with the generated manifest; manual settings not represented there are replaced.
+- Arbitrary Slack response bodies are not logged. Safe error codes are returned, with refresh guidance for expired authentication.
+
+### What should be done in the future
+- Trace the user's next /ui-showcase interaction in tmux.
+- Address existing lint and dependency findings independently.
+
+### Code review instructions
+- Start with pkg/slackcli/run_remote.go, update_manifest.go, and update_manifest_test.go.
+- Review the new run flag in commands.go and the cleanup fix in internal/slacktransport/client.go.
+- Use the focused CLI tests and inspect the live startup logs.
+
+### Technical details
+- POST https://slack.com/api/apps.manifest.update with bearer management token, app_id, and manifest as a JSON-encoded string.
+- Sources: https://docs.slack.dev/reference/methods/apps.manifest.update/ and https://docs.slack.dev/app-management/distribution/.
+- Session: slack-ui-showcase. Bot: ui-showcase. Profile: go-go-golems.

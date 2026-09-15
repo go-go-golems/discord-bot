@@ -347,3 +347,19 @@ See [the offline API guide](pkg/slackdoc/slack-offline.md), the
 connections and broader retry/reconnect acceptance coverage remain planned.
 The commands above need no credentials; `bots run-local` uses an explicit
 synthetic connection file.
+
+## Automatic manifest sync on startup
+
+`slack-bot bots run ui-showcase --profile go-go-golems` updates the selected
+Slack app with the bot's generated manifest before connecting to Socket Mode.
+This replaces the app configuration, including its display name, slash commands,
+events and scopes. The profile's stored management access token is required.
+The app ID and existing runtime tokens are reused.
+
+Use `--skip-manifest-update` to connect using the current Slack configuration
+without a management token. If a management token has expired, run
+`slack-bot credentials refresh --profile go-go-golems` and retry.
+
+If Slack returns `permissions_updated: true`, startup stops with an install
+command. Run it to grant the changed scopes, then start the bot again. Command-only
+changes normally do not require reinstalling. There is no automatic rate-limit retry.

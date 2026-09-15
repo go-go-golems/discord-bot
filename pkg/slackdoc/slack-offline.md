@@ -242,3 +242,19 @@ All HTTP and WebSocket dials are restricted to that exact host and port. HTTP pr
 Posting performs one SDK request. A 429 returns `rate_limited`; unknown or ambiguous failures return `delivery_unknown` without automatic retransmission. This conservative baseline avoids duplicating messages after a lost response; it does not yet implement method-scoped pacing or retry waits. Invalid input is rejected before HTTP.
 
 Run the separate SDK gate and full process scenario described in `testdata/slack/mock/README.md`. Ordinary Go tests skip the external-server probe unless explicitly configured, while HTTP/WebSocket fixture tests need permission to bind loopback sockets.
+
+## Automatic manifest sync on startup
+
+`slack-bot bots run ui-showcase --profile go-go-golems` updates the selected
+Slack app with the bot's generated manifest before connecting to Socket Mode.
+This replaces the app configuration, including its display name, slash commands,
+events and scopes. The profile's stored management access token is required.
+The app ID and existing runtime tokens are reused.
+
+Use `--skip-manifest-update` to connect using the current Slack configuration
+without a management token. If a management token has expired, run
+`slack-bot credentials refresh --profile go-go-golems` and retry.
+
+If Slack returns `permissions_updated: true`, startup stops with an install
+command. Run it to grant the changed scopes, then start the bot again. Command-only
+changes normally do not require reinstalling. There is no automatic rate-limit retry.

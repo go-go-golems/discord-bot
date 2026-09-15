@@ -24,6 +24,7 @@ import (
 )
 
 type settings struct {
+	SkipManifestUpdate  bool   `glazed:"skip-manifest-update"`
 	ConfigTokenFile     string `glazed:"config-token-file"`
 	CredentialsFile     string `glazed:"credentials-file"`
 	ConfigDir           string `glazed:"config-dir"`
@@ -63,7 +64,7 @@ func newBotsCommand(logger zerolog.Logger, appClient *http.Client) (*cobra.Comma
 			short = "Install a local Slack app and save runtime tokens"
 		}
 		if op == "run" {
-			short = "Run a Slack bot using stored workspace credentials"
+			short = "Update the app manifest and run a Slack bot using stored credentials"
 		}
 		desc := cmds.NewCommandDescription(op, cmds.WithShort(short), cmds.WithFlags(
 			fields.New("log-level", fields.TypeString, fields.WithDefault("info"), fields.WithHelp("Log level (debug, info, warn, error)")),
@@ -93,6 +94,7 @@ func newBotsCommand(logger zerolog.Logger, appClient *http.Client) (*cobra.Comma
 		}
 		if op == "run" {
 			cmds.WithFlags(
+				fields.New("skip-manifest-update", fields.TypeBool, fields.WithDefault(false), fields.WithHelp("Connect without updating the installed app manifest (no management token required)")),
 				fields.New("config-dir", fields.TypeString, fields.WithHelp("Local Slack profile and credentials directory (default: user config directory)")),
 				fields.New("profile", fields.TypeString, fields.WithHelp("Named local profile")),
 				fields.New("bot-config-file", fields.TypeString, fields.WithHelp("Optional declared bot configuration JSON")),
