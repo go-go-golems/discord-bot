@@ -40,4 +40,4 @@ Baseline discord-bot revision: 5c700b2. Pinned Slack SDK: v0.17.3. Official Slac
 
 ## Delivery
 
-Delivered the corrected 20-page **SLACK-UI-001 Slack UI Research Guide** to `/ai/2026/09/14/SLACK-UI-001`. See [final PDF](<artifacts/final/SLACK-UI-001 Slack UI Research Guide.pdf>) and [delivery receipt](artifacts/delivery-receipt.txt). The earlier differently named upload remains intact; use the corrected guide. This confirms cloud upload, not physical device sync. Implementation tasks remain open.
+Delivered the revised 21-page **SLACK-UI-001 Slack UI Research Guide v2** to `/ai/2026/09/14/SLACK-UI-001`. See [final PDF](<artifacts/final-v2/SLACK-UI-001-Slack-UI-Research-Guide-v2.pdf>) and [delivery receipt](artifacts/delivery-receipt.txt). The earlier uploads remain intact; use v2 for the clarified scope. This confirms cloud upload, not physical device sync. Implementation tasks remain open.

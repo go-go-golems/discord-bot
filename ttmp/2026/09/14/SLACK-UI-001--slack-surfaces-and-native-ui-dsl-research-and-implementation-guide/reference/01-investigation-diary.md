@@ -229,3 +229,49 @@ The implementation scope was clarified after reviewing the complexity scale. Lay
 ### Technical details
 - The existing invocation gate and ordinary handler timeout remain unchanged.
 - Interactive ACK deadline state belongs to the single-use ACK object; it is not a new handler execution budget.
+
+## Step 5: Re-render and deliver the clarified scope
+
+Regenerated the reading copy after the scope edit and uploaded it under a new name so no prior reMarkable document or annotations were overwritten. The v2 rendering contains the explicit layers 1–7 scope and the deferred layer 8 boundary.
+
+### Prompt Context
+**User prompt (verbatim):** "Mark 8 explicitly deferred and remove the worker reservation and bounded interactive execution. We basically want to do 1-7, because the ACK handling is at the core of it and warrants the compelxity."
+**Assistant interpretation:** Re-render and redeliver the edited research guide after committing the scope correction.
+**Inferred user intent:** Ensure the document on reMarkable matches the agreed implementation scope.
+**Commit (code):** bb959d1 — "docs(slack): defer UI scheduling and retain ACK scope"
+
+### What I did
+- Refreshed the print copy from the revised primary guide while retaining the Graphviz diagrams and corrected archive links.
+- Rendered and visually inspected the v2 diagram, scope/table page, modal sequence, pseudocode, and JavaScript layout.
+- Uploaded v2 as `SLACK-UI-001 Slack UI Research Guide v2` without `--force`.
+
+### Why
+- The primary design changed materially; the previous uploaded PDF was stale.
+- A new remote name preserved earlier documents and their annotations.
+
+### What worked
+- Final v2 PDF: 21 pages, SHA-256 `6bb3cc6156adc95ff9830428d1d2a53413b6a046915ffdfe5dd0e082697e3853`.
+- Upload receipt: `OK: uploaded SLACK-UI-001 Slack UI Research Guide v2.pdf -> /ai/2026/09/14/SLACK-UI-001`.
+- Source integrity and docmgr checks remained valid after the primary-document edit.
+
+### What didn't work
+- The earlier uploaded documents cannot be replaced without `--force`; v2 was intentionally uploaded under a new name.
+
+### What I learned
+- Scope decisions affecting pseudocode require a fresh reading-copy render, even when no production code changes.
+
+### What was tricky to build
+- Keeping the source archive links and Graphviz assets valid after copying the revised Markdown into the print directory.
+
+### What warrants a second pair of eyes
+- Review the ACK state machine during implementation; the scheduler boundary is now explicit and deferred.
+
+### What should be done in the future
+- Implement layers 1–7 in phases 1–3. Do not add layer 8 unless local measurements demonstrate a need.
+
+### Code review instructions
+- Compare the primary guide, print copy, and v2 receipt. Run the research integrity script and docmgr doctor.
+
+### Technical details
+- v2 was uploaded with `remarquee upload bundle`, `--toc-depth 2`, 0.72-inch margins, DejaVu fonts, and `--non-interactive`.
+- Cloud receipt proves cloud delivery, not physical device synchronization.

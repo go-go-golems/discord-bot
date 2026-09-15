@@ -48,7 +48,7 @@ An **acknowledgment**, abbreviated ACK, tells Slack that an interaction was rece
 
 This is a design at repository revision `5c700b2`, with `slack-go/slack v0.17.3`. All APIs marked **proposed** are sketches, not installed functionality. The first useful result is the note editor described above, with an offline test and a real Slack demonstration.
 
-Use the existing process, configuration, credentials store, runtime owner, and HTTP client. Keep state in the existing process-local store for the example. Do not add a database, durable queue, distributed lock, declarative workflow interpreter, generated schema pipeline, or cross-platform compatibility layer. A restart may invalidate an old edit screen; a clear “reopen the editor” response is sufficient. Detailed documentation should reduce implementation uncertainty rather than increase the implementation's scope.
+Use the existing process, configuration, credentials store, runtime owner, and HTTP client. This ticket covers the first seven layers of the proposed progression: raw Block Kit block values, small JavaScript helpers, rich outbound messages, action routing, one basic modal flow, typed Go-owned builders, and deadline-aware ACK handling. Layer eight—an interaction scheduler or separate worker-execution policy—is explicitly deferred. Keep state in the existing process-local store for the example. Do not add a database, durable queue, distributed lock, declarative workflow interpreter, generated schema pipeline, or cross-platform compatibility layer. A restart may invalidate an old edit screen; a clear “reopen the editor” response is sufficient. Detailed documentation should reduce implementation uncertainty rather than increase the implementation's scope.
 
 ## 2. Read the current system first
 
@@ -77,7 +77,7 @@ Ingress calls `admit` before `Ack`. The queue worker can begin executing before 
 
 Goja values belong to a runtime and must be accessed through its owner. The existing host creates promises on that owner, runs network work outside it, and returns to the owner to resolve or reject them. Builders should follow the same rule: construct and validate on the owner, then pass detached Go data to the service goroutine. Never retain `goja.Value`, a Proxy, or a reflected mutable object in an HTTP request worker.
 
-The host also has a separate gate around an entire invocation. This means a handler awaiting network I/O can hold the gate while the owner itself is free. A three-second interaction cannot safely wait behind an arbitrary long-running command. For the initial local implementation, retain serial execution but give interaction admission a short deadline and document that busy interactions require retry. Do not introduce a priority scheduler merely to hide this limitation. If ordinary usage later demonstrates unacceptable blocking, revisit invocation concurrency as its own change with tests. The vault's runtime-ownership article explains the owner pattern; the pinned host source determines the exact APIs available here.[^owner]
+The host also has a separate gate around an entire invocation. This means a handler awaiting network I/O can hold the gate while the owner itself is free. The initial implementation keeps that existing serial execution model. ACK handling remains deadline-aware, but this ticket does not add an interaction scheduler, worker reservation, priority policy, or special execution budget. If serial execution later proves inconvenient, concurrency can be redesigned as a separate change with its own measurements and tests. The vault's runtime-ownership article explains the owner pattern; the pinned host source determines the exact APIs available here.[^owner]
 
 ## 3. What carries over from the Discord DSL
 
@@ -168,7 +168,7 @@ A `table` supports at most 100 rows and 20 cells per row, with a 10,000-characte
 
 Task cards describe an individual task's status, details, output, and sources; plan blocks group related tasks. Context actions provide feedback or icon buttons. These are relevant to an eventual research assistant, not to basic form support. The pinned SDK includes `MarkdownBlock` but lacks native table and task-card types. The ticket's runnable SDK probe demonstrates that decoding either through `slack.Blocks` and marshaling again discards their fields, leaving only `type`. Never use the SDK's `UnknownBlock` as a lossless raw-data container.
 
-For a future unsupported block, choose one deliberate implementation: upgrade the SDK if the target version actually supports it, or add a small typed transport struct that implements `slack.Block` and preserves its fields. Do not ship an unrestricted “send arbitrary Slack API JSON” command as a shortcut around all validation. No SDK upgrade is needed for the core slice.
+For a future unsupported block, choose one deliberate implementation: upgrade the SDK if the target version actually supports it, or add a small typed transport struct that implements `slack.Block` and preserves its fields. The message API may accept a plain JSON-compatible `blocks` array as the low-level layer of this ticket, but it must remain inside the message/view payload boundary. Do not ship an unrestricted “call any Slack API with arbitrary JSON” command as a shortcut around all validation. No SDK upgrade is needed for the core slice.
 
 ### Documentation conflicts and availability
 
@@ -221,15 +221,15 @@ A view submission must be acknowledged within three seconds. Field errors are pa
 
 ![Modal submission sequence showing validation and acknowledgment paths](assets/modal-sequence.png)
 
-For the first implementation, expose explicit acknowledgment on view handlers, and automatically empty-ack ordinary actions before their handler work. Use a single Go-owned acknowledgment object per envelope. It validates the response kind, guards against a second call, respects `accepts_response_payload`, and refuses use after expiry. The socket loop must keep receiving while a submission handler runs; a bounded goroutine tracked by an errgroup is enough. Reuse the existing host gate with a deadline for admission.
+For the first implementation, expose explicit acknowledgment on view handlers, and automatically empty-ack ordinary actions before their handler work. Use a single Go-owned acknowledgment object per envelope. It validates the response kind, guards against a second call, respects `accepts_response_payload`, and refuses use after expiry. Reuse the existing host gate. The handler must choose an ACK before Slack's deadline; the implementation does not reserve a separate worker or create a second execution path for interactive requests.
 
-If the host is busy until the deadline, cancel that interaction and let Slack show a failure that preserves the user's ability to retry. Do not fabricate an empty modal ACK, because that would accept data that was never processed. Where a valid input block is known, a field-level busy error is an optional improvement, not a reason to maintain a form-schema registry. For action handlers, the framework can acknowledge and respond “busy; try again” where a response capability exists. This is an explicit local-use limitation, not a claim of guaranteed responsiveness under load.
+If the existing host gate delays a submission past the deadline, the ACK attempt fails and Slack shows its normal interaction failure. Do not fabricate an empty modal ACK, because that would accept data that was never processed. There is no separate busy response, worker pool, or scheduler in this ticket. For a local bot, the operator can retry the interaction or restart a stuck process.
 
 Retries of response-bearing submissions deserve a small special case: the existing dedupe path ACKs duplicates with no semantic payload. Reuse its bounded in-memory storage to retain the chosen ACK JSON for a processed interactive envelope, or add a small adjacent map. Re-send the same ACK for a duplicate envelope and do not reapply the edit. An in-flight duplicate must not be empty-acked ahead of its validator. Do not dedupe independent clicks by `action_id`; the same button is legitimately used repeatedly. No durable exactly-once execution is promised across restart.
 
 ### Transport and handler pseudocode
 
-The following is the intended control flow, not a new scheduling subsystem. Keep the current event/command ingress for ordinary work and add one bounded interactive branch where an ACK body is required. The transport owns the receipt time and the ACK object; JavaScript never owns the raw socket.
+The following is the intended control flow, not a new scheduling subsystem. Keep the current event/command ingress for ordinary work and add one interactive branch where an ACK body is required. The transport owns the receipt time and the ACK object; JavaScript never owns the raw socket.
 
 ```text
 onSocketEnvelope(request):
@@ -254,27 +254,21 @@ onSocketEnvelope(request):
         return
 
     // Submission or external options: do not ACK before computing the body.
-    if !tryReserveInteractiveWorkerSlot():
-        logSafeBusyDiagnostic()
-        return  // no false successful submission
-
-    startTrackedWorker:
-        defer releaseInteractiveWorkerSlot()
-        ackDeadline = receivedAt + localBudgetBelowThreeSeconds
-        acquireExistingHostGateUntil(ackDeadline)
-        ack = singleUseACK(request, ackDeadline)
-        dispatchHandler(interaction, ack)
-        if !ack.wasChosen():
-            logMissingACKAndCancelInvocation()
+    // Dispatch through the existing host path. The ACK object enforces the
+    // Slack deadline and rejects late or duplicate responses.
+    ack = singleUseACK(request, receivedAt + slackInteractionDeadline)
+    dispatchHandler(interaction, ack)
+    if !ack.wasChosen():
+        logMissingACK()
 ```
 
-An ACK deadline is separate from the handler's ordinary work timeout. Before acknowledgment, expiry cancels the handler and prevents a later ACK. After a successful ACK choice, the handler may continue its normal bounded work. Implement this transition in Go so that a timeout and a handler cannot both choose a response. One small mutex or owner-serialized state transition is enough; do not create a reusable transaction framework. `AckCtx` returning successfully indicates SDK acceptance of the send request; a WebSocket fixture should verify the actual wire output.
+An ACK deadline is a property of the acknowledgment object, not a new handler execution budget. Before acknowledgment, expiry prevents a late response. After a successful ACK choice, the handler may continue its normal existing work timeout. Implement the single-use transition in Go so that a timeout and a handler cannot both choose a response. One small mutex or owner-serialized state transition is enough; do not create a reusable transaction framework. `AckCtx` returning successfully indicates SDK acceptance of the send request; a WebSocket fixture should verify the actual wire output.
 
 For ordinary actions, choose either automatic acknowledgment or explicit acknowledgment and enforce that choice consistently. This guide chooses automatic ACK for actions and explicit ACK for submissions/options. `ctx.ack` must therefore not be available as a second acknowledgment path on an already-acknowledged action. A returned message remains an application reply, never an implicit substitute for a modal response action.
 
 ## 6. Proposed API: one complete note editor
 
-All code in this section is **proposed API pseudocode**. Its purpose is to fix the boundary and provide an acceptance example; method names may change together during implementation. Keep one naming scheme, then update the TypeScript declarations and embedded help in the same change.
+All code in this section is **proposed API pseudocode**. Its purpose is to fix the boundary and provide an acceptance example; method names may change together during implementation. Keep one naming scheme, then update the TypeScript declarations and embedded help in the same change. The raw layer and helper layer should remain available even when typed builders are used, so an intern can compare the generated object with Slack's documented Block Kit JSON.
 
 ```javascript
 const { defineBot } = require("slack");
@@ -396,7 +390,7 @@ Each phase should end with a working example and a focused commit. Update the de
 
 Extend `pkg/slackbot/model.go` or extract `messages.go` for the message payload and update request. Add initial block structs and validation in `pkg/slackbot/blocks.go`. Extend `internal/slacktransport/client.go` to convert supported blocks to SDK types and call `chat.update`. Update the JS reply/post decoder to accept blocks and use the same normalization for explicit replies and returned messages.
 
-Implement `internal/jsslack/ui_module.go` and `ui_builders.go`, register `slack/ui` in the existing registrar, and expose message, section, actions, button, and plain/mrkdwn constructors. Use one fixture showing a note title and button. Inspect the exact posted JSON offline and preview it with Block Kit Builder. At this checkpoint the button may be intentionally inert; document that clearly until Phase 2.
+Implement `internal/jsslack/ui_module.go` and `ui_builders.go`, register `slack/ui` in the existing registrar, and expose the low-level plain-object message path alongside message, section, actions, button, and plain/mrkdwn constructors. Use one fixture showing a note title and button. Inspect the exact posted JSON offline and preview it with Block Kit Builder. At this checkpoint the button may be intentionally inert; document that clearly until Phase 2.
 
 **Done when:** text-only ping still works, a returned rich message and an explicit rich post both serialize correctly, unknown fields fail usefully, and builder snapshots cannot be changed by later builder mutation.
 
@@ -410,7 +404,7 @@ Automatically acknowledge ordinary actions promptly, and dispatch them through e
 
 ### Phase 3: A complete modal edit
 
-Preserve the command/action trigger capability; add `views.open`, modal/input/text-input builders, view registration, submitted state decoding, and a response-bearing ACK path. Implement the explicit `ctx.ack.accept()` and `ctx.ack.errors()` operations. Add the deadline and duplicate-ACK handling described above. Keep all promise settlement on the owner and track interaction worker lifetimes with an errgroup.
+Preserve the command/action trigger capability; add `views.open`, modal/input/text-input builders, view registration, submitted state decoding, and a response-bearing ACK path. Implement the explicit `ctx.ack.accept()` and `ctx.ack.errors()` operations. Add the deadline and duplicate-ACK handling described above. Keep all promise settlement on the owner and use the existing invocation lifecycle.
 
 Run the note-editor acceptance example. Test submission while another handler is slow: the modal must not be silently accepted on timeout. Keep the busy/retry limitation documented. Add `views.update` with the received hash only if the example actually requires background loading or a changed layout. Preserving the same input block/action IDs allows Slack to retain input values across view updates.[^modals]
 
@@ -529,13 +523,22 @@ This is separate from UI construction. A research assistant would need to receiv
 - **Consequences:** Unsupported blocks stay explicitly unsupported until a use case justifies them.
 - **Status:** Proposed.
 
-### Decision: Deadline-aware local execution
+### Decision: Ship layers one through seven; defer execution scheduling
 
-- **Context:** Slack imposes a short deadline; the host serializes full invocations.
-- **Options considered:** A scheduler redesign, unbounded waiting, or bounded admission with retry.
-- **Decision:** Keep the local gate, bound UI admission, and never fabricate a successful submission ACK.
-- **Rationale:** This handles the real protocol requirement without a concurrency framework.
-- **Consequences:** A busy bot may ask the user to retry. Revisit only with evidence from ordinary use.
+- **Context:** The UI DSL needs both a low-level Block Kit escape hatch and a correct interaction acknowledgment protocol.
+- **Options considered:** Ship only fluent builders, ship raw objects without ACK support, or ship the raw/helper/builder layers together with ACK handling.
+- **Decision:** Implement layers one through seven in this ticket. Explicitly defer layer eight, which would add a separate interaction scheduler, worker reservation, or priority execution policy.
+- **Rationale:** Raw payloads make the first experiments possible, builders improve authoring, and ACK semantics are required by Slack itself. Scheduling addresses a different performance problem and is unnecessary for the local bot.
+- **Consequences:** The existing host execution model remains in place. A late ACK fails normally; the framework does not manufacture a successful response or create a second worker system.
+- **Status:** Proposed.
+
+### Decision: Deadline-aware acknowledgments with existing execution
+
+- **Context:** Slack imposes a short deadline; the host already serializes full invocations.
+- **Options considered:** A scheduler redesign, worker reservation, or a single ACK object on the existing dispatch path.
+- **Decision:** Keep the existing execution path and make the ACK object deadline-aware, single-use, and response-type aware.
+- **Rationale:** ACK semantics are core Slack protocol behavior. A new scheduler is a separate performance problem and is unnecessary for the local bot.
+- **Consequences:** A handler that misses the deadline fails normally and can be retried. No worker pool or priority policy is introduced.
 - **Status:** Proposed.
 
 The remaining questions are deliberately small: whether the first bot needs a static select; whether the public name should be `modal` or `form`; and whether a busy interaction is common enough to justify changing invocation concurrency. None blocks the research handoff. Newer component schema conflicts and workspace availability are explicit deferred verification tasks, not hidden assumptions in the core design.
