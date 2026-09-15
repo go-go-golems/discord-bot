@@ -187,3 +187,58 @@ Review `internal/slackconfig/store.go`, `pkg/slackcli/credentials.go`, and `pkg/
 Runtime import rejects missing profile/app, missing files, and known app/workspace mismatch. It writes `config.yaml` and `credentials.json` via private atomic replacement and emits only profile, installation, and team ID.
 
 Full validation for this milestone completed with the repository test suite in tmux: all packages passed with loopback socket access. The sandbox-only run had failed at the existing `httptest` IPv6 listener; the escalated tmux run passed `internal/slacktransport` as well. Full `build -buildvcs=false ./...`, `vet ./...`, focused tests, CLI help checks, `git diff --check`, and `docmgr doctor --ticket SLACK-CREDENTIALS-001` all pass.
+
+## Step 4: Commit the completed pragmatic implementation
+
+The implementation and ticket bookkeeping are committed. All seven ticket tasks are checked. Generated build and PDF artifacts from earlier work remain untracked and were intentionally excluded from this source commit.
+
+### Prompt Context
+
+See Steps 1–3 for the verbatim request and implementation decisions.
+
+**Assistant interpretation:** Finish the requested implementation with an auditable commit and diary record.
+
+**Inferred user intent:** Leave a usable, reviewable local Slack credential workflow in the repository.
+
+**Commit (code):** `23e819b` — `feat(slack): add pragmatic local credentials and profiles`
+
+### What I did
+
+- Committed the store, commands, profile-based app creation, runtime import, tests, help, and ticket updates.
+- Preserved the deprecated predecessor design as historical context.
+
+### Why
+
+The commit is the review boundary for the complete local scope.
+
+### What worked
+
+Full tests passed in tmux with loopback access; build and vet passed; CLI help and docmgr doctor passed.
+
+### What didn't work
+
+The unprivileged full-test attempt was blocked by the sandbox's IPv6 listener restriction, then passed with the required socket-enabled tmux run.
+
+### What I learned
+
+No cloud-scale reliability feature was needed to meet the local workflow: manual re-import is an adequate recovery path.
+
+### What was tricky to build
+
+Keep generated artifacts out of the source commit while retaining the ticket's implementation evidence and diary.
+
+### What warrants a second pair of eyes
+
+Review API request details for a real Slack workspace before using refresh or profile-based creation with production credentials.
+
+### What should be done in the future
+
+Optional real-workspace smoke test and production transport integration remain separate work.
+
+### Code review instructions
+
+Start at `23e819b`, inspect the seven checked tasks, and run `04-go-offline.sh test ./...` with loopback permission if needed.
+
+### Technical details
+
+Commit contains 14 files and 1,169 insertions. No supplied token file was read during automated validation, and no real Slack API mutation was performed by the tests.
