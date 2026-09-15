@@ -38,7 +38,7 @@ func TestInstallAppSavesRuntimeTokens(t *testing.T) {
 		require.Equal(t, "A_INSTALL", payload.AppID)
 		require.Equal(t, []string{"chat:write", "commands", "app_mentions:read"}, payload.BotScopes)
 		require.Empty(t, payload.OutgoingDomains)
-		require.Equal(t, "T_INSTALL", payload.TeamID)
+		require.Empty(t, payload.TeamID, "standalone developer installs omit team_id; it selects local storage only")
 		return appResponse(http.StatusOK, `{"ok":true,"app_id":"A_INSTALL","api_access_tokens":{"bot":"xoxb-secret","app_level":"xapp-secret"}}`), nil
 	})}
 	root, err := newBotsCommand(zerolog.Nop(), client)

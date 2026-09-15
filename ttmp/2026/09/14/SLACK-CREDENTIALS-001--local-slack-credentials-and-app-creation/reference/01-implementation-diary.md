@@ -484,3 +484,57 @@ Compare the profile resolver call in `install_app.go` with the design doc's CLI 
 ### Technical details
 
 The correction changes only pre-request validation. No Slack request is made when profile resolution fails, and all token redaction assertions remain unchanged.
+
+## Step 9: Correct the standalone developer-install request shape
+
+The first live install attempt returned Slack error `invalid_argument`. No tokens were returned and no local credentials were changed. Reviewing the Slack CLI implementation showed that it deliberately clears `team_id` for non-enterprise apps before serializing the `apps.developerInstall` request. The local command now follows that wire shape while retaining `--team-id` for local installation identity and storage.
+
+### Prompt Context
+
+**User prompt (verbatim):** "i ran go work use"
+
+**Assistant interpretation:** Retry the requested live install after correcting the Go workspace setup and the request mismatch discovered from the previous response.
+
+**Inferred user intent:** Complete the `ping` installation in the intended workspace, with minimal manual intervention.
+
+### What I did
+
+- Removed `team_id` from the standalone developer-install JSON request.
+- Updated the fake transport assertion and design documentation.
+- Preserved explicit team ID validation and `<profile>-<team-id>` local storage mapping.
+
+### Why
+
+The Slack CLI source sends `team_id` only as an organization grant identifier. For a standalone app, including the workspace ID produced the observed `invalid_argument` response.
+
+### What worked
+
+The focused offline tests passed after the request-shape correction. The earlier live attempt completed with a safe `invalid_argument` error and did not write runtime tokens.
+
+### What didn't work
+
+The first live request included `team_id` and Slack rejected it. The response contained only the error code; no secret-bearing response was logged.
+
+### What I learned
+
+The workspace ID is needed by this local credential store even when it is not an API argument for standalone developer installation.
+
+### What was tricky to build
+
+The same field name has two meanings in Slack CLI internals: an organization grant target in the API request and a local workspace selector in this tool. Keeping those roles separate avoids sending an invalid standalone argument.
+
+### What warrants a second pair of eyes
+
+Review the request body against the current Slack CLI source before future live installs, especially if enterprise-grid support is added.
+
+### What should be done in the future
+
+Add an explicit enterprise-install mode only if a real organization workflow requires it; do not infer one from a workspace ID.
+
+### Code review instructions
+
+Inspect `install_app.go` request serialization and compare it with `DeveloperAppInstall` in `/home/manuel/code/others/slack-cli/internal/api/app.go`.
+
+### Technical details
+
+The corrected JSON contains `app_id`, `bot_scopes`, and `outgoing_domains`; it omits `team_id`. The command still saves credentials under `profile-teamID` after a successful response.

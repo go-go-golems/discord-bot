@@ -45,7 +45,7 @@ POST https://slack.com/api/apps.developerInstall
 Authorization: Bearer <management access token>
 Content-Type: application/json
 
-{"app_id":"A123","bot_scopes":["chat:write","commands"],"outgoing_domains":[],"team_id":"T123"}
+{"app_id":"A123","bot_scopes":["chat:write","commands"],"outgoing_domains":[]}
 ```
 
 The response used by the CLI has this shape:
@@ -62,7 +62,7 @@ The response used by the CLI has this shape:
 }
 ```
 
-The local command only needs `bot` and `app_level`. A user token, when present, is ignored and never printed. The request's `bot_scopes` are derived from the existing `Manifest` generator, so app creation and installation use the same declared permissions. This avoids a second scope configuration that can drift from the bot code.
+The local command only needs `bot` and `app_level`. A user token, when present, is ignored and never printed. The request's `bot_scopes` are derived from the existing `Manifest` generator, so app creation and installation use the same declared permissions. This avoids a second scope configuration that can drift from the bot code. Slack CLI omits `team_id` for standalone workspace apps; this command still requires the ID to choose the local installation record, but does not send it in the request.
 
 The public references explain adjacent, supported APIs and behavior: [Slack CLI app install](https://docs.slack.dev/tools/slack-cli/reference/commands/slack_app_install/), [Slack CLI environment variables](https://docs.slack.dev/tools/slack-cli/guides/using-environment-variables-with-the-slack-cli/), [apps.manifest.create](https://api.slack.com/methods/apps.manifest.create), [OAuth v2 access](https://api.slack.com/methods/oauth.v2.access), and [Socket Mode connections.open](https://api.slack.com/methods/apps.connections.open). None of the public API pages documents `apps.developerInstall`; that absence is a material limitation of this feature.
 
@@ -123,7 +123,7 @@ load config.yaml and credentials.json
 resolve selected profile and its management credential
 require app_id and explicit team_id
 scopes = Manifest(descriptor).oauth_config.scopes.bot
-POST developerInstall with bearer management access token
+POST developerInstall with bearer management access token (omit team_id for standalone apps)
 decode bounded response
 require ok, matching app_id, bot token, app-level token
 installation = profile + "-" + team_id

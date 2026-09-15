@@ -74,8 +74,7 @@ func (c *command) installApp(ctx context.Context, d slackbot.Descriptor, s setti
 		AppID           string   `json:"app_id"`
 		BotScopes       []string `json:"bot_scopes"`
 		OutgoingDomains []string `json:"outgoing_domains"`
-		TeamID          string   `json:"team_id"`
-	}{app.AppID, scopes, []string{}, s.TeamID})
+	}{app.AppID, scopes, []string{}})
 	if err != nil {
 		return errors.Wrap(err, "encode developer installation request")
 	}
