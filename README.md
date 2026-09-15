@@ -46,8 +46,9 @@ discord-bot bots help ping --bot-repository ./examples/discord-bots
 
 The repository also contains a Go-hosted Slack runtime under `cmd/slack-bot`.
 It discovers JavaScript bots from `examples/slack-bots`, exposes the typed
-`require("slack")` API, and supports offline inspection/simulation alongside
-real Slack Socket Mode execution. A local profile stores management, app, and
+`require("slack")` API plus the native `require("slack/ui")` Block Kit
+builders, and supports offline inspection/simulation alongside real Slack
+Socket Mode execution. A local profile stores management, app, and
 workspace-installation credentials under `~/.config/go-go-slack/`.
 
 ```bash
@@ -340,7 +341,9 @@ go run ./cmd/slack-bot bots simulate ping --event-file examples/slack-bots/fixtu
 go run ./cmd/slack-bot help slack-offline
 ```
 
-See [the offline API guide](pkg/slackdoc/slack-offline.md) and
-[example bot](examples/slack-bots/ping/index.js). External Slack connections and broader
-retry/reconnect acceptance coverage remain planned. The commands above need no
-credentials; `bots run-local` uses an explicit synthetic connection file.
+See [the offline API guide](pkg/slackdoc/slack-offline.md), the
+[text bot](examples/slack-bots/ping/index.js), and the
+[Block Kit showcase](examples/slack-bots/ui-showcase/index.js). External Slack
+connections and broader retry/reconnect acceptance coverage remain planned.
+The commands above need no credentials; `bots run-local` uses an explicit
+synthetic connection file.

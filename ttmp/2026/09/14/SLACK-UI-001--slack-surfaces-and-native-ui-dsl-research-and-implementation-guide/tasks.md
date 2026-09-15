@@ -7,7 +7,7 @@
 - [x] Write intern guide with pragmatic phases, diagrams, API sketches, and tests <!-- t:tr85 -->
 - [x] Validate ticket, references, and render reading copy <!-- t:uvfo -->
 - [x] Upload the guide to reMarkable <!-- t:o9rw -->
-- [ ] Implement Phase 1: rich messages and initial Slack UI builders <!-- t:b7ti -->
+- [x] Implement Phase 1: rich messages and initial Slack UI builders <!-- t:b7ti -->
 - [ ] Implement Phase 2: button and static-select action routing <!-- t:p4l7 -->
 - [ ] Implement Phase 3: complete modal editor with deadline-aware ACKs <!-- t:hlcd -->
 - [ ] Update CLI inspection/simulation, TypeScript, embedded help, and example docs with implementation <!-- t:g02f -->

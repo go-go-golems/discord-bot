@@ -142,14 +142,25 @@ Registration must be synchronous. `defineBot` and `configure` can each be called
 - `ctx.store.get(key)`, `set(key,value)`, `delete(key)`, `keys()`: JSON values, copied on read/write, scoped by host and workspace. Missing keys return `undefined`; keys are sorted. State is in memory and disappears on restart.
 - `ctx.log.debug/info/warn/error(message)`: structured logs with bot and invocation IDs. Transport credentials are never part of the JS context.
 
-The Slack surface is intentionally small at this stage. The runtime supports
-plain text replies, `chat.postMessage` text with optional thread targeting,
-ephemeral slash-command responses, slash commands, and `app_mention` events.
-It does not yet expose a Slack Block Kit or UI DSL: buttons, select menus,
-modals, Home tabs, shortcuts, message actions, attachments, files, rich-text
-blocks, and canvases are outside the current contract. The Discord UI DSL is
-not reused because Slack's interaction payloads and validation rules are
-different.
+The Slack surface is intentionally small. The runtime supports plain text and
+validated low-level Block Kit message payloads, plus the native
+`require("slack/ui")` helpers for fallback text, sections, actions, buttons,
+headers, and dividers. The builders return detached JSON objects, so a bot can
+inspect or extend them before sending:
+
+```javascript
+const ui = require("slack/ui");
+return ui.message("A notification fallback")
+  .block(ui.section(ui.mrkdwn("*A section*")))
+  .block(ui.actions("actions", ui.button("note.edit", "Edit").value("n1")))
+  .build();
+```
+
+The current release does not yet route button/select actions or expose modal
+views, Home tabs, shortcuts, message actions, attachments, files, rich-text
+blocks, or canvases. The UI work is being implemented in phases; the Discord UI
+DSL is inspiration for construction style only because Slack's payloads and
+acknowledgment rules are different.
 
 Text must contain 1–4000 characters. Message options reject unknown fields. Context operations fail after an invocation closes. Native network operations are promises, backed by a bounded errgroup (16 concurrent operations per invocation) and settled on the VM owner. Await the operations whose result matters; only the handler's return/rejection determines the JS invocation result. Unawaited side effects should not be used for critical work.
 
