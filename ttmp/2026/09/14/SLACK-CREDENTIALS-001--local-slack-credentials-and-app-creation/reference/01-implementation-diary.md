@@ -455,6 +455,8 @@ ok github.com/go-go-golems/discord-bot/internal/slackconfig
 ok github.com/go-go-golems/discord-bot/cmd/slack-bot
 ```
 
+The correction was committed as `a3bd15f` (`fix(slack): honor default profile during install`).
+
 ### What didn't work
 
 The initial test of missing-profile behavior omitted `--config-dir`, so it loaded the developer's real default store and reached the fake HTTP response instead of the intended resolver error. Isolating the test directory fixed the test without changing runtime behavior.
