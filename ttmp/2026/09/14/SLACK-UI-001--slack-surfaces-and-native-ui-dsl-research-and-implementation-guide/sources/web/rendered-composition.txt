@@ -1,0 +1,49 @@
+Block KitCOMPOSITION OBJECTS
+Copy as markdown
+Composition objects
+
+Composition objects can be used inside of block elements and certain message payload fields. They are common JSON object patterns that you'll encounter frequently when building blocks or composing messages.
+
+The list of fields and values for each object describe the JSON that apps can use to generate each object.
+
+Name
+Description
+Confirmation dialog object
+
+Provides a dialog that adds a confirmation step to interactive elements.
+
+Conversation filter object
+
+Provides a way to filter the list of options in conversation selector menus.
+
+Dispatch action configuration object
+
+Defines when a plain-text input element will return a block_actions interaction payload.
+
+Option group object
+
+Used to group option objects in select menus.
+
+Option object
+
+Represents a single item in a number of item selection elements.
+
+Slack file object
+
+Defines an object containing Slack file information to be used in an image block or image element.
+
+Slack icon object
+
+Defines an object containing Slack icon information to be used in a card block.
+
+Text object
+
+Defines text for many different blocks and elements.
+
+Trigger object
+
+Defines an object containing trigger information.
+
+Workflow object
+
+Defines an object containing workflow information.

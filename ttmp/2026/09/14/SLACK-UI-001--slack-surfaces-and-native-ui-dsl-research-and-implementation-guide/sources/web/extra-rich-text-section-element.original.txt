@@ -1,0 +1,101 @@
+## Fields
+
+| Field | Type | Description | Required? |
+| --- | --- | --- | --- |
+| `type` | String | The type of sub-element; in this case, `rich_text_section`. | Required |
+| `elements` | Object \[\] | An array of rich text elements. Rich text elements include [`attachment_mention`](/reference/block-kit/block-elements/attachment-mention-element), [`broadcast`](/reference/block-kit/block-elements/broadcast-element), [`canvas`](/reference/block-kit/block-elements/canvas-element), [`canvas_user_mention`](/reference/block-kit/block-elements/canvas-user-mention-element), [`canvas_message_unfurl`](/reference/block-kit/block-elements/canvas-message-unfurl-element), [`channel`](/reference/block-kit/block-elements/channel-element), [`citation`](/reference/block-kit/block-elements/citation-element), [`color`](/reference/block-kit/block-elements/color-element), [`date`](/reference/block-kit/block-elements/date-element), [`emoji`](/reference/block-kit/block-elements/emoji-element), [`file`](/reference/block-kit/block-elements/file-element), [`link`](/reference/block-kit/block-elements/link-element), [`list_record`](/reference/block-kit/block-elements/list-record-element), [`message_mention`](/reference/block-kit/block-elements/message-mention-element), [`salesforce_data_field`](/reference/block-kit/block-elements/salesforce-data-field-element), [`tag`](/reference/block-kit/block-elements/tag-element), [`team`](/reference/block-kit/block-elements/team-element), [`text`](/reference/block-kit/block-elements/text-element), [`user`](/reference/block-kit/block-elements/user-element), [`usergroup`](/reference/block-kit/block-elements/usergroup-element), [`work_object_mention`](/reference/block-kit/block-elements/work-object-mention-element), [`workflow_mention`](/reference/block-kit/block-elements/workflow-mention-element). | Required |
+
+## Example
+
+![An example of a rich\_text\_section block](/assets/images/bk_rich_text_section_example-2ab6aae732c461ab4f39e2da4802f7a0.png)
+
+- JSON
+- Python Slack SDK
+- Node Slack SDK
+- Java Slack SDK
+
+```json
+{
+    "blocks": [
+        {
+            "type": "rich_text",
+            "elements": [
+                {
+                    "type": "rich_text_section",
+                    "elements": [
+                        {
+                            "type": "text",
+                            "text": "Hello there, I am a basic rich text block!"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "rich_text",
+            "elements": [
+                {
+                    "type": "rich_text_section",
+                    "elements": [
+                        {
+                            "type": "text",
+                            "text": "Hello there, "
+                        },
+                        {
+                            "type": "text",
+                            "text": "I am a bold rich text block!",
+                            "style": {
+                                "bold": true
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "rich_text",
+            "elements": [
+                {
+                    "type": "rich_text_section",
+                    "elements": [
+                        {
+                            "type": "text",
+                            "text": "Hello there, "
+                        },
+                        {
+                            "type": "text",
+                            "text": "I am an italic rich text block!",
+                            "style": {
+                                "italic": true
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "rich_text",
+            "elements": [
+                {
+                    "type": "rich_text_section",
+                    "elements": [
+                        {
+                            "type": "text",
+                            "text": "Hello there, "
+                        },
+                        {
+                            "type": "text",
+                            "text": "I am a strikethrough rich text block!",
+                            "style": {
+                                "strike": true
+                            }
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}
+```
+
+[View in Block Kit Builder](https://app.slack.com/block-kit-builder/#%7B%22blocks%22:%5B%7B%22type%22:%22rich_text%22,%22elements%22:%5B%7B%22type%22:%22rich_text_section%22,%22elements%22:%5B%7B%22type%22:%22text%22,%22text%22:%22Hello%20there,%20I%20am%20a%20basic%20rich%20text%20block!%22%7D%5D%7D%5D%7D,%7B%22type%22:%22rich_text%22,%22elements%22:%5B%7B%22type%22:%22rich_text_section%22,%22elements%22:%5B%7B%22type%22:%22text%22,%22text%22:%22Hello%20there,%20%22%7D,%7B%22type%22:%22text%22,%22text%22:%22I%20am%20a%20bold%20rich%20text%20block!%22,%22style%22:%7B%22bold%22:true%7D%7D%5D%7D%5D%7D,%7B%22type%22:%22rich_text%22,%22elements%22:%5B%7B%22type%22:%22rich_text_section%22,%22elements%22:%5B%7B%22type%22:%22text%22,%22text%22:%22Hello%20there,%20%22%7D,%7B%22type%22:%22text%22,%22text%22:%22I%20am%20an%20italic%20rich%20text%20block!%22,%22style%22:%7B%22italic%22:true%7D%7D%5D%7D%5D%7D,%7B%22type%22:%22rich_text%22,%22elements%22:%5B%7B%22type%22:%22rich_text_section%22,%22elements%22:%5B%7B%22type%22:%22text%22,%22text%22:%22Hello%20there,%20%22%7D,%7B%22type%22:%22text%22,%22text%22:%22I%20am%20a%20strikethrough%20rich%20text%20block!%22,%22style%22:%7B%22strike%22:true%7D%7D%5D%7D%5D%7D%5D%7D)

@@ -1,0 +1,114 @@
+---
+Title: "43 reference events app_home_opened"
+Ticket: SLACK-UI-001
+Status: active
+Topics: [slack, architecture]
+DocType: reference
+Intent: long-term
+Owners: []
+RelatedFiles: []
+ExternalSources: ["https://docs.slack.dev/reference/events/app_home_opened/"]
+Summary: "Official Slack documentation source capture; see sources catalog for extraction details."
+LastUpdated: 2026-09-14T23:00:00-04:00
+WhatFor: "Research evidence."
+WhenToUse: "Check the original API contract."
+---
+
+## Facts
+
+**Required Scopes**
+
+No scopes required!
+
+**Compatible APIs**
+
+[`Events`](https://docs.slack.dev/apis/events-api)
+
+## Usage info
+
+This example includes both the [event wrapper](https://docs.slack.dev/apis/events-api/#callback-field) and the [event structure](https://docs.slack.dev/apis/events-api/#event-type-structure) for the `app_home_opened` event.
+
+```json
+{
+    "token": "XXYYZZ",
+    "team_id": "T123ABC456",
+    "api_app_id": "A123ABC456",
+    "event": {
+        "type": "app_home_opened",
+        "user": "U123ABC456",
+        "channel": "D123ABC456",
+        "event_ts": "1515449522000016",
+        "tab": "home",
+        "view": {
+            "id": "V123ABC456",
+            "team_id": "T123ABC456",
+            "type": "home",
+            "blocks": [
+                "..."
+            ],
+            "private_metadata": "",
+            "callback_id": "",
+            "hash": "1231232323.12321312",
+            "clear_on_close": false,
+            "notify_on_close": false,
+            "root_view_id": "V123ABC456",
+            "app_id": "A123ABC456",
+            "external_id": "",
+            "app_installed_team_id": "T123ABC456",
+            "bot_id": "B123ABC456"
+        }
+    },
+    "type": "event_callback",
+    "authorizations": [
+        {
+            "team_id": "T123ABC456",
+            "user_id": "U123ABC456",
+            "is_bot": false,
+            "is_enterprise_install": false,
+        }
+    ],
+    "event_id": "Ev123ABC456",
+    "event_time": 123456789
+}
+```
+
+This [app event](https://docs.slack.dev/apis/events-api/#app_events) notifies your app when a user has entered the [App Home](https://docs.slack.dev/surfaces/app-home).
+
+Your Slack app must have a bot user configured and installed to use this event.
+
+If the user opens a tab within the App Home, the event payload for this event will reference that in the `tab` field (such as "messages" for the Messages tab and "home" for the Home tab). If they opened a [Home tab](https://docs.slack.dev/surfaces/app-home) and that tab has had a `view` published at least once before, a `view` field will also be included. That `view` field will contain the current state of the Home tab, including the list of `blocks`, and various pieces of metadata.
+
+If the app is subscribed to the [`app_context_changed`](https://docs.slack.dev/reference/events/app_context_changed) event, Slack will also send the app context (via the `context` property) to these events. This context provides more information about what a user is currently viewing when they send a message.
+
+Example:
+
+```json
+{
+  "type": "app_home_opened",
+  "user": "U012345ABCDE",
+  "channel": "D0123ABCDEF",
+  "context": {
+    "entities": [
+      {
+        "type": "slack#/types/message_context",
+        "value": {
+          "message_ts": "1782919931.619439",
+          "channel_id": "C01AB234CDE"
+        },
+        "team_id": "T012345ABCDE"
+      },
+      {
+        "type": "slack#/types/channel_id",
+        "value": "C012345ABCDE",
+        "team_id": "T01A2B3C4D"
+      }
+    ]
+  }
+}
+```
+
+Use the `app_home_opened` event to begin a friendly onboarding flow from your app, a whimsical welcome message, or a deep-dive into a detailed dialog. Since the `app_home_opened` event is only sent to your app when a user has already clicked on your app, you can be sure that your attentions are welcome.
+
+`app_home_opened` events are just like other `message` events sent over the Events API, but their `type` indicates `app_home_opened`.
+
+Learn more about [using `app_home_opened` for onboarding](https://docs.slack.dev/surfaces/app-home).

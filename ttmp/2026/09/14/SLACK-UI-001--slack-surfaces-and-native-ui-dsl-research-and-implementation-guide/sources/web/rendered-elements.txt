@@ -1,0 +1,299 @@
+Block KitBLOCK KIT ELEMENTS
+Copy as markdown
+Block Elements
+
+This page lists the JSON payloads that your app can use to generate each element. Select the block element you'd like to build:
+
+All
+Rich text
+Section
+Actions
+Input
+Context actions
+Context
+Table
+Task card
+All
+Modals
+Messages
+Home tabs
+Name
+Description
+Blocks
+Surfaces
+Attachment mention
+
+Renders as a rich app attachment or entity reference.
+
+Rich text
+ModalsMessagesHome tabs
+Broadcast
+
+Displays a broadcast mention such as here, channel, or everyone.
+
+Rich text
+ModalsMessagesHome tabs
+Button
+
+Allows users a direct path to performing basic actions.
+
+SectionActions
+ModalsMessagesHome tabs
+Canvas
+
+Renders as a link to a canvas.
+
+Rich text
+ModalsMessagesHome tabs
+Canvas message unfurl
+
+Renders as an inline preview of a message inside a canvas.
+
+Rich text
+ModalsMessagesHome tabs
+Canvas user mention
+
+Renders as a user mention in canvas content.
+
+Rich text
+ModalsMessagesHome tabs
+Channel
+
+Renders as a mention of a channel.
+
+Rich text
+ModalsMessagesHome tabs
+Checkboxes
+
+Allows users to choose multiple items from a list of options.
+
+SectionActionsInput
+ModalsMessagesHome tabs
+Citation
+
+Renders as an AI citation (file, external, web, message, or memory).
+
+Rich text
+ModalsMessagesHome tabs
+Color
+
+Displays a color swatch from a hex value.
+
+Rich text
+ModalsMessagesHome tabs
+Date
+
+Displays a formatted, localized date.
+
+Rich text
+ModalsMessagesHome tabs
+Date picker
+
+Allows users to select a date from a calendar style UI.
+
+SectionActionsInput
+ModalsMessagesHome tabs
+Datetime picker
+
+Allows users to select both a date and a time of day.
+
+ActionsInput
+ModalsMessages
+Email input
+
+Allows user to enter an email into a single-line field.
+
+Input
+Modals
+Emoji
+
+Displays an emoji.
+
+Rich text
+ModalsMessagesHome tabs
+Feedback buttons
+
+Buttons to indicate positive or negative feedback.
+
+Context actions
+Messages
+File
+
+Renders as a link to a Slack file.
+
+Rich text
+ModalsMessagesHome tabs
+File input
+
+Allows user to upload files.
+
+Input
+Modals
+Icon button
+
+An icon button to perform actions.
+
+Context actions
+Messages
+Image
+
+Displays an image as part of a larger block of content.
+
+SectionContext
+ModalsMessagesHome tabs
+Link
+
+Displays a hyperlink.
+
+Rich text
+ModalsMessagesHome tabs
+List record
+
+Renders as a link to a Slack list record.
+
+Rich text
+ModalsMessagesHome tabs
+Message mention
+
+Renders as a link to a Slack message.
+
+Rich text
+ModalsMessagesHome tabs
+Multi-select menu
+
+Allows users to select multiple items from a list of options.
+
+SectionActionsInput
+ModalsMessagesHome tabs
+Number input
+
+Allows user to enter a number into a single-line field.
+
+Input
+Modals
+Overflow menu
+
+Allows users to press a button to view a list of options.
+
+SectionActions
+ModalsMessagesHome tabs
+Plain-text input
+
+Allows users to enter freeform text data into a single-line or multi-line field.
+
+Input
+ModalsMessagesHome tabs
+Radio button group
+
+Allows users to choose one item from a list of possible options.
+
+SectionActionsInput
+ModalsMessagesHome tabs
+Rich text input
+
+Allows users to enter formatted text in a WYSIWYG composer, offering the same messaging writing experience as in Slack.
+
+InputTable
+ModalsHome tabs
+Rich text list
+
+Displays a list of rich text items.
+
+Rich text
+ModalsMessagesHome tabs
+Rich text preformatted
+
+Displays a preformatted rich text element.
+
+Rich text
+ModalsMessagesHome tabs
+Rich text quote
+
+Displays a rich text quote block.
+
+Rich text
+ModalsMessagesHome tabs
+Rich text section
+
+A section element that holds rich text elements.
+
+Rich text
+ModalsMessagesHome tabs
+Salesforce data field
+
+Renders as a Salesforce data field reference.
+
+Rich text
+ModalsMessagesHome tabs
+Select menu
+
+Allows users to choose an option from a drop down menu.
+
+SectionActionsInput
+ModalsMessagesHome tabs
+Tag
+
+Renders as a colored tag or pill.
+
+Rich text
+ModalsMessagesHome tabs
+Team
+
+Renders as a mention of a workspace or team.
+
+Rich text
+ModalsMessagesHome tabs
+Text
+
+Displays text, optionally with styling.
+
+Rich text
+ModalsMessagesHome tabs
+Time picker
+
+Allows users to enter numerical data into a single-line field.
+
+SectionActionsInput
+ModalsMessagesHome tabs
+URL input
+
+Allows user to enter a URL into a single-line field.
+
+Input
+Modals
+URL source
+
+Displays a URL source for referencing within a task card block.
+
+Task card
+Messages
+User
+
+Renders as a mention of a user.
+
+Rich text
+ModalsMessagesHome tabs
+Usergroup
+
+Renders as a mention of a user group.
+
+Rich text
+ModalsMessagesHome tabs
+Work object mention
+
+Renders as a Work Object reference.
+
+Rich text
+ModalsMessagesHome tabs
+Workflow button
+
+Allows users to run a link trigger with customizable inputs.
+
+SectionActions
+Messages
+Workflow mention
+
+Renders as a link to a workflow.
+
+Rich text
+ModalsMessagesHome tabs

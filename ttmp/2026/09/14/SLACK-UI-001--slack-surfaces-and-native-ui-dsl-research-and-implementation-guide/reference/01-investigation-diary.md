@@ -63,3 +63,63 @@ Created a new research ticket and traced the current Slack dispatcher and Discor
 ### Technical details
 - Baseline revision is recorded in sources/code/REVISION.txt; SDK is v0.17.3.
 - No runtime feature code or live bot process was changed.
+
+## Step 2: Research surface contracts and constrain the implementation
+
+Archived the Slack surface documentation and traced the interactions needed for a complete local note editor. The guide recommends three small implementation phases and keeps the rest of the surface catalog as optional reference material.
+
+### Prompt Context
+**User prompt (verbatim):** "save all the relevant pages and documentation to the sources folder of the ticket. Feel free to use browser tools or script them to process the documents. commit at appropriate intervals and keep a detailed diary as you work (using the diary format from the skill)"
+
+**User prompt (verbatim):** "and despite me telling you to write a detailed / textbook style document doesn't mean this applies to the design itself, we don't want to astronaut engineer, as you are sometimes wont to do. we love solid engineering and take pride in being thorough, but we are also pragmatic"
+
+**Assistant interpretation:** Preserve research thoroughly while keeping the recommended implementation small.
+**Inferred user intent:** Make careful engineering decisions without creating unnecessary architecture.
+**Commit (code):** d8d1027 — "docs(slack): establish UI research ticket and source baseline"
+
+### What I did
+- Captured official pages with Defuddle, browser-rendered catalog tables, and linked element/composition references.
+- Ran scripts/02-run-sdk-probe.sh against slack-go v0.17.3.
+- Wrote the intern guide with a full note-edit example, surface matrix, deadline pseudocode, file-level phases, API references, and test expectations.
+- Kept messages, actions, and one modal as the core; Home and all other surfaces are independent follow-ups.
+
+### Why
+- The interaction acknowledgment protocol is a real correctness requirement even for one local bot.
+- SDK breadth and documentation breadth must not force a matching implementation scope.
+
+### What worked
+- The SDK probe preserved section blocks but reduced table and task_card blocks to their type, demonstrating unknown-block data loss.
+- Browser rendering populated compatibility tables absent from static extraction.
+- Browser-captured HTML successfully passed through Defuddle for the two URL captures that timed out.
+
+### What didn't work
+- The first network-enabled batch stopped with `subprocess.TimeoutExpired` for `https://docs.slack.dev/reference/methods/slackLists.create/` after 60 seconds. Added bounded exception handling; lists and Work Objects implementation still timed out after 35 seconds, then were recovered through the browser.
+- Browser code attempting filesystem import failed with `TypeError [ERR_VM_DYNAMIC_IMPORT_CALLBACK_MISSING]: A dynamic import callback was not specified.` Used browser_evaluate's supported filename output instead.
+- Static HTML parsing showed empty catalog tables. Retained that evidence and captured rendered HTML and text.
+- docmgr doctor warned `unknown_topics` for slack. Added the topic before final validation.
+
+### What I learned
+- Newer references include cards, containers, interactive tables, charts, and agent-session changes; the older Assistant examples are not the whole current API.
+- Card and alert tables conflict with examples. Those features need a live serialization check before implementation.
+- Ordinary Slack buttons do not expose Discord's disabled-button property.
+
+### What was tricky to build
+- The existing gate serializes complete invocations, independently of VM ownership. The design retains it with bounded admission and a retry limitation rather than adding a scheduler.
+- Modal duplicate handling must preserve the original semantic ACK, because an empty duplicate ACK can accept an invalid form.
+
+### What warrants a second pair of eyes
+- The single-use ACK transition and cancellation before side effects.
+- Surface restrictions and differences between wire documentation and the pinned SDK.
+
+### What should be done in the future
+- Implement core phases only after design review; verify optional newer blocks in the actual workspace when needed.
+
+### Code review instructions
+- Read the guide's note-editor example and phases, then compare sources/sdk-probe-output.txt with the probe code.
+- Review sources/catalog-complete.json for source provenance and recovered captures.
+
+### Technical details
+- No production Go code, credentials, manifests, or running Slack process was changed.
+- Plain message fallback is an explicit host policy; unsupported block fields are not silently accepted.
+
+Source-integrity check during this step found two missing links to the original timed-out capture filenames: `web/41-reference-methods-slackLists.create.md` and `web/49-messaging-work-objects-implementation.md`. Both had recovered browser captures, but the catalog continuation skipped their recovery metadata. Corrected the catalog and README links to the rendered captures, then reran the check.

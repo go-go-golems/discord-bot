@@ -1,0 +1,1122 @@
+[
+  {
+    "id": 1,
+    "url": "https://docs.slack.dev/surfaces/",
+    "file": "web/01-surfaces.md",
+    "bytes": 5607,
+    "exit": 0,
+    "sha256": "6363dc1250ccea98362635db4dab9ca9800b44e36a72645abe7ca2146c7e704a",
+    "diagnostic": "",
+    "archived_sha256": "73d82d96e075b77748bb9da2fff71682a4e4289a7cf3bf7bab888a9a29040a76"
+  },
+  {
+    "id": 2,
+    "url": "https://docs.slack.dev/surfaces/app-home/",
+    "file": "web/02-surfaces-app-home.md",
+    "bytes": 15697,
+    "exit": 0,
+    "sha256": "31d184b7aeeaca65087c22a7f176616a7aaf9e62f6041d9282e25062704d8d2d",
+    "diagnostic": "",
+    "archived_sha256": "27c9f7f97f029d84ca059394c2d258d2a4963000cc62df32248f24172304a3b5"
+  },
+  {
+    "id": 3,
+    "url": "https://docs.slack.dev/surfaces/modals/",
+    "file": "web/03-surfaces-modals.md",
+    "bytes": 26545,
+    "exit": 0,
+    "sha256": "b04940516088631a44b096df8c397e583b488b17543cd72f94fecf310be3fc99",
+    "diagnostic": "",
+    "archived_sha256": "692e935fb5fad1ff04ff938cdea4039c033ab1c5f456b61f2ce039349a77dbf1"
+  },
+  {
+    "id": 4,
+    "url": "https://docs.slack.dev/surfaces/canvases/",
+    "file": "web/04-surfaces-canvases.md",
+    "bytes": 12067,
+    "exit": 0,
+    "sha256": "a3fa52040c88b399be147d2e55760cb15813067dbabb0613a0e84b1436489915",
+    "diagnostic": "",
+    "archived_sha256": "e7ae23ce48a1fb5048878936bf4768dc1725436de1afb872ec3aa36c818e5b33"
+  },
+  {
+    "id": 5,
+    "url": "https://docs.slack.dev/surfaces/lists/",
+    "file": "web/05-surfaces-lists.md",
+    "bytes": 1274,
+    "exit": 0,
+    "sha256": "41730337c3844938f3c366d8692e4ec5a6e8de9d8fb6843c9e511f1d40c21f7f",
+    "diagnostic": "",
+    "archived_sha256": "1ed6324a53a5ee37a3a96b223aaa4f206896fd9bdb438c027e6f0105b470ec3f"
+  },
+  {
+    "id": 6,
+    "url": "https://docs.slack.dev/surfaces/split-view/",
+    "file": "web/06-surfaces-split-view.md",
+    "bytes": 1019,
+    "exit": 0,
+    "sha256": "3017df24fdf81681e08fdda80a7487d510eb038661de2a0d05baa9206715f8a0",
+    "diagnostic": "",
+    "archived_sha256": "d3eeabada2c3caa42efb32cb2d7e8cebeb06d4cb242b2107f03287f85827c3f6"
+  },
+  {
+    "id": 7,
+    "url": "https://docs.slack.dev/block-kit/",
+    "file": "web/07-block-kit.md",
+    "bytes": 5969,
+    "exit": 0,
+    "sha256": "c70af6e6bbfab81fdd233f3b5e1fb508a937502affdcaac0037106c1c559e59f",
+    "diagnostic": "",
+    "archived_sha256": "7d8932ffa51390163702ab902ba025ded6a77fcb8dc7787b5b2bb973a4996cc1"
+  },
+  {
+    "id": 8,
+    "url": "https://docs.slack.dev/reference/block-kit/blocks/",
+    "file": "web/08-reference-block-kit-blocks.md",
+    "bytes": 357,
+    "exit": 0,
+    "sha256": "0c511a3c76e1eb0b6c7407ba7136b5115d4d2401a2485091ee78eed498eb0970",
+    "diagnostic": "",
+    "archived_sha256": "8bf7a71d3d4c6e3b0375723ff36bba0c1383ce2850310f1406bb5cccf19bc7b8"
+  },
+  {
+    "id": 9,
+    "url": "https://docs.slack.dev/reference/block-kit/block-elements/",
+    "file": "web/09-reference-block-kit-block-elements.md",
+    "bytes": 164,
+    "exit": 0,
+    "sha256": "5d1dc24d8309ba228ff6782448520bedd56f5029f75ee04831f07fc49d435922",
+    "diagnostic": "",
+    "archived_sha256": "8b3b4158621e3b544544e20f2ea48bb13076caee3a461759c3de2421af12f6a9"
+  },
+  {
+    "id": 10,
+    "url": "https://docs.slack.dev/reference/block-kit/composition-objects/",
+    "file": "web/10-reference-block-kit-composition-objects.md",
+    "bytes": 423,
+    "exit": 0,
+    "sha256": "0b294cd48efbe76369e667e218d22352504fcdabfd3fa490e4a6aaf21e947712",
+    "diagnostic": "",
+    "archived_sha256": "6ab23eee87921bf4a02516e476f9d5102aa8f08e5300a842f120270a482304c7"
+  },
+  {
+    "id": 11,
+    "url": "https://docs.slack.dev/interactivity/handling-user-interaction/",
+    "file": "web/11-interactivity-handling-user-interaction.md",
+    "bytes": 14165,
+    "exit": 0,
+    "sha256": "3d36df48a9bdc1d4b3dd728b17e5056ffbbd9bd9e482e80a0cfc93762b89fd53",
+    "diagnostic": "",
+    "archived_sha256": "331c8b435899b37db2de09016656994eb392b70f709642a2dc6442844f043cb5"
+  },
+  {
+    "id": 12,
+    "url": "https://docs.slack.dev/apis/events-api/using-socket-mode/",
+    "file": "web/12-apis-events-api-using-socket-mode.md",
+    "bytes": 16788,
+    "exit": 0,
+    "sha256": "ab0b2f2e243af43aeb3a60138eab6d08f3b635de05eee8f5a2afe4f30b77e44b",
+    "diagnostic": "",
+    "archived_sha256": "d9db4d24d5361611da4254fac7b4b7768ecd325202177f4247d1e54661991778"
+  },
+  {
+    "id": 13,
+    "url": "https://docs.slack.dev/reference/interaction-payloads/block_actions-payload/",
+    "file": "web/13-reference-interaction-payloads-block_actions-payload.md",
+    "bytes": 10475,
+    "exit": 0,
+    "sha256": "62b7f1dbd040d265f15dd50992cab32cf49814f1c385cff3c6653f2a1c435825",
+    "diagnostic": "",
+    "archived_sha256": "d565a7733fc8c5e58b87f2f7a69d38c69d46eb3317ad855accb33f423fb3a486"
+  },
+  {
+    "id": 14,
+    "url": "https://docs.slack.dev/reference/interaction-payloads/block_suggestion-payload/",
+    "file": "web/14-reference-interaction-payloads-block_suggestion-payload.md",
+    "bytes": 6697,
+    "exit": 0,
+    "sha256": "39ae592029f794a9de6ffbd3067cc11374726a168de08220799c13fcc75b4771",
+    "diagnostic": "",
+    "archived_sha256": "f3098cfdd3a61499aa53769b2b1e1505e26c9ea6174932d1d38de8d5e6a40494"
+  },
+  {
+    "id": 15,
+    "url": "https://docs.slack.dev/reference/interaction-payloads/view-interactions-payload/",
+    "file": "web/15-reference-interaction-payloads-view-interactions-payload.md",
+    "bytes": 8054,
+    "exit": 0,
+    "sha256": "e71556844f0996a870ac9d01b5b8db2417839761acea3c3b87d22f9fd273461f",
+    "diagnostic": "",
+    "archived_sha256": "a4480b5c25d80085571b93fe44f898c9dee8c47ca7adb0af6dff2383ac65983e"
+  },
+  {
+    "id": 16,
+    "url": "https://docs.slack.dev/reference/views/modal-views/",
+    "file": "web/16-reference-views-modal-views.md",
+    "bytes": 3973,
+    "exit": 0,
+    "sha256": "57892bb2f3179b83537e06ee6cf3d6b462b9b575a2465e33dc18abd495c764f5",
+    "diagnostic": "",
+    "archived_sha256": "87204bf4cfecfb437910f02f9a542f42abdbecd12944d53d3374d1984a5be080"
+  },
+  {
+    "id": 17,
+    "url": "https://docs.slack.dev/reference/methods/chat.postMessage/",
+    "file": "web/17-reference-methods-chat.postMessage.md",
+    "bytes": 22048,
+    "exit": 0,
+    "sha256": "1eacac5dcff037e38a0ec7a01d406c322589908977ba5bebc8bfd1080e74717a",
+    "diagnostic": "",
+    "archived_sha256": "e0b52ad82608b84f1f1cb90bbe2fe052d8a90ae81f2a6f02138de3f34d7a872e"
+  },
+  {
+    "id": 18,
+    "url": "https://docs.slack.dev/reference/methods/chat.update/",
+    "file": "web/18-reference-methods-chat.update.md",
+    "bytes": 12144,
+    "exit": 0,
+    "sha256": "7d288628ab82fd62ec0238449defb78573f1e0548a8774d69d81faba808a0131",
+    "diagnostic": "",
+    "archived_sha256": "b7d6c2f7e28865b90dc192b26d8ccc8d1fe417ea981b3636617353584fc3a1b2"
+  },
+  {
+    "id": 19,
+    "url": "https://docs.slack.dev/reference/methods/chat.postEphemeral/",
+    "file": "web/19-reference-methods-chat.postEphemeral.md",
+    "bytes": 13477,
+    "exit": 0,
+    "sha256": "b14b8b04d803a7dd3b810ebe60e495cd53d1333b1a60c9f4af4a5ec53a458d92",
+    "diagnostic": "",
+    "archived_sha256": "b8bc1f88570d3ff0c9285a36871204f0a6ff2646d385256fee80d2d9ef0b9a3b"
+  },
+  {
+    "id": 20,
+    "url": "https://docs.slack.dev/reference/methods/views.open/",
+    "file": "web/20-reference-methods-views.open.md",
+    "bytes": 5972,
+    "exit": 0,
+    "sha256": "e7b8663b23e6f46af7ac5c75c34b5dc0413dcf381437eb35319b3440a114b35d",
+    "diagnostic": "",
+    "archived_sha256": "87c1cc4972ead927b032a1e19a81424cca4c77a91834f85dd4c9d7265df21462"
+  },
+  {
+    "id": 21,
+    "url": "https://docs.slack.dev/reference/methods/views.update/",
+    "file": "web/21-reference-methods-views.update.md",
+    "bytes": 5921,
+    "exit": 0,
+    "sha256": "f2a2209f229d9775af9382607cbdd009713a23f29742e6bfecce743d9bb86360",
+    "diagnostic": "",
+    "archived_sha256": "b84f7b516be114592c3859be4b27e4e70ac940eb8a5b6e6b0c9ee41271f7644f"
+  },
+  {
+    "id": 22,
+    "url": "https://docs.slack.dev/reference/methods/views.publish/",
+    "file": "web/22-reference-methods-views.publish.md",
+    "bytes": 5697,
+    "exit": 0,
+    "sha256": "a85b2795567d3c40c9cb67391b4abc918006df15cde342186faef088b0b0035c",
+    "diagnostic": "",
+    "archived_sha256": "fd933698d2b4ebae1502e472fa29edc76f00672087b0172e7230b3c49cbf70a3"
+  },
+  {
+    "id": 23,
+    "url": "https://docs.slack.dev/reference/block-kit/blocks/input-block/",
+    "file": "web/23-reference-block-kit-blocks-input-block.md",
+    "bytes": 11700,
+    "exit": 0,
+    "sha256": "d1fb5a8eae0751d2830bc4df2c663f549517053f2fe2c5b961d38487c17316a3",
+    "diagnostic": "",
+    "archived_sha256": "ec151ae341c8c334dc9b19c346a4773b503b508bff3162a0cde5d8dff8d1b419"
+  },
+  {
+    "id": 24,
+    "url": "https://docs.slack.dev/reference/block-kit/blocks/section-block/",
+    "file": "web/24-reference-block-kit-blocks-section-block.md",
+    "bytes": 3441,
+    "exit": 0,
+    "sha256": "6f737c14bea71043f353f082d72ea9dc0a8a7c6b6a8686e9f096b83c09f4ff0b",
+    "diagnostic": "",
+    "archived_sha256": "3ffa81ac280beaa29bbb85baff3ebddc610f026db20fc1534c1c89ba4bffd048"
+  },
+  {
+    "id": 25,
+    "url": "https://docs.slack.dev/reference/block-kit/blocks/actions-block/",
+    "file": "web/25-reference-block-kit-blocks-actions-block.md",
+    "bytes": 28939,
+    "exit": 0,
+    "sha256": "75dd10a1b0a7c6bb42fe3f6e9820633cb66fe0247244297ae9fa0274c0327c3c",
+    "diagnostic": "",
+    "archived_sha256": "e6844d18504eac3d9b925dd7c7f79cde0a016c10dece99cefb516402d5f62a67"
+  },
+  {
+    "id": 26,
+    "url": "https://docs.slack.dev/reference/block-kit/block-elements/button-element/",
+    "file": "web/26-reference-block-kit-block-elements-button-element.md",
+    "bytes": 9826,
+    "exit": 0,
+    "sha256": "cb085c29d3039092f8a11baff4db76464969d7d216e5a1b60b67ea8666263894",
+    "diagnostic": "",
+    "archived_sha256": "fdad9c4043a8e32b8f27e5157bd284a6fffd649f65b7aae26a5232d22f5d8484"
+  },
+  {
+    "id": 27,
+    "url": "https://docs.slack.dev/reference/block-kit/block-elements/select-menu-element/",
+    "file": "web/27-reference-block-kit-block-elements-select-menu-element.md",
+    "bytes": 13108,
+    "exit": 0,
+    "sha256": "6696f6f6b72f0aea8919fc1be8bf1e7cc072f5cd95aab4af904ed919f843b296",
+    "diagnostic": "",
+    "archived_sha256": "16e1dcf9deb4166c6fc149221114568c2661df7af7a1685721e9783883459158"
+  },
+  {
+    "id": 28,
+    "url": "https://docs.slack.dev/reference/block-kit/blocks/table-block/",
+    "file": "web/28-reference-block-kit-blocks-table-block.md",
+    "bytes": 2841,
+    "exit": 0,
+    "sha256": "6154cde17324cd6b06757d3d9d5f0943ae23f062b3551132c7206c55f85b2648",
+    "diagnostic": "",
+    "archived_sha256": "da97715b45f2ac415edb47db6f41732155973297d1e2811c65c9d0ede6357c1b"
+  },
+  {
+    "id": 29,
+    "url": "https://docs.slack.dev/reference/block-kit/blocks/markdown-block/",
+    "file": "web/29-reference-block-kit-blocks-markdown-block.md",
+    "bytes": 7630,
+    "exit": 0,
+    "sha256": "c252086640192f3c7da697c8d3db9903fc6b6de6b454cf23d0a7b6a520efebb2",
+    "diagnostic": "",
+    "archived_sha256": "79107014c8ce583822d8348aa554c5a8c29fcfb98c6f53f8b4b6ed925ad39e27"
+  },
+  {
+    "id": 30,
+    "url": "https://docs.slack.dev/reference/block-kit/blocks/task-card-block/",
+    "file": "web/30-reference-block-kit-blocks-task-card-block.md",
+    "bytes": 2495,
+    "exit": 0,
+    "sha256": "27b5bbe02680ca56ec3243103b2b476b7ba16c6688c7b72368842cc6e3b7a131",
+    "diagnostic": "",
+    "archived_sha256": "960c168e3524746c61194aa76379cc16703a38d252db845dd4cca68a57484bee"
+  },
+  {
+    "id": 31,
+    "url": "https://docs.slack.dev/reference/block-kit/blocks/plan-block/",
+    "file": "web/31-reference-block-kit-blocks-plan-block.md",
+    "bytes": 2557,
+    "exit": 0,
+    "sha256": "864bf1c7d4c410225ba45153a132530319528b5ff373e1320180ef1ab368e8a2",
+    "diagnostic": "",
+    "archived_sha256": "8dfe87b3062f70c17fd1706489b4655eb0f370702903aaa013a6e8a038f0c347"
+  },
+  {
+    "id": 32,
+    "url": "https://docs.slack.dev/reference/block-kit/blocks/rich-text-block/",
+    "file": "web/32-reference-block-kit-blocks-rich-text-block.md",
+    "bytes": 2131,
+    "exit": 0,
+    "sha256": "3c71c21a3fe6fd4b4a0e7705d20158d79caa0213153d6a72a295d7ecdab8dfe5",
+    "diagnostic": "",
+    "archived_sha256": "445ed1181dbbac7a20ce764b4eee5b9dc0e3fcc2e7885f8623c40f3dcb7d2483"
+  },
+  {
+    "id": 33,
+    "url": "https://docs.slack.dev/reference/block-kit/blocks/data-table-block/",
+    "file": "web/33-reference-block-kit-blocks-data-table-block.md",
+    "bytes": 2555,
+    "exit": 0,
+    "sha256": "c05b6d49d5db21540863d9e73e5da71e2ffc61dfd65addbaa0765ad67f83c033",
+    "diagnostic": "",
+    "archived_sha256": "29384afe6c6b160f9d86dd4992456b0af3cc03b705db9ec5e7b73dd5eb610f16"
+  },
+  {
+    "id": 34,
+    "url": "https://docs.slack.dev/reference/block-kit/blocks/data-visualization-block/",
+    "file": "web/34-reference-block-kit-blocks-data-visualization-block.md",
+    "bytes": 4400,
+    "exit": 0,
+    "sha256": "5f30809c712ce8c5a6a57eb97d126f0b8537e1cfcc0f7c2ef1ccf0067f8a1dd5",
+    "diagnostic": "",
+    "archived_sha256": "a14e539301ab9e4a5c8fbda8f60ecaa659de264d798fe99db66a63d7bf1d93a3"
+  },
+  {
+    "id": 35,
+    "url": "https://docs.slack.dev/reference/block-kit/blocks/card-block/",
+    "file": "web/35-reference-block-kit-blocks-card-block.md",
+    "bytes": 2127,
+    "exit": 0,
+    "sha256": "906c184120cbb7d591e06f8fea4036ac2f03c9c6b9e2c76c75d3fcdb3eebd234",
+    "diagnostic": "",
+    "archived_sha256": "86b05e65f3dfd14646e438513f6a03f7ef95332a92b2a233f9ebb42b9343a732"
+  },
+  {
+    "id": 36,
+    "url": "https://docs.slack.dev/reference/block-kit/blocks/carousel-block/",
+    "file": "web/36-reference-block-kit-blocks-carousel-block.md",
+    "bytes": 8120,
+    "exit": 0,
+    "sha256": "c898d09184eb91f540ea50b218c55096d271804114b7d71df99d7e3e542e9536",
+    "diagnostic": "",
+    "archived_sha256": "cf0659660ac567ad9bea3731a042316454efdc773bc2bdae60f1e7d9e90d7b0c"
+  },
+  {
+    "id": 37,
+    "url": "https://docs.slack.dev/reference/block-kit/blocks/container-block/",
+    "file": "web/37-reference-block-kit-blocks-container-block.md",
+    "bytes": 2824,
+    "exit": 0,
+    "sha256": "08037aec9feeb733790f5c3ce9eee0a4e0950b476f8a9cf4f25dc66ff5e8176c",
+    "diagnostic": "",
+    "archived_sha256": "3ef067d82e8404ec5f6d46e881adfcba35474c631afac31aee20bd062961a26b"
+  },
+  {
+    "id": 38,
+    "url": "https://docs.slack.dev/reference/block-kit/blocks/alert-block/",
+    "file": "web/38-reference-block-kit-blocks-alert-block.md",
+    "bytes": 1529,
+    "exit": 0,
+    "sha256": "743602c01b98032a33b7d5615f755cf9982afe30962eeeada06814d79dde2f11",
+    "diagnostic": "",
+    "archived_sha256": "e46012cc7774158fa92fee00df48d1f65bda8b301fde3f768eca36643e4605bc"
+  },
+  {
+    "id": 39,
+    "url": "https://docs.slack.dev/reference/block-kit/blocks/context-actions-block/",
+    "file": "web/39-reference-block-kit-blocks-context-actions-block.md",
+    "bytes": 3445,
+    "exit": 0,
+    "sha256": "608385dfa638a71dfcb05ad3f9838ce8a5caaffbb8d16b43b22302c451fb9a39",
+    "diagnostic": "",
+    "archived_sha256": "5a393ba7ff33beab534195512b5feb8a5636fc122602a852a872e9555688ac2f"
+  },
+  {
+    "id": 40,
+    "url": "https://docs.slack.dev/reference/methods/files.getUploadURLExternal/",
+    "file": "web/40-reference-methods-files.getUploadURLExternal.md",
+    "bytes": 5992,
+    "exit": 0,
+    "sha256": "af2afe9cb536548ba92a6effa5f4c05d7c0dd0edf42cc946be427f23075a16ef",
+    "diagnostic": "",
+    "archived_sha256": "b497869905316ab2285b629d651ccce36a634b337eb9b3786f86ffda98146486"
+  },
+  {
+    "id": 41,
+    "url": "https://docs.slack.dev/reference/methods/slackLists.create",
+    "file": "web/41-reference-methods-slackLists.create.md",
+    "bytes": 0,
+    "exit": 124,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "diagnostic": "Defuddle timeout after 35 seconds",
+    "recovered_by": "web/rendered-lists-create.md"
+  },
+  {
+    "id": 42,
+    "url": "https://docs.slack.dev/reference/methods/canvases.create/",
+    "file": "web/42-reference-methods-canvases.create.md",
+    "bytes": 5920,
+    "exit": 0,
+    "sha256": "1c91998a7559a3725094de68f6f20834e561cb99b9e7d82264fc3e0bc3b36f14",
+    "diagnostic": "",
+    "archived_sha256": "bab2cfb6b13cb7985cabce25f23d35914c4cee2cac7568071895fcbf888c2018"
+  },
+  {
+    "id": 43,
+    "url": "https://docs.slack.dev/reference/events/app_home_opened/",
+    "file": "web/43-reference-events-app_home_opened.md",
+    "bytes": 3408,
+    "exit": 0,
+    "sha256": "3a9b0eb85f1ce0189835db709a37f5e88094cf2bab585567fd0263331e351b39",
+    "diagnostic": "",
+    "archived_sha256": "1154c2d0118b287cbf6159168064179be550a2aacc7dbbeaf19c734cb1d9efa6"
+  },
+  {
+    "id": 44,
+    "url": "https://docs.slack.dev/reference/app-manifest/",
+    "file": "web/44-reference-app-manifest.md",
+    "bytes": 32816,
+    "exit": 0,
+    "sha256": "1d3617b8a47a6c59931ecca4d890e4f19d3f3db6e0eb80190fbfe8d199ad5cc9",
+    "diagnostic": "",
+    "archived_sha256": "6d6c8538cceaba170c53e6337e92b1758401393410c8cc9404a411048d678300"
+  },
+  {
+    "id": 45,
+    "url": "https://docs.slack.dev/messaging/work-objects/",
+    "file": "web/45-messaging-work-objects.md",
+    "bytes": 8212,
+    "exit": 0,
+    "sha256": "e709fcf50d7ab26daaa4462a926cf28dab3a9b52a877b671d2ea594e5cbafa66",
+    "diagnostic": "",
+    "archived_sha256": "c669c20014fb48de9db76156acebfaee240b64af271e9bf8841210d55f696fdc"
+  },
+  {
+    "id": 46,
+    "url": "https://docs.slack.dev/ai/developing-agents/",
+    "file": "web/46-ai-developing-agents.md",
+    "bytes": 15192,
+    "exit": 0,
+    "sha256": "8c55fd5e575773aa43526a9900ff116f365717e4c9700af97bef94445582163d",
+    "diagnostic": "",
+    "archived_sha256": "d1f51e6408f64a2f5452a428859b235cc860f6c74dfd1ecf5317cbe5853e705f"
+  },
+  {
+    "id": 47,
+    "url": "https://docs.slack.dev/ai/migrating-to-agent-messaging/",
+    "file": "web/47-ai-migrating-to-agent-messaging.md",
+    "bytes": 6202,
+    "exit": 0,
+    "sha256": "c818fe480e836b8a3d31c87641f2c0ee96499e6eb00fecdc8c9e94f2a3f39299",
+    "diagnostic": "",
+    "archived_sha256": "4d843b46622dd9ab011432f9a7420084a86ce413c7cbc538fa59c4a4a8dbbd8d"
+  },
+  {
+    "id": 48,
+    "url": "https://docs.slack.dev/messaging/work-objects-overview/",
+    "file": "web/48-messaging-work-objects-overview.md",
+    "bytes": 8212,
+    "exit": 0,
+    "sha256": "e709fcf50d7ab26daaa4462a926cf28dab3a9b52a877b671d2ea594e5cbafa66",
+    "diagnostic": "",
+    "archived_sha256": "07b66c7affe2e8b1f5ec6622eec99e1d61e85a483d1c73e91f2d964cf0edaeb2"
+  },
+  {
+    "id": 49,
+    "url": "https://docs.slack.dev/messaging/work-objects-implementation/",
+    "file": "web/49-messaging-work-objects-implementation.md",
+    "bytes": 0,
+    "exit": 124,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "diagnostic": "Defuddle timeout after 35 seconds",
+    "recovered_by": "web/rendered-work-objects-implementation.md"
+  },
+  {
+    "id": 50,
+    "url": "https://docs.slack.dev/reference/methods/files.completeUploadExternal/",
+    "file": "web/50-reference-methods-files.completeUploadExternal.md",
+    "bytes": 5808,
+    "exit": 0,
+    "sha256": "eb8f677d65ca5841ead292b82611a8cfb6bea203e49d3f6d1d95cdbf301edcfa",
+    "diagnostic": "",
+    "archived_sha256": "eb28ff940286145f9f9a3f71ceebcb9f5886a82445d413d64988a82a9e6f940d"
+  },
+  {
+    "id": 51,
+    "url": "https://docs.slack.dev/reference/methods/chat.unfurl/",
+    "file": "web/51-reference-methods-chat.unfurl.md",
+    "bytes": 12938,
+    "exit": 0,
+    "sha256": "fc345e2bcf417a6d3bff4c83ad1e393361572ea5d8178f8ce00c680002f80e99",
+    "diagnostic": "",
+    "archived_sha256": "698919b2fe701c114e9b8b992ce97f43b245711c71dc7cc27f932ba3900b79aa"
+  },
+  {
+    "id": 52,
+    "url": "https://docs.slack.dev/reference/methods/views.push/",
+    "file": "web/52-reference-methods-views.push.md",
+    "bytes": 6134,
+    "exit": 0,
+    "sha256": "11a18448c9f7da097a346dce4f95a7061a2754701c75457969813cde1e390093",
+    "diagnostic": "",
+    "archived_sha256": "a7657eb7568179ad93ec0ea43ee8b3697d6e50b3e9485a3e854ff7f218ef0e85"
+  },
+  {
+    "id": 53,
+    "url": "https://docs.slack.dev/reference/block-kit/blocks/video-block/",
+    "file": "web/53-reference-block-kit-blocks-video-block.md",
+    "bytes": 3690,
+    "exit": 0,
+    "sha256": "d57156ffb65aac47abde0ede800f011c72cdcb74696d8fc97da2b9be089cbf50",
+    "diagnostic": "",
+    "archived_sha256": "61711acbe064a327bac130fb2e18500053a0910974afe9c73f4cd304c8766f7c"
+  },
+  {
+    "id": 54,
+    "url": "https://docs.slack.dev/reference/block-kit/block-elements/plain-text-input-element/",
+    "file": "web/54-reference-block-kit-block-elements-plain-text-input-element.md",
+    "bytes": 2187,
+    "exit": 0,
+    "sha256": "acb410fb6ef7ab8359de84536143bf583b039903d733628982b78117104f28ad",
+    "diagnostic": "",
+    "archived_sha256": "784d746671b11cbaf0c5ad5d0a768015e67edca08afd16b6c73c1f1877600482"
+  },
+  {
+    "id": 55,
+    "url": "https://docs.slack.dev/reference/block-kit/composition-objects/text-object/",
+    "file": "web/55-reference-block-kit-composition-objects-text-object.md",
+    "bytes": 1915,
+    "exit": 0,
+    "sha256": "916d88f5ad61c67eb379f0759322874c19485f133b3f6f8ebcea1c096e93e864",
+    "diagnostic": "",
+    "archived_sha256": "d13509cb4756a28d985b547e30152d7cc79b6bb40b924c7c2a725f286049feef"
+  },
+  {
+    "id": 56,
+    "url": "https://docs.slack.dev/reference/block-kit/composition-objects/confirmation-dialog-object/",
+    "file": "web/56-reference-block-kit-composition-objects-confirmation-dialog-object.md",
+    "bytes": 1642,
+    "exit": 0,
+    "sha256": "e6e01c935f50a57926ef42133b81f58dfc9af5cfccef8524dcf3c609e0379024",
+    "diagnostic": "",
+    "archived_sha256": "f6d15eeae545209e4f8c2adc836b03b73345aecc60548d4cec6f5ac15b0f25fd"
+  },
+  {
+    "id": 57,
+    "url": "https://docs.slack.dev/interactivity/implementing-shortcuts/",
+    "file": "web/57-interactivity-implementing-shortcuts.md",
+    "bytes": 10435,
+    "exit": 0,
+    "sha256": "2ce71cf969d5b65f7878d16543b1375a293676b890ec2f502988939c7d5f32b3",
+    "diagnostic": "",
+    "archived_sha256": "a566f811d1fd49fd3230e83b16f4fc25aae4fe425bac5158f87995d0871fa48c"
+  },
+  {
+    "id": 58,
+    "url": "https://docs.slack.dev/reference/methods/chat.startStream/",
+    "file": "web/58-reference-methods-chat.startStream.md",
+    "bytes": 10750,
+    "exit": 0,
+    "sha256": "9fb1ec239f808e52995be9a4bf953bed85e4a39e1150c0a1f2da5c2af864515e",
+    "diagnostic": "",
+    "archived_sha256": "c6b96dad160f4c612123a3b54be90f08d69e046cb8226829fd6661a459886561"
+  },
+  {
+    "id": 59,
+    "url": "https://docs.slack.dev/reference/methods/assistant.threads.setStatus/",
+    "file": "web/59-reference-methods-assistant.threads.setStatus.md",
+    "bytes": 6079,
+    "exit": 0,
+    "sha256": "2099779c90f214ba44e1ff36bcef89b9fba2707f95ecbe508c35413710934e2f",
+    "diagnostic": "",
+    "archived_sha256": "6f708638a8a98ebad78eb0ab4e719e5d2203c7b7bd1c34e035e086a7658f26fb"
+  },
+  {
+    "url": "https://docs.slack.dev/ai/agent-sessions/",
+    "file": "web/extra-agent-sessions.md",
+    "exit": 0,
+    "bytes": 10102,
+    "archived_sha256": "92bf362ec6535690cb3ce9c920046c7782eca1ea80ce95850e79475df8697cc5"
+  },
+  {
+    "url": "https://docs.slack.dev/reference/block-kit/block-elements/attachment-mention-element",
+    "file": "web/extra-attachment-mention-element.md",
+    "exit": 0,
+    "bytes": 2200,
+    "archived_sha256": "085722f30dbdd0d54ec3591ad1d046b5d39c5ef19a86e5f62cd016a5bb35166f"
+  },
+  {
+    "url": "https://docs.slack.dev/reference/block-kit/block-elements/broadcast-element",
+    "file": "web/extra-broadcast-element.md",
+    "exit": 0,
+    "bytes": 1851,
+    "archived_sha256": "0fb2e0ec90297a684b621fca518a73c7cfba2828afbb09ad8bf9281fd4ec264d"
+  },
+  {
+    "url": "https://docs.slack.dev/reference/block-kit/block-elements/canvas-element",
+    "file": "web/extra-canvas-element.md",
+    "exit": 0,
+    "bytes": 2015,
+    "archived_sha256": "766ac12115d9ca10b9b3aba155a55eea6cab01635aa64181657f19ad54747bca"
+  },
+  {
+    "url": "https://docs.slack.dev/reference/block-kit/block-elements/canvas-message-unfurl-element",
+    "file": "web/extra-canvas-message-unfurl-element.md",
+    "exit": 0,
+    "bytes": 1863,
+    "archived_sha256": "dc00333046f725bd6350d45146c9364ad3950fbef224337eee4259e7f972edd3"
+  },
+  {
+    "url": "https://docs.slack.dev/reference/block-kit/block-elements/canvas-user-mention-element",
+    "file": "web/extra-canvas-user-mention-element.md",
+    "exit": 0,
+    "bytes": 1723,
+    "archived_sha256": "f5fb960cecb74b792b0c2b29941dbf4010e079380051bd50b9048daac9bdca4d"
+  },
+  {
+    "url": "https://docs.slack.dev/reference/block-kit/block-elements/channel-element",
+    "file": "web/extra-channel-element.md",
+    "exit": 0,
+    "bytes": 1916,
+    "archived_sha256": "3566d1b30e57ee1c02775242ed46c6d7c6df7c4ad562350f85c4f3e8dfde986e"
+  },
+  {
+    "url": "https://docs.slack.dev/reference/block-kit/block-elements/checkboxes-element",
+    "file": "web/extra-checkboxes-element.md",
+    "exit": 0,
+    "bytes": 4853,
+    "archived_sha256": "ef7d6cb50dc0ac2a6cafa62e311bcaf269329bc0bf70db29a740cf00e6b76b28"
+  },
+  {
+    "url": "https://docs.slack.dev/reference/block-kit/block-elements/checkboxes-element/",
+    "file": "web/extra-checkboxes-element.md",
+    "exit": 0,
+    "bytes": 4853,
+    "archived_sha256": "ef7d6cb50dc0ac2a6cafa62e311bcaf269329bc0bf70db29a740cf00e6b76b28"
+  },
+  {
+    "url": "https://docs.slack.dev/reference/block-kit/block-elements/citation-element",
+    "file": "web/extra-citation-element.md",
+    "exit": 0,
+    "bytes": 2399,
+    "archived_sha256": "fabfe33d403e9d8c590893dbb4c30dba3a1540f260d7fc133d39433bdef623fc"
+  },
+  {
+    "url": "https://docs.slack.dev/reference/block-kit/block-elements/color-element",
+    "file": "web/extra-color-element.md",
+    "exit": 0,
+    "bytes": 1618,
+    "archived_sha256": "443d5b86ebb7dea7701ff0d8f5239e05ecd5479cd70c394a03a16f28d25ba467"
+  },
+  {
+    "url": "https://docs.slack.dev/reference/block-kit/block-elements/date-element",
+    "file": "web/extra-date-element.md",
+    "exit": 0,
+    "bytes": 2942,
+    "archived_sha256": "a2a03f2f51ae84dffea672f753bec5e7e27a1fb0b54be90b1f56e67a0eb41250"
+  },
+  {
+    "url": "https://docs.slack.dev/reference/block-kit/block-elements/date-picker-element",
+    "file": "web/extra-date-picker-element.md",
+    "exit": 0,
+    "bytes": 3002,
+    "archived_sha256": "c73f3629812bf0ba5006c25289aea62f6b321cbb733a37bb9ccd8ec76a829842"
+  },
+  {
+    "url": "https://docs.slack.dev/reference/block-kit/block-elements/date-picker-element/",
+    "file": "web/extra-date-picker-element.md",
+    "exit": 0,
+    "bytes": 3002,
+    "archived_sha256": "c73f3629812bf0ba5006c25289aea62f6b321cbb733a37bb9ccd8ec76a829842"
+  },
+  {
+    "url": "https://docs.slack.dev/reference/block-kit/block-elements/datetime-picker-element",
+    "file": "web/extra-datetime-picker-element.md",
+    "exit": 0,
+    "bytes": 1893,
+    "archived_sha256": "a04881ae5f87c24fa25eb8708a9451fa003a0f383bb96507e8d1b314634f3d46"
+  },
+  {
+    "url": "https://docs.slack.dev/reference/block-kit/block-elements/datetime-picker-element/",
+    "file": "web/extra-datetime-picker-element.md",
+    "exit": 0,
+    "bytes": 1893,
+    "archived_sha256": "a04881ae5f87c24fa25eb8708a9451fa003a0f383bb96507e8d1b314634f3d46"
+  },
+  {
+    "url": "https://docs.slack.dev/reference/block-kit/block-elements/email-input-element",
+    "file": "web/extra-email-input-element.md",
+    "exit": 0,
+    "bytes": 2593,
+    "archived_sha256": "f14a00ff64c93278ea68e7559516e3bff4e2a2e883887fd8e886f5028e9d7e4b"
+  },
+  {
+    "url": "https://docs.slack.dev/reference/block-kit/block-elements/email-input-element/",
+    "file": "web/extra-email-input-element.md",
+    "exit": 0,
+    "bytes": 2593,
+    "archived_sha256": "f14a00ff64c93278ea68e7559516e3bff4e2a2e883887fd8e886f5028e9d7e4b"
+  },
+  {
+    "url": "https://docs.slack.dev/reference/block-kit/block-elements/emoji-element",
+    "file": "web/extra-emoji-element.md",
+    "exit": 0,
+    "bytes": 2567,
+    "archived_sha256": "117f646b4498eb22286117f0c7868967d80cd2a23bee11be720653133312d885"
+  },
+  {
+    "url": "https://docs.slack.dev/reference/block-kit/block-elements/feedback-buttons-element",
+    "file": "web/extra-feedback-buttons-element.md",
+    "exit": 0,
+    "bytes": 3050,
+    "archived_sha256": "7a18e7649195588ca5500d558709e64045a22324ec0ddb6955e741e0f8b7ae47"
+  },
+  {
+    "url": "https://docs.slack.dev/reference/block-kit/block-elements/file-element",
+    "file": "web/extra-file-element.md",
+    "exit": 0,
+    "bytes": 1806,
+    "archived_sha256": "3a4f6730e5881591c0a826b85cca6e6ca66a3c3c1c0a33366ebc4de7d017d429"
+  },
+  {
+    "url": "https://docs.slack.dev/reference/block-kit/block-elements/file-input-element",
+    "file": "web/extra-file-input-element.md",
+    "exit": 0,
+    "bytes": 2970,
+    "archived_sha256": "4f513648b5db08110daa260227af70cea14abb1fc64d82e1b1cee08561cbe9fe"
+  },
+  {
+    "url": "https://docs.slack.dev/reference/block-kit/block-elements/file-input-element/",
+    "file": "web/extra-file-input-element.md",
+    "exit": 0,
+    "bytes": 2970,
+    "archived_sha256": "4f513648b5db08110daa260227af70cea14abb1fc64d82e1b1cee08561cbe9fe"
+  },
+  {
+    "url": "https://docs.slack.dev/reference/block-kit/block-elements/icon-button-element",
+    "file": "web/extra-icon-button-element.md",
+    "exit": 0,
+    "bytes": 2457,
+    "archived_sha256": "12db2452fd640914d11404279dc90ca33306489bc9a6f76c955f4f8c846a6695"
+  },
+  {
+    "url": "https://docs.slack.dev/reference/block-kit/block-elements/image-element",
+    "file": "web/extra-image-element.md",
+    "exit": 0,
+    "bytes": 3497,
+    "archived_sha256": "93d6a82fa7556d05394be1f7889a3586b8bc5c73ed3051b4b27d9115d723df29"
+  },
+  {
+    "url": "https://docs.slack.dev/reference/block-kit/block-elements/link-element",
+    "file": "web/extra-link-element.md",
+    "exit": 0,
+    "bytes": 2185,
+    "archived_sha256": "8b30b37bbf0771a8beec4a08236a35e51fcb3cc88647992e571eb6c6f5de3bfb"
+  },
+  {
+    "url": "https://docs.slack.dev/reference/block-kit/block-elements/list-record-element",
+    "file": "web/extra-list-record-element.md",
+    "exit": 0,
+    "bytes": 1861,
+    "archived_sha256": "bcfaad9c67a8ce3307031d10dc92357dcde84b6ecf1531419839383c789a7d77"
+  },
+  {
+    "url": "https://docs.slack.dev/reference/block-kit/block-elements/message-mention-element",
+    "file": "web/extra-message-mention-element.md",
+    "exit": 0,
+    "bytes": 2109,
+    "archived_sha256": "8bb968582d556f4ef7ce6fd74d38278f8f97e8afd8b5ccccbda3288c66598e48"
+  },
+  {
+    "url": "https://docs.slack.dev/reference/block-kit/block-elements/multi-select-menu-element",
+    "file": "web/extra-multi-select-menu-element.md",
+    "exit": 0,
+    "bytes": 12986,
+    "archived_sha256": "49eed4d14ac8d72051dfbbe33ff532ccf97bd54cde474781f4d683197b582887"
+  },
+  {
+    "url": "https://docs.slack.dev/reference/block-kit/block-elements/multi-select-menu-element/",
+    "file": "web/extra-multi-select-menu-element.md",
+    "exit": 0,
+    "bytes": 12986,
+    "archived_sha256": "49eed4d14ac8d72051dfbbe33ff532ccf97bd54cde474781f4d683197b582887"
+  },
+  {
+    "url": "https://docs.slack.dev/reference/block-kit/block-elements/number-input-element",
+    "file": "web/extra-number-input-element.md",
+    "exit": 0,
+    "bytes": 2320,
+    "archived_sha256": "7a5a7f3c817e99552b21f5f53bb7ce81672519bb05d22844b88c7ea8286a6ba4"
+  },
+  {
+    "url": "https://docs.slack.dev/reference/block-kit/block-elements/number-input-element/",
+    "file": "web/extra-number-input-element.md",
+    "exit": 0,
+    "bytes": 2320,
+    "archived_sha256": "7a5a7f3c817e99552b21f5f53bb7ce81672519bb05d22844b88c7ea8286a6ba4"
+  },
+  {
+    "url": "https://docs.slack.dev/reference/block-kit/block-elements/overflow-menu-element",
+    "file": "web/extra-overflow-menu-element.md",
+    "exit": 0,
+    "bytes": 12336,
+    "archived_sha256": "4ae07c87a853f2c67bfcb4db86356ed768db3aea52e7631c8586cb65695d871d"
+  },
+  {
+    "url": "https://docs.slack.dev/reference/block-kit/block-elements/radio-button-group-element",
+    "file": "web/extra-radio-button-group-element.md",
+    "exit": 0,
+    "bytes": 9797,
+    "archived_sha256": "e7d298da6404debae747ff75b7ef5ba1035ef51af85d97dbd2162cc0ecaf1724"
+  },
+  {
+    "url": "https://docs.slack.dev/reference/block-kit/block-elements/radio-button-group-element/",
+    "file": "web/extra-radio-button-group-element.md",
+    "exit": 0,
+    "bytes": 9797,
+    "archived_sha256": "e7d298da6404debae747ff75b7ef5ba1035ef51af85d97dbd2162cc0ecaf1724"
+  },
+  {
+    "url": "https://docs.slack.dev/reference/block-kit/block-elements/rich-text-input-element",
+    "file": "web/extra-rich-text-input-element.md",
+    "exit": 0,
+    "bytes": 2093,
+    "archived_sha256": "abd77e9822a1aee734374a5030e53af967eb6fa4bfebca41f28ddea3e918469e"
+  },
+  {
+    "url": "https://docs.slack.dev/reference/block-kit/block-elements/rich-text-input-element/",
+    "file": "web/extra-rich-text-input-element.md",
+    "exit": 0,
+    "bytes": 2093,
+    "archived_sha256": "abd77e9822a1aee734374a5030e53af967eb6fa4bfebca41f28ddea3e918469e"
+  },
+  {
+    "url": "https://docs.slack.dev/reference/block-kit/block-elements/rich-text-list-element",
+    "file": "web/extra-rich-text-list-element.md",
+    "exit": 0,
+    "bytes": 9720,
+    "archived_sha256": "4f47ad67a2fdc7150286decc7be5c50ae109cdf954717d461d1335d8d42a3cb7"
+  },
+  {
+    "url": "https://docs.slack.dev/reference/block-kit/block-elements/rich-text-preformatted-element",
+    "file": "web/extra-rich-text-preformatted-element.md",
+    "exit": 0,
+    "bytes": 1762,
+    "archived_sha256": "83945b5f94b677fc270897b35a8e0df5628bdbbec96eb01110caf85433b52b67"
+  },
+  {
+    "url": "https://docs.slack.dev/reference/block-kit/block-elements/rich-text-quote-element",
+    "file": "web/extra-rich-text-quote-element.md",
+    "exit": 0,
+    "bytes": 3416,
+    "archived_sha256": "5d9c98e0f0c0c49105e4c0dde1b6265ed7cedd92d0c36f54cb3ee73ecce8245e"
+  },
+  {
+    "url": "https://docs.slack.dev/reference/block-kit/block-elements/rich-text-section-element",
+    "file": "web/extra-rich-text-section-element.md",
+    "exit": 0,
+    "bytes": 5731,
+    "archived_sha256": "cfdf23811bd36a7c978fc764d9e9ad73221b9593690e34a3886cf7f163b753fc"
+  },
+  {
+    "url": "https://docs.slack.dev/reference/block-kit/block-elements/salesforce-data-field-element",
+    "file": "web/extra-salesforce-data-field-element.md",
+    "exit": 0,
+    "bytes": 1994,
+    "archived_sha256": "2f13d1edcd75be057d8ef959cd1a623fbd96f87a444b7dc23735557f6d21287c"
+  },
+  {
+    "url": "https://docs.slack.dev/reference/block-kit/block-elements/tag-element",
+    "file": "web/extra-tag-element.md",
+    "exit": 0,
+    "bytes": 1755,
+    "archived_sha256": "25ad3cb43a71a7e03435762730a35a623ec28a6086a56c4883fd0809e94a00eb"
+  },
+  {
+    "url": "https://docs.slack.dev/reference/block-kit/block-elements/team-element",
+    "file": "web/extra-team-element.md",
+    "exit": 0,
+    "bytes": 1660,
+    "archived_sha256": "e5798d2ddb28b0fc5b5a8c64ee0659659df02ec3021528c9e1e95d88becf9651"
+  },
+  {
+    "url": "https://docs.slack.dev/reference/block-kit/block-elements/text-element",
+    "file": "web/extra-text-element.md",
+    "exit": 0,
+    "bytes": 1853,
+    "archived_sha256": "bbeb294dc4828905101e8b5b4496045d3922f8b46f52ffde0ab149b4fdf185a0"
+  },
+  {
+    "url": "https://docs.slack.dev/reference/block-kit/block-elements/time-picker-element",
+    "file": "web/extra-time-picker-element.md",
+    "exit": 0,
+    "bytes": 2393,
+    "archived_sha256": "4cb61523aed2cd307402c06d74d81cc3af7cac66595d280e2570062d6878e120"
+  },
+  {
+    "url": "https://docs.slack.dev/reference/block-kit/block-elements/time-picker-element/",
+    "file": "web/extra-time-picker-element.md",
+    "exit": 0,
+    "bytes": 2393,
+    "archived_sha256": "4cb61523aed2cd307402c06d74d81cc3af7cac66595d280e2570062d6878e120"
+  },
+  {
+    "url": "https://docs.slack.dev/reference/block-kit/block-elements/url-input-element",
+    "file": "web/extra-url-input-element.md",
+    "exit": 0,
+    "bytes": 2259,
+    "archived_sha256": "ca9eb439583a0f022cad9132cd65bd5b451d1fdc1990078813ba44e9e98ffe15"
+  },
+  {
+    "url": "https://docs.slack.dev/reference/block-kit/block-elements/url-input-element/",
+    "file": "web/extra-url-input-element.md",
+    "exit": 0,
+    "bytes": 2259,
+    "archived_sha256": "ca9eb439583a0f022cad9132cd65bd5b451d1fdc1990078813ba44e9e98ffe15"
+  },
+  {
+    "url": "https://docs.slack.dev/reference/block-kit/block-elements/url-source-element",
+    "file": "web/extra-url-source-element.md",
+    "exit": 0,
+    "bytes": 1183,
+    "archived_sha256": "1c9baa81acc5cff36c24b4e0bae68abfaab8e45f3485f16ae3bfce76d79a0bb8"
+  },
+  {
+    "url": "https://docs.slack.dev/reference/block-kit/block-elements/user-element",
+    "file": "web/extra-user-element.md",
+    "exit": 0,
+    "bytes": 1823,
+    "archived_sha256": "07947a66437e033c07251fdf74354271ef1c0f783114a665f48dbc908c3f48f0"
+  },
+  {
+    "url": "https://docs.slack.dev/reference/block-kit/block-elements/usergroup-element",
+    "file": "web/extra-usergroup-element.md",
+    "exit": 0,
+    "bytes": 1760,
+    "archived_sha256": "4d440e1687592336b598b1371547a201d8414dbdd3f0134127e298817501773e"
+  },
+  {
+    "url": "https://docs.slack.dev/reference/block-kit/block-elements/work-object-mention-element",
+    "file": "web/extra-work-object-mention-element.md",
+    "exit": 0,
+    "bytes": 2487,
+    "archived_sha256": "702a0df1599efd5d039b79ba78b32aaad53bb040e90c8b139aeb2363fa3dbe26"
+  },
+  {
+    "url": "https://docs.slack.dev/reference/block-kit/block-elements/workflow-button-element",
+    "file": "web/extra-workflow-button-element.md",
+    "exit": 0,
+    "bytes": 8463,
+    "archived_sha256": "420e4926c945e828ed13f2787e1f37643811435ce7a3500c1c08bdbd0894285d"
+  },
+  {
+    "url": "https://docs.slack.dev/reference/block-kit/block-elements/workflow-mention-element",
+    "file": "web/extra-workflow-mention-element.md",
+    "exit": 0,
+    "bytes": 2259,
+    "archived_sha256": "615e063fd344311a75ecf8c9be6e606d766a0cd1894e67d4744fa8dccf13f5df"
+  },
+  {
+    "url": "https://docs.slack.dev/reference/block-kit/blocks/context-block",
+    "file": "web/extra-context-block.md",
+    "exit": 0,
+    "bytes": 12044,
+    "archived_sha256": "aadff6e723b620e078e882493c833f6b5f115880180167c139282d4da9260e1c"
+  },
+  {
+    "url": "https://docs.slack.dev/reference/block-kit/blocks/divider-block",
+    "file": "web/extra-divider-block.md",
+    "exit": 0,
+    "bytes": 7177,
+    "archived_sha256": "1bbe24b4c1a3333bca7553654fde08c3af348bb83f38c656536e5b6b9059b066"
+  },
+  {
+    "url": "https://docs.slack.dev/reference/block-kit/blocks/file-block",
+    "file": "web/extra-file-block.md",
+    "exit": 0,
+    "bytes": 1024,
+    "archived_sha256": "342213082e4ae2003f2f9eda82fd0acf5406eb0e91c27110b75b6b8f4910e4fd"
+  },
+  {
+    "url": "https://docs.slack.dev/reference/block-kit/blocks/header-block",
+    "file": "web/extra-header-block.md",
+    "exit": 0,
+    "bytes": 10515,
+    "archived_sha256": "ee3f65070a716c594006f23dae45a460406fd3d3ac9947a8043b22a64966f4a2"
+  },
+  {
+    "url": "https://docs.slack.dev/reference/block-kit/blocks/image-block",
+    "file": "web/extra-image-block.md",
+    "exit": 0,
+    "bytes": 1743,
+    "archived_sha256": "8b5d6778a759794d60ad67c37b7b3f5cd5a8cda7b7f8e33fcbd5ca3fd9c2cabf"
+  },
+  {
+    "url": "https://docs.slack.dev/reference/block-kit/composition-objects/conversation-filter-object",
+    "file": "web/extra-conversation-filter-object.md",
+    "exit": 0,
+    "bytes": 3849,
+    "archived_sha256": "146c4572cd95e7dcea1178cac95b07080065fc7c9632646d7c242a6fe5bdaf9d"
+  },
+  {
+    "url": "https://docs.slack.dev/reference/block-kit/composition-objects/dispatch-action-configuration-object",
+    "file": "web/extra-dispatch-action-configuration-object.md",
+    "exit": 0,
+    "bytes": 2186,
+    "archived_sha256": "ea4ab50e9976752ab65a54a2050e93b8385ee377d4f976040f9ec956e37aa6b5"
+  },
+  {
+    "url": "https://docs.slack.dev/reference/block-kit/composition-objects/option-group-object",
+    "file": "web/extra-option-group-object.md",
+    "exit": 0,
+    "bytes": 5238,
+    "archived_sha256": "6006915c1da0caa5002229da8ff733cfc3123062ded2602afd8340013b13f2e5"
+  },
+  {
+    "url": "https://docs.slack.dev/reference/block-kit/composition-objects/option-object",
+    "file": "web/extra-option-object.md",
+    "exit": 0,
+    "bytes": 3141,
+    "archived_sha256": "52734568f87e88279f74d683edf630bd9a10500d2582648d660d0651646d7702"
+  },
+  {
+    "url": "https://docs.slack.dev/reference/block-kit/composition-objects/slack-file-object",
+    "file": "web/extra-slack-file-object.md",
+    "exit": 0,
+    "bytes": 1726,
+    "archived_sha256": "d84f6b6d39ff5ca8a9851fbffdb37ff6d70ddbb996f170b250449cf05b830bbf"
+  },
+  {
+    "url": "https://docs.slack.dev/reference/block-kit/composition-objects/slack-file-object/",
+    "file": "web/extra-slack-file-object.md",
+    "exit": 0,
+    "bytes": 1726,
+    "archived_sha256": "d84f6b6d39ff5ca8a9851fbffdb37ff6d70ddbb996f170b250449cf05b830bbf"
+  },
+  {
+    "url": "https://docs.slack.dev/reference/block-kit/composition-objects/slack-icon-object",
+    "file": "web/extra-slack-icon-object.md",
+    "exit": 0,
+    "bytes": 902,
+    "archived_sha256": "e6e020d0fe55f70ae8bdb4989dcbd30bcf6cb3ba46ab908c43b42622a708b12e"
+  },
+  {
+    "url": "https://docs.slack.dev/reference/block-kit/composition-objects/trigger-object",
+    "file": "web/extra-trigger-object.md",
+    "exit": 0,
+    "bytes": 2019,
+    "archived_sha256": "644f370a7b8ee1993a510f0346b3e7ac4a69599e02314861fb363505b2645c61"
+  },
+  {
+    "url": "https://docs.slack.dev/reference/block-kit/composition-objects/workflow-object",
+    "file": "web/extra-workflow-object.md",
+    "exit": 0,
+    "bytes": 1656,
+    "archived_sha256": "4dff20a73f0e6c412ffb91909f910a907606f34b8b1fcec39f63d81c20038edc"
+  },
+  {
+    "url": "https://docs.slack.dev/reference/methods/agents.sessions.setStatus/",
+    "file": "web/extra-agents.sessions.setStatus.md",
+    "exit": 0,
+    "bytes": 9457,
+    "archived_sha256": "52f4abf41cbf280a160ca517aff1e8a0d9bf479557cc61c06b44bd9f230802a6"
+  },
+  {
+    "url": "https://docs.slack.dev/reference/methods/slackLists.create/",
+    "file": "web/rendered-lists-create.md",
+    "exit": 0,
+    "bytes": 33558,
+    "note": "Browser-rendered HTML processed with Defuddle; JSON retains full main HTML and text.",
+    "archived_sha256": "e28d0d696e65af8acd20060837aa2e770c26b994efc8c2b2061a2dea719c40ca"
+  },
+  {
+    "url": "https://docs.slack.dev/reference/block-kit/block-elements/",
+    "file": "web/rendered-elements.md",
+    "exit": 0,
+    "bytes": 7026,
+    "note": "Browser-rendered HTML processed with Defuddle; JSON retains full main HTML and text.",
+    "archived_sha256": "8be6913f72e92c59bf28f86cb258500a6f4cea9685a42b83770ff0ac8926cd8c"
+  },
+  {
+    "url": "https://docs.slack.dev/messaging/work-objects-implementation/",
+    "file": "web/rendered-work-objects-implementation.md",
+    "exit": 0,
+    "bytes": 78995,
+    "note": "Browser-rendered HTML processed with Defuddle; JSON retains full main HTML and text.",
+    "archived_sha256": "e7e8bdc9c56589051c32bda13abf2c88141e567063de22df4b2c27991a5fecfe"
+  },
+  {
+    "url": "https://docs.slack.dev/reference/block-kit/composition-objects/",
+    "file": "web/rendered-composition.md",
+    "exit": 0,
+    "bytes": 1683,
+    "note": "Browser-rendered HTML processed with Defuddle; JSON retains full main HTML and text.",
+    "archived_sha256": "cde50662b23c4958b0d9eaff29d4045252ace18ccbfe596123375d52673e1c60"
+  },
+  {
+    "url": "https://docs.slack.dev/reference/block-kit/blocks/",
+    "file": "web/rendered-blocks.md",
+    "exit": 0,
+    "bytes": 2714,
+    "note": "Browser-rendered HTML processed with Defuddle; JSON retains full main HTML and text.",
+    "archived_sha256": "2a19afc2a28bc7578abeb8f9bfb5ecedd52e2fd40164d947f23a6a8436e50f5e"
+  }
+]

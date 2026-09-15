@@ -16,39 +16,28 @@ WhatFor: ""
 WhenToUse: ""
 ---
 
-# Slack surfaces and native UI DSL research and implementation guide
+# Slack surfaces and native UI DSL
 
 ## Overview
 
-<!-- Provide a brief overview of the ticket, its goals, and current status -->
+Research and design for extending the existing local Slack host with a small native UI DSL inspired by Discord. The recommended core is rich messages, action routing, and one complete modal editor. The broader Slack surface catalog is reference material and optional follow-up work. No runtime UI functionality has been implemented in this ticket.
 
-## Key Links
+## Read first
 
-- **Related Files**: See frontmatter RelatedFiles field
-- **External Sources**: See frontmatter ExternalSources field
+- [Intern design and implementation guide](design-doc/01-slack-surfaces-and-ui-dsl-intern-guide.md)
+- [Detailed investigation diary](reference/01-investigation-diary.md)
+- [Source catalog](sources/README.md)
+- [Implementation and research tasks](tasks.md)
+- [SDK probe](scripts/02-run-sdk-probe.sh) and [observed output](sources/sdk-probe-output.txt)
 
-## Status
+## Findings
 
-Current status: **active**
+The current Slack API is text-only and drops interactive envelopes. Slack modal submissions need semantic acknowledgment before the interaction deadline. The pinned SDK supports the core slice, but loses fields when decoding newer unknown blocks. The design keeps existing local state and execution machinery with a documented busy/retry limitation.
 
-## Topics
+## Evidence and scope
 
-- slack
-- architecture
+Baseline discord-bot revision: 5c700b2. Pinned Slack SDK: v0.17.3. Official Slack references were captured on 2026-09-14 local time; some catalogs require browser rendering. Source provenance and extraction recovery are recorded in sources/catalog-complete.json. The live ping process and private credentials were not changed.
 
-## Tasks
+## Delivery
 
-See [tasks.md](./tasks.md) for the current task list.
-
-## Changelog
-
-See [changelog.md](./changelog.md) for recent changes and decisions.
-
-## Structure
-
-- design/ - Architecture and design documents
-- reference/ - Prompt packs, API contracts, context summaries
-- playbooks/ - Command sequences and test procedures
-- scripts/ - Temporary code and tooling
-- various/ - Working notes and research
-- archive/ - Deprecated or reference-only artifacts
+The guide is being rendered for reMarkable. The final delivery receipt will be recorded in the diary and artifacts. Implementation tasks remain open.

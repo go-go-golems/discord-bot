@@ -1,0 +1,422 @@
+[
+  {
+    "url": "https://docs.slack.dev/ai/agent-sessions/",
+    "file": "web/extra-agent-sessions.md",
+    "exit": 0,
+    "bytes": 10102
+  },
+  {
+    "url": "https://docs.slack.dev/reference/block-kit/block-elements/attachment-mention-element",
+    "file": "web/extra-attachment-mention-element.md",
+    "exit": 0,
+    "bytes": 2200
+  },
+  {
+    "url": "https://docs.slack.dev/reference/block-kit/block-elements/broadcast-element",
+    "file": "web/extra-broadcast-element.md",
+    "exit": 0,
+    "bytes": 1851
+  },
+  {
+    "url": "https://docs.slack.dev/reference/block-kit/block-elements/canvas-element",
+    "file": "web/extra-canvas-element.md",
+    "exit": 0,
+    "bytes": 2015
+  },
+  {
+    "url": "https://docs.slack.dev/reference/block-kit/block-elements/canvas-message-unfurl-element",
+    "file": "web/extra-canvas-message-unfurl-element.md",
+    "exit": 0,
+    "bytes": 1863
+  },
+  {
+    "url": "https://docs.slack.dev/reference/block-kit/block-elements/canvas-user-mention-element",
+    "file": "web/extra-canvas-user-mention-element.md",
+    "exit": 0,
+    "bytes": 1723
+  },
+  {
+    "url": "https://docs.slack.dev/reference/block-kit/block-elements/channel-element",
+    "file": "web/extra-channel-element.md",
+    "exit": 0,
+    "bytes": 1916
+  },
+  {
+    "url": "https://docs.slack.dev/reference/block-kit/block-elements/checkboxes-element",
+    "file": "web/extra-checkboxes-element.md",
+    "exit": 0,
+    "bytes": 4853
+  },
+  {
+    "url": "https://docs.slack.dev/reference/block-kit/block-elements/checkboxes-element/",
+    "file": "web/extra-checkboxes-element.md",
+    "exit": 0,
+    "bytes": 4853
+  },
+  {
+    "url": "https://docs.slack.dev/reference/block-kit/block-elements/citation-element",
+    "file": "web/extra-citation-element.md",
+    "exit": 0,
+    "bytes": 2399
+  },
+  {
+    "url": "https://docs.slack.dev/reference/block-kit/block-elements/color-element",
+    "file": "web/extra-color-element.md",
+    "exit": 0,
+    "bytes": 1618
+  },
+  {
+    "url": "https://docs.slack.dev/reference/block-kit/block-elements/date-element",
+    "file": "web/extra-date-element.md",
+    "exit": 0,
+    "bytes": 2942
+  },
+  {
+    "url": "https://docs.slack.dev/reference/block-kit/block-elements/date-picker-element",
+    "file": "web/extra-date-picker-element.md",
+    "exit": 0,
+    "bytes": 3002
+  },
+  {
+    "url": "https://docs.slack.dev/reference/block-kit/block-elements/date-picker-element/",
+    "file": "web/extra-date-picker-element.md",
+    "exit": 0,
+    "bytes": 3002
+  },
+  {
+    "url": "https://docs.slack.dev/reference/block-kit/block-elements/datetime-picker-element",
+    "file": "web/extra-datetime-picker-element.md",
+    "exit": 0,
+    "bytes": 1893
+  },
+  {
+    "url": "https://docs.slack.dev/reference/block-kit/block-elements/datetime-picker-element/",
+    "file": "web/extra-datetime-picker-element.md",
+    "exit": 0,
+    "bytes": 1893
+  },
+  {
+    "url": "https://docs.slack.dev/reference/block-kit/block-elements/email-input-element",
+    "file": "web/extra-email-input-element.md",
+    "exit": 0,
+    "bytes": 2593
+  },
+  {
+    "url": "https://docs.slack.dev/reference/block-kit/block-elements/email-input-element/",
+    "file": "web/extra-email-input-element.md",
+    "exit": 0,
+    "bytes": 2593
+  },
+  {
+    "url": "https://docs.slack.dev/reference/block-kit/block-elements/emoji-element",
+    "file": "web/extra-emoji-element.md",
+    "exit": 0,
+    "bytes": 2567
+  },
+  {
+    "url": "https://docs.slack.dev/reference/block-kit/block-elements/feedback-buttons-element",
+    "file": "web/extra-feedback-buttons-element.md",
+    "exit": 0,
+    "bytes": 3050
+  },
+  {
+    "url": "https://docs.slack.dev/reference/block-kit/block-elements/file-element",
+    "file": "web/extra-file-element.md",
+    "exit": 0,
+    "bytes": 1806
+  },
+  {
+    "url": "https://docs.slack.dev/reference/block-kit/block-elements/file-input-element",
+    "file": "web/extra-file-input-element.md",
+    "exit": 0,
+    "bytes": 2970
+  },
+  {
+    "url": "https://docs.slack.dev/reference/block-kit/block-elements/file-input-element/",
+    "file": "web/extra-file-input-element.md",
+    "exit": 0,
+    "bytes": 2970
+  },
+  {
+    "url": "https://docs.slack.dev/reference/block-kit/block-elements/icon-button-element",
+    "file": "web/extra-icon-button-element.md",
+    "exit": 0,
+    "bytes": 2457
+  },
+  {
+    "url": "https://docs.slack.dev/reference/block-kit/block-elements/image-element",
+    "file": "web/extra-image-element.md",
+    "exit": 0,
+    "bytes": 3497
+  },
+  {
+    "url": "https://docs.slack.dev/reference/block-kit/block-elements/link-element",
+    "file": "web/extra-link-element.md",
+    "exit": 0,
+    "bytes": 2185
+  },
+  {
+    "url": "https://docs.slack.dev/reference/block-kit/block-elements/list-record-element",
+    "file": "web/extra-list-record-element.md",
+    "exit": 0,
+    "bytes": 1861
+  },
+  {
+    "url": "https://docs.slack.dev/reference/block-kit/block-elements/message-mention-element",
+    "file": "web/extra-message-mention-element.md",
+    "exit": 0,
+    "bytes": 2109
+  },
+  {
+    "url": "https://docs.slack.dev/reference/block-kit/block-elements/multi-select-menu-element",
+    "file": "web/extra-multi-select-menu-element.md",
+    "exit": 0,
+    "bytes": 12986
+  },
+  {
+    "url": "https://docs.slack.dev/reference/block-kit/block-elements/multi-select-menu-element/",
+    "file": "web/extra-multi-select-menu-element.md",
+    "exit": 0,
+    "bytes": 12986
+  },
+  {
+    "url": "https://docs.slack.dev/reference/block-kit/block-elements/number-input-element",
+    "file": "web/extra-number-input-element.md",
+    "exit": 0,
+    "bytes": 2320
+  },
+  {
+    "url": "https://docs.slack.dev/reference/block-kit/block-elements/number-input-element/",
+    "file": "web/extra-number-input-element.md",
+    "exit": 0,
+    "bytes": 2320
+  },
+  {
+    "url": "https://docs.slack.dev/reference/block-kit/block-elements/overflow-menu-element",
+    "file": "web/extra-overflow-menu-element.md",
+    "exit": 0,
+    "bytes": 12336
+  },
+  {
+    "url": "https://docs.slack.dev/reference/block-kit/block-elements/radio-button-group-element",
+    "file": "web/extra-radio-button-group-element.md",
+    "exit": 0,
+    "bytes": 9797
+  },
+  {
+    "url": "https://docs.slack.dev/reference/block-kit/block-elements/radio-button-group-element/",
+    "file": "web/extra-radio-button-group-element.md",
+    "exit": 0,
+    "bytes": 9797
+  },
+  {
+    "url": "https://docs.slack.dev/reference/block-kit/block-elements/rich-text-input-element",
+    "file": "web/extra-rich-text-input-element.md",
+    "exit": 0,
+    "bytes": 2093
+  },
+  {
+    "url": "https://docs.slack.dev/reference/block-kit/block-elements/rich-text-input-element/",
+    "file": "web/extra-rich-text-input-element.md",
+    "exit": 0,
+    "bytes": 2093
+  },
+  {
+    "url": "https://docs.slack.dev/reference/block-kit/block-elements/rich-text-list-element",
+    "file": "web/extra-rich-text-list-element.md",
+    "exit": 0,
+    "bytes": 9720
+  },
+  {
+    "url": "https://docs.slack.dev/reference/block-kit/block-elements/rich-text-preformatted-element",
+    "file": "web/extra-rich-text-preformatted-element.md",
+    "exit": 0,
+    "bytes": 1762
+  },
+  {
+    "url": "https://docs.slack.dev/reference/block-kit/block-elements/rich-text-quote-element",
+    "file": "web/extra-rich-text-quote-element.md",
+    "exit": 0,
+    "bytes": 3416
+  },
+  {
+    "url": "https://docs.slack.dev/reference/block-kit/block-elements/rich-text-section-element",
+    "file": "web/extra-rich-text-section-element.md",
+    "exit": 0,
+    "bytes": 5731
+  },
+  {
+    "url": "https://docs.slack.dev/reference/block-kit/block-elements/salesforce-data-field-element",
+    "file": "web/extra-salesforce-data-field-element.md",
+    "exit": 0,
+    "bytes": 1994
+  },
+  {
+    "url": "https://docs.slack.dev/reference/block-kit/block-elements/tag-element",
+    "file": "web/extra-tag-element.md",
+    "exit": 0,
+    "bytes": 1755
+  },
+  {
+    "url": "https://docs.slack.dev/reference/block-kit/block-elements/team-element",
+    "file": "web/extra-team-element.md",
+    "exit": 0,
+    "bytes": 1660
+  },
+  {
+    "url": "https://docs.slack.dev/reference/block-kit/block-elements/text-element",
+    "file": "web/extra-text-element.md",
+    "exit": 0,
+    "bytes": 1853
+  },
+  {
+    "url": "https://docs.slack.dev/reference/block-kit/block-elements/time-picker-element",
+    "file": "web/extra-time-picker-element.md",
+    "exit": 0,
+    "bytes": 2393
+  },
+  {
+    "url": "https://docs.slack.dev/reference/block-kit/block-elements/time-picker-element/",
+    "file": "web/extra-time-picker-element.md",
+    "exit": 0,
+    "bytes": 2393
+  },
+  {
+    "url": "https://docs.slack.dev/reference/block-kit/block-elements/url-input-element",
+    "file": "web/extra-url-input-element.md",
+    "exit": 0,
+    "bytes": 2259
+  },
+  {
+    "url": "https://docs.slack.dev/reference/block-kit/block-elements/url-input-element/",
+    "file": "web/extra-url-input-element.md",
+    "exit": 0,
+    "bytes": 2259
+  },
+  {
+    "url": "https://docs.slack.dev/reference/block-kit/block-elements/url-source-element",
+    "file": "web/extra-url-source-element.md",
+    "exit": 0,
+    "bytes": 1183
+  },
+  {
+    "url": "https://docs.slack.dev/reference/block-kit/block-elements/user-element",
+    "file": "web/extra-user-element.md",
+    "exit": 0,
+    "bytes": 1823
+  },
+  {
+    "url": "https://docs.slack.dev/reference/block-kit/block-elements/usergroup-element",
+    "file": "web/extra-usergroup-element.md",
+    "exit": 0,
+    "bytes": 1760
+  },
+  {
+    "url": "https://docs.slack.dev/reference/block-kit/block-elements/work-object-mention-element",
+    "file": "web/extra-work-object-mention-element.md",
+    "exit": 0,
+    "bytes": 2487
+  },
+  {
+    "url": "https://docs.slack.dev/reference/block-kit/block-elements/workflow-button-element",
+    "file": "web/extra-workflow-button-element.md",
+    "exit": 0,
+    "bytes": 8463
+  },
+  {
+    "url": "https://docs.slack.dev/reference/block-kit/block-elements/workflow-mention-element",
+    "file": "web/extra-workflow-mention-element.md",
+    "exit": 0,
+    "bytes": 2259
+  },
+  {
+    "url": "https://docs.slack.dev/reference/block-kit/blocks/context-block",
+    "file": "web/extra-context-block.md",
+    "exit": 0,
+    "bytes": 12044
+  },
+  {
+    "url": "https://docs.slack.dev/reference/block-kit/blocks/divider-block",
+    "file": "web/extra-divider-block.md",
+    "exit": 0,
+    "bytes": 7177
+  },
+  {
+    "url": "https://docs.slack.dev/reference/block-kit/blocks/file-block",
+    "file": "web/extra-file-block.md",
+    "exit": 0,
+    "bytes": 1024
+  },
+  {
+    "url": "https://docs.slack.dev/reference/block-kit/blocks/header-block",
+    "file": "web/extra-header-block.md",
+    "exit": 0,
+    "bytes": 10515
+  },
+  {
+    "url": "https://docs.slack.dev/reference/block-kit/blocks/image-block",
+    "file": "web/extra-image-block.md",
+    "exit": 0,
+    "bytes": 1743
+  },
+  {
+    "url": "https://docs.slack.dev/reference/block-kit/composition-objects/conversation-filter-object",
+    "file": "web/extra-conversation-filter-object.md",
+    "exit": 0,
+    "bytes": 3849
+  },
+  {
+    "url": "https://docs.slack.dev/reference/block-kit/composition-objects/dispatch-action-configuration-object",
+    "file": "web/extra-dispatch-action-configuration-object.md",
+    "exit": 0,
+    "bytes": 2186
+  },
+  {
+    "url": "https://docs.slack.dev/reference/block-kit/composition-objects/option-group-object",
+    "file": "web/extra-option-group-object.md",
+    "exit": 0,
+    "bytes": 5238
+  },
+  {
+    "url": "https://docs.slack.dev/reference/block-kit/composition-objects/option-object",
+    "file": "web/extra-option-object.md",
+    "exit": 0,
+    "bytes": 3141
+  },
+  {
+    "url": "https://docs.slack.dev/reference/block-kit/composition-objects/slack-file-object",
+    "file": "web/extra-slack-file-object.md",
+    "exit": 0,
+    "bytes": 1726
+  },
+  {
+    "url": "https://docs.slack.dev/reference/block-kit/composition-objects/slack-file-object/",
+    "file": "web/extra-slack-file-object.md",
+    "exit": 0,
+    "bytes": 1726
+  },
+  {
+    "url": "https://docs.slack.dev/reference/block-kit/composition-objects/slack-icon-object",
+    "file": "web/extra-slack-icon-object.md",
+    "exit": 0,
+    "bytes": 902
+  },
+  {
+    "url": "https://docs.slack.dev/reference/block-kit/composition-objects/trigger-object",
+    "file": "web/extra-trigger-object.md",
+    "exit": 0,
+    "bytes": 2019
+  },
+  {
+    "url": "https://docs.slack.dev/reference/block-kit/composition-objects/workflow-object",
+    "file": "web/extra-workflow-object.md",
+    "exit": 0,
+    "bytes": 1656
+  },
+  {
+    "url": "https://docs.slack.dev/reference/methods/agents.sessions.setStatus/",
+    "file": "web/extra-agents.sessions.setStatus.md",
+    "exit": 0,
+    "bytes": 9457
+  }
+]

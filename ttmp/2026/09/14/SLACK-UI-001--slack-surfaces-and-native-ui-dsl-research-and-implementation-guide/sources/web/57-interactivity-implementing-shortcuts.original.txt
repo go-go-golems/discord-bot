@@ -1,0 +1,147 @@
+**Shortcuts** let users quickly trigger workflows from various prominent locations within Slack.
+
+Shortcuts can trigger [modals](/surfaces/modals) and other [app interactions](/interactivity#responses). When someone uses one of your shortcuts, your app will receive some context about what happened in an [interaction payload](#request_payload). They are gateways to powerful, productive workflows.
+
+Apps can create **global shortcuts** that are available from anywhere in Slack, and **message shortcuts** that are shown only in message context menus.
+
+#### Use cases
+
+- Surface your app's core functionality globally within Slack
+- Enable users to take action on a message
+- Improve discoverability of your app
+
+---
+
+## Shortcut types
+
+### Global shortcuts
+
+Global shortcuts are available to users via the shortcuts button in the message composer (hint: it looks like this `/`), and when using search in Slack.
+
+These type of shortcuts are intended to trigger workflows that can operate without the context of a channel or message.
+
+For example, users might trigger a global shortcut to create a calendar event or view their upcoming on-call shifts.
+
+### Message shortcuts
+
+Message shortcuts are shown to users in the context menus of non-ephemeral messages within Slack.
+
+Message shortcuts will retain the context of the source message from which they were initiated. This makes them ideal when you have a workflow that relies on that context to work.
+
+For example, users might quickly generate tasks from a posted message, or send messages to external services.
+
+![](/assets/images/message_shortcuts-354f3adde554ab79fc9aa5ea86f6ae9a.svg)
+
+Think about what app invocation points belong in a global context versus which belong in a message context.
+
+For example, pretend you're building a task management app. An example of a shortcut that makes sense in a global context would be `Create a task`, whereas a shortcut that belongs in a message context would be `Attach to a task`, which could attach the specific message to an existing task.
+
+---
+
+## Getting started with shortcuts
+
+If you don't have a Slack app yet, [follow our quick guide to create one](/app-management/quickstart-app-settings#creating).
+
+In order to start using shortcuts with your app, there are a few preparation steps you'll need to go through.
+
+### Preparing for payloads
+
+Ensure your app is ready to receive interaction payloads by providing a **Request URL**, as described in our [guide to handling user interactions](/interactivity/handling-user-interaction#setup).
+
+### Adding the right permissions
+
+To make shortcuts available in Slack, your app must have the `commands` permission scope. You can either [request this scope during the OAuth flow](/authentication/installing-with-oauth#asking) or add it to your app OAuth settings:
+
+1. From your [app's dashboard](https://api.slack.com/apps), click the menu item **OAuth & Permissions**.
+2. Under *Scopes*, type `commands` into the text field, select the correct permission to add it, then click **Save Changes**.
+
+If your app isn't already requesting `commands` at installation, it will need to be reinstalled before shortcuts can be used. If your app is published in the Slack Marketplace, the changes will be reflected only after the app is reviewed and approved.
+
+---
+
+## Creating a shortcut
+
+Now that your app is ready, it's time to create some potential interaction energy:
+
+1. Open your [app's dashboard](https://api.slack.com/apps)
+2. Click on *Interactivity & Shortcuts* in the sidebar
+3. Click the *Create New Shortcut* button under *Shortcuts*
+4. Select from the *Global* and *On messages* options, depending on [which type of shortcut you want](#shortcut_types) and click *Next*
+5. Fill in the following:
+- *Name*: a short, catchy call to action. Start the name with a verb, and use sentence case (eg. “Create a ticket”).
+- *Short Description*: describe what the shortcut does for the benefit of a potential user.
+- *Callback ID*: a string that will be sent to your Request URL in an interaction payload — we'll talk about this more [later on](#request_payload).
+1. Click the green **Create** button, and you'll be sent back to the *Interactivity & Shortcuts* page.
+2. On that page you'll need to click the **Save Changes** button.
+
+That's it—you've created your first shortcut! You can create some more—each app can have up to 5 global shortcuts, and separately, 5 message shortcuts. Shortcuts will appear in shortcuts menus in the order in which they were created.
+
+Now let's make sure you are ready to receive interaction payloads and do something in response.
+
+---
+
+## Handling the use of shortcuts in your app
+
+You've created a shortcut, and at some point it will be used by someone in Slack. Your app has to handle that eventuality.
+
+We explain the process in-depth in our [guide to handling user interactions in apps](/interactivity/handling-user-interaction#flow), including how to prepare your app with a request URL. In short, your app will receive an interaction payload after someone uses one of your shortcuts. Your app must process that payload and then send a response.
+
+First, let's learn more about that interaction payload.
+
+### Processing the interaction payload
+
+When a shortcut is invoked, a request will be sent to the app's configured *Request URL*. The request body will contain a `payload` parameter that your app should parse for JSON.
+
+Inside you'll discover an interaction payload containing lots of useful context — consult our [reference guide](/reference/interaction-payloads/shortcuts-interaction-payload) to see the full structure of the fields included.
+
+Payloads for global shortcuts will contain different info from payloads for message shortcuts. For example, a payload for a message shortcut will include channel and message context, and a `response_url` for publishing message responses. If you want to publish a message in response to a global shortcut, [use our alternative approach](#global_response_url).
+
+### Responding to shortcuts
+
+There are a few things to consider about responding to interaction payloads:
+
+- **Always send an [acknowledgment response](/interactivity/handling-user-interaction#acknowledgment_response)**.
+	As soon as your app receives the interaction payload, a countdown begins, because this message will self-destruct in 3 seconds. If your app doesn't respond with an HTTP status `200 OK` within 3000ms of receiving the payload, the person who used the shortcut will see a generic error message letting them know that something went wrong.
+- **Your app must [follow up with a modal](/interactivity/handling-user-interaction#modal_responses) to confirm any action that will occur**.
+	This will allow the user to feel much more confident using *any* shortcut, as they can trust that they won't immediately publish a message or modify data.
+
+Putting those two steps together, a handler acknowledges the payload and then uses the `trigger_id` from the shortcut to open a modal. A **message shortcut** is triggered from a message's context menu, so its payload includes the source message. A **global shortcut** is triggered from the composer, so it has no message context. See this implemented using the [Bolt framework](/tools#bolt):
+
+- **Beyond these essential actions, your app also has a range of more complex responses to take.**
+	You can [use a field supplied in the interaction payload to publish messages](/interactivity/handling-user-interaction#message_responses), or [another payload field to pop a modal that can collect or present more info](/interactivity/handling-user-interaction#modal_responses). Shortcuts can also be a trigger for your app to [make calls to APIs or external services](/interactivity/handling-user-interaction#async_responses).
+
+Some recommendations related to shortcuts:
+
+- **Include user confirmation of results**
+	Whenever a user completes an action with your app (even when it isn't associated with shortcuts), provide confirmation and details about what they just did. And for a third-party service, include relevant links out to the service.
+	As an example, if the user performed an action like creating a new helpdesk ticket in a third-party service, include a link to where they can view more information about that ticket.
+- **Be clear when using paid-feature shortcuts**
+	If your app’s core features are paid-only and you plan to expose them via shortcuts, you should make it apparent for non-paying users that the reason they can’t use the shortcut is because they must have a paid plan for your app. Rather than silently failing, we recommend opening an explanatory modal (or posting an ephemeral message) that explains why they can't use the shortcut.
+
+---
+
+## Limitations
+
+- Global shortcuts are not visible (and therefore usable) for all types of guest user. Please see our [Help Center](https://slack.com/intl/en-ie/help/articles/202518103-Multi-Channel-and-Single-Channel-Guests#guest-permissions) for an up-to-date breakdown of the [availability of shortcuts for these users](https://slack.com/intl/en-ie/help/articles/202518103-Multi-Channel-and-Single-Channel-Guests#guest-permissions).
+- When an app is submitted (or re-submitted) to the Slack Marketplace, the confirmation modal does not indicate any changes regarding global shortcuts. Despite the discrepancy, global shortcut changes *will* be submitted upon confirmation.
+- An app responding to a shortcut initiated from a threaded message cannot currently publish a message back to that thread. They *can* publish back to the parent conversation. We are working on a comprehensive solution that will make this possible.
+
+---
+
+## Next steps
+
+You've now learned how to create a shortcut, and what your app has to do to handle their use. That's a great start!
+
+Read our [guide to responding to interactions](/interactivity/handling-user-interaction#responses) to understand the vast range of possibilities open to your app at this point.
+
+---
+
+## Related references
+
+- [Interaction payload reference for shortcuts](/reference/interaction-payloads/shortcuts-interaction-payload)
+
+### Modal and messages
+
+- [Web API: `views.open`](/reference/methods/views.open)
+- [Block Kit: Select menu with conversations list](/reference/block-kit/block-elements/select-menu-element#conversations_select)
+- [Block Kit: Select menu with channels list](/reference/block-kit/block-elements/select-menu-element#channels_select)

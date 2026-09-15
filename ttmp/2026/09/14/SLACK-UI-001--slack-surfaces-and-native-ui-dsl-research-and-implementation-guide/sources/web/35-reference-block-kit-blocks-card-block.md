@@ -1,0 +1,38 @@
+---
+Title: "35 reference block kit blocks card block"
+Ticket: SLACK-UI-001
+Status: active
+Topics: [slack, architecture]
+DocType: reference
+Intent: long-term
+Owners: []
+RelatedFiles: []
+ExternalSources: ["https://docs.slack.dev/reference/block-kit/blocks/card-block/"]
+Summary: "Official Slack documentation source capture; see sources catalog for extraction details."
+LastUpdated: 2026-09-14T23:00:00-04:00
+WhatFor: "Research evidence."
+WhenToUse: "Check the original API contract."
+---
+
+## Fields
+
+| Field | Type | Description | Required? |
+| --- | --- | --- | --- |
+| `type` | String | The type of block. For a card block, `type` is always `card`. | Required |
+| `block_id` | String | A unique identifier for a block. If not specified, a `block_id` will be generated. | Optional |
+| `hero_image` | [Image element](https://docs.slack.dev/reference/block-kit/block-elements/image-element) | Link to the top image used on the card. Max length 3000 characters. The `alt_text` property has a max length of 2000 characters. | Optional |
+| `icon` | [Image element](https://docs.slack.dev/reference/block-kit/block-elements/image-element) | Link to the small image used next to the card's title and subtitle. Max length 3000 characters. The `alt_text` property has a max length of 2000 characters. | Optional |
+| `title` | String | Title of the card, using `plain_text` or `mrkdwn` formatting. 150 characters max. | Optional |
+| `subtitle` | String | Subtitle of the card, using `plain_text` or `mrkdwn` formatting. 150 characters max. | Optional |
+| `body` | String | Content of the card, using `plain_text` or `mrkdwn` formatting. 200 characters max. | Optional |
+| `actions` | [Actions block](https://docs.slack.dev/reference/block-kit/blocks/actions-block) | Action buttons shown at the bottom of the card, maximum of 3 buttons. Buttons with `danger` style will be left-aligned, while buttons with `primary` or no style will be right-aligned (buttons with `primary` style will be furthest to the right). | Optional |
+| `slack_icon` | [Slack icon composition object](https://docs.slack.dev/reference/block-kit/composition-objects/slack-icon-object) | A Slack icon to be rendered next to the card's title and subtitle. Mutually exclusive with `icon`, that is, only one of `icon` & `slack_icon` can be present as they render in the same location on the card. | Optional |
+| `subtext` | String | Subtext to be rendered below body of the card, using `plain_text` or `mrkdwn` formatting. Maximum 200 characters. | Optional |
+
+At least one of `hero_image`, `title`, `actions`, or `body` is required.
+
+Note that there is not currently an attribute to define the size of the card.
+
+## Example
+
+A sample card block:

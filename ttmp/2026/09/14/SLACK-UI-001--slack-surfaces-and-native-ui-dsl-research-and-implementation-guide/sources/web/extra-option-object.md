@@ -1,0 +1,36 @@
+---
+Title: "extra option object"
+Ticket: SLACK-UI-001
+Status: active
+Topics: [slack, architecture]
+DocType: reference
+Intent: long-term
+Owners: []
+RelatedFiles: []
+ExternalSources: ["https://docs.slack.dev/reference/block-kit/composition-objects/option-object"]
+Summary: "Official Slack documentation source capture; see sources catalog for extraction details."
+LastUpdated: 2026-09-14T23:00:00-04:00
+WhatFor: "Research evidence."
+WhenToUse: "Check the original API contract."
+---
+
+**Defines a single item in a number of item selection elements.**
+
+An object that represents a single selectable item in a [select menu](https://docs.slack.dev/reference/block-kit/block-elements/select-menu-element), [multi-select menu](https://docs.slack.dev/reference/block-kit/block-elements/multi-select-menu-element), [checkbox group](https://docs.slack.dev/reference/block-kit/block-elements/checkboxes-element), [radio button group](https://docs.slack.dev/reference/block-kit/block-elements/radio-button-group-element), or [overflow menu](https://docs.slack.dev/reference/block-kit/block-elements/overflow-menu-element).
+
+#### Fields
+
+| Field | Type | Description | Required? |
+| --- | --- | --- | --- |
+| `text` | Object | A [text object](https://docs.slack.dev/reference/block-kit/composition-objects/text-object) that defines the text shown in the option on the menu. Overflow, select, and multi-select menus can only use `plain_text` objects, while radio buttons and checkboxes can use `mrkdwn` text objects. Maximum length for the `text` in this field is 75 characters. | Required |
+| `value` | String | A unique string value that will be passed to your app when this option is chosen. Maximum length for this field is 150 characters. | Required |
+| `description` | Object | A [`plain_text`](https://docs.slack.dev/reference/block-kit/composition-objects/text-object) text object that defines a line of descriptive text shown below the `text` field beside a single selectable item in a [select menu](https://docs.slack.dev/reference/block-kit/block-elements/select-menu-element), [multi-select menu](https://docs.slack.dev/reference/block-kit/block-elements/multi-select-menu-element), [checkbox group](https://docs.slack.dev/reference/block-kit/block-elements/checkboxes-element), [radio button group](https://docs.slack.dev/reference/block-kit/block-elements/radio-button-group-element), or [overflow menu](https://docs.slack.dev/reference/block-kit/block-elements/overflow-menu-element). [Checkbox group](https://docs.slack.dev/reference/block-kit/block-elements/checkboxes-element) and [radio button group](https://docs.slack.dev/reference/block-kit/block-elements/radio-button-group-element) items can also use [`mrkdwn`](https://docs.slack.dev/messaging/formatting-message-text#basic-formatting) formatting. Maximum length for the `text` within this field is 75 characters. | Optional |
+| `url` | String | A URL to load in the user's browser when the option is clicked. **The `url` attribute is only available in [overflow menus](https://docs.slack.dev/reference/block-kit/block-elements/overflow-menu-element)**. Maximum length for this field is 3000 characters. If you're using `url`, you'll still receive an [interaction payload](https://docs.slack.dev/interactivity/handling-user-interaction#payloads) and will need to [send an acknowledgement response](https://docs.slack.dev/interactivity/handling-user-interaction#acknowledgment_response). | Optional |
+
+#### Example
+
+The option object must be used with the [select menu](https://docs.slack.dev/reference/block-kit/block-elements/select-menu-element), [multi-select menu](https://docs.slack.dev/reference/block-kit/block-elements/multi-select-menu-element), [checkbox group](https://docs.slack.dev/reference/block-kit/block-elements/checkboxes-element), [radio button group](https://docs.slack.dev/reference/block-kit/block-elements/radio-button-group-element), or [overflow menu](https://docs.slack.dev/reference/block-kit/block-elements/overflow-menu-element).
+
+This example shows a section block containing a static select menu element with several option objects.
+
+---

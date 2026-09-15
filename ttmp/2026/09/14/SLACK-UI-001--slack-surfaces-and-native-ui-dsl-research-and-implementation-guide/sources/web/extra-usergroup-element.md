@@ -1,0 +1,55 @@
+---
+Title: "extra usergroup element"
+Ticket: SLACK-UI-001
+Status: active
+Topics: [slack, architecture]
+DocType: reference
+Intent: long-term
+Owners: []
+RelatedFiles: []
+ExternalSources: ["https://docs.slack.dev/reference/block-kit/block-elements/usergroup-element"]
+Summary: "Official Slack documentation source capture; see sources catalog for extraction details."
+LastUpdated: 2026-09-14T23:00:00-04:00
+WhatFor: "Research evidence."
+WhenToUse: "Check the original API contract."
+---
+
+This is a rich text element, compatible only with the [`rich_text`](https://docs.slack.dev/reference/block-kit/blocks/rich-text-block) block. It must be used within the [`rich_text_list`](https://docs.slack.dev/reference/block-kit/block-elements/rich-text-list-element), [`rich_text_quote`](https://docs.slack.dev/reference/block-kit/block-elements/rich-text-quote-element), or [`rich_text_section`](https://docs.slack.dev/reference/block-kit/block-elements/rich-text-section-element) block element within the `rich_text` block's `elements` array.
+
+## Fields
+
+| Field | Type | Description | Required? |
+| --- | --- | --- | --- |
+| `type` | String | The type of object; in this case "usergroup". | Required |
+| `usergroup_id` | String | The ID of the user group to be mentioned. | Required |
+| `style` | Object | An object of optional boolean properties that dictate style: `bold`, `italic`, `strike`, `highlight`, `client_highlight`, `unlink`, and `underline`. | Optional |
+
+## Example
+
+- JSON
+- Python Slack SDK
+- Node Slack SDK
+- Java Slack SDK
+
+```json
+{
+    "blocks": [
+        {
+            "type": "rich_text",
+            "elements": [
+                {
+                    "type": "rich_text_section",
+                    "elements": [
+                        {
+                            "type": "usergroup",
+                            "usergroup_id": "G123ABC456"
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}
+```
+
+[View in Block Kit Builder](https://app.slack.com/block-kit-builder/#%7B%2522blocks%2522%3A%255B%257B%2522type%2522%3A%2522rich_text%2522%2C%2522elements%2522%3A%255B%257B%2522type%2522%3A%2522rich_text_section%2522%2C%2522elements%2522%3A%255B%257B%2522type%2522%3A%2522usergroup%2522%2C%2522usergroup_id%2522%3A%2522G123ABC456%2522%257D%255D%257D%255D%257D%255D%257D)

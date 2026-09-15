@@ -1,0 +1,1 @@
+Block Kit Block Kit Elements Copy as markdown Block Elements This page lists the JSON payloads that your app can use to generate each element. Select the block element you'd like to build: All All Name Description Blocks Surfaces Previous Video block Next Overview

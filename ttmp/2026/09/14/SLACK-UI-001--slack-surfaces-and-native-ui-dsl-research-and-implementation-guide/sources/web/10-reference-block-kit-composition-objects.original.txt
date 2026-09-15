@@ -1,0 +1,7 @@
+Composition objects can be used inside of [block elements](/reference/block-kit/block-elements) and certain [message payload](/messaging#payloads) fields. They are common JSON object patterns that you'll encounter frequently when [building blocks](/block-kit) or [composing messages](/messaging).
+
+The list of fields and values for each object describe the JSON that apps can use to generate each object.
+
+Name
+
+Description
