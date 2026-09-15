@@ -2,6 +2,7 @@ package slackcli
 
 import (
 	"context"
+	"os"
 	"time"
 
 	"github.com/go-go-golems/discord-bot/internal/slackconfig"
@@ -57,7 +58,7 @@ func (c *command) runRemote(ctx context.Context, d slackbot.Descriptor, s settin
 		return errors.Errorf("app %q has no Socket Mode app token; install or import runtime credentials first", profile.App)
 	}
 
-	c.logger.Info().Str("profile", profileName).Str("bot", d.Name).Str("script", d.ScriptPath).Str("app_id", app.AppID).Str("team_id", installation.TeamID).Msg("Starting Slack bot with stored installation")
+	c.logger.Info().Int("pid", os.Getpid()).Str("profile", profileName).Str("bot", d.Name).Str("script", d.ScriptPath).Str("app_id", app.AppID).Str("team_id", installation.TeamID).Msg("Starting Slack bot with stored installation")
 	client, err := slacktransport.NewRemote(slacktransport.RemoteOptions{
 		BotToken: installationCred.BotToken,
 		AppToken: appToken,

@@ -604,3 +604,61 @@ The runner previously selected JavaScript without changing Slack's app configura
 - POST https://slack.com/api/apps.manifest.update with bearer management token, app_id, and manifest as a JSON-encoded string.
 - Sources: https://docs.slack.dev/reference/methods/apps.manifest.update/ and https://docs.slack.dev/app-management/distribution/.
 - Session: slack-ui-showcase. Bot: ui-showcase. Profile: go-go-golems.
+
+## Step 12: Investigate the unexpected pong reply
+
+The user observed that pong stopped when the showcase process stopped. That is evidence of a connection to our runner, but does not identify the generating code path. Earlier assertions attributing the reply to another instance were unsupported. This investigation has not established the root cause.
+
+### Prompt Context
+**User prompt (verbatim):** "ok, figure it out"
+**Assistant interpretation:** Trace the unexplained pong response and reproduce it.
+**Inferred user intent:** Account for the response with evidence rather than another speculative explanation.
+
+### What I did
+- Inspected bot discovery, runtime loading, command registration, dispatch, response URL delivery, ACK construction, and pinned slack-go v0.17.3 Socket Mode parsing.
+- Checked process names while the runner was stopped; no other Go, Slack, Node or Deno runner appeared in that process listing.
+- Added a local wire-level regression reproducing CLI discovery (including ping inspection), loading the showcase, and delivering /golem-ping followed by /ui-showcase over a real local WebSocket.
+- Captured both Socket Mode ACK payloads and response-URL HTTP messages in the test.
+- Added reply fingerprints, byte counts, block counts, and delivery success logs correlated with bot and invocation. Startup now includes PID.
+- Exported the live manifest read-only: app A0C1YJCCCP6 is named ui-showcase and registers only /ui-showcase.
+- Restarted the instrumented showcase in tmux with --skip-manifest-update for a fresh user-triggered reproduction.
+
+### Why
+- Local source searches cannot explain an observed live reply by themselves. The reproduction exercises the SDK and actual response encoding.
+- Inspecting both scripts before loading the showcase tests the hypothesis that discovery leaks ping handlers into the runtime.
+- Text hashes identify a literal pong without logging user message bodies or credential-bearing response URLs.
+
+### What worked
+- TestShowcaseWireDoesNotReplyPong passed: both ACKs had no payload, and the sole HTTP reply contained the showcase fallback text and blocks.
+- Host and CLI tests passed after adding outbound diagnostics.
+- Live manifest export confirmed that /golem-ping is absent from the current app configuration.
+- Instrumented PID 132981 authenticated and received Socket Mode connected/hello.
+
+### What didn't work
+- First wire test imported slackcli from an internal slacktransport test and triggered "import cycle not allowed in test"; changed to the external slacktransport_test package.
+- Next fixture timed out waiting for an ACK because slack-go SlashCommand.UnmarshalJSON requires is_enterprise_install even when false. Adding that real payload field fixed the fixture.
+- No local test has reproduced the unexplained pong. This is not a root-cause fix.
+
+### What I learned
+- The current showcase rejects /golem-ping and emits only its own UI message in the tested discovery/runtime/transport sequence.
+- The SDK's WebSocket PONG control frames do not implement slash-command text replies.
+- The existing live log contained a successful showcase command and modal submission, but no attributed pong emission.
+
+### What was tricky to build
+- A missing SDK-required slash-command field prevents the event from reaching our decoder; the mock must match the real wire payload, not just the framework's normalized invocation.
+
+### What warrants a second pair of eyes
+- The fresh live reproduction remains necessary; do not interpret the passing mock as disproving the user's observation.
+
+### What should be done in the future
+- Capture the next /ui-showcase and any still-accepted /golem-ping attempt, then compare incoming command, envelope, and outgoing fingerprint.
+- Keep the cause explicitly unresolved until evidence identifies it.
+
+### Code review instructions
+- Review internal/slacktransport/showcase_wire_test.go and the sendReply logs in internal/jsslack/dispatch.go.
+- Run GOCACHE=/tmp/go-build-cache-slack-ui GOWORK=off go test ./internal/slacktransport -run TestShowcaseWireDoesNotReplyPong -v with loopback access.
+
+### Technical details
+- SHA-256 of literal pong: 9795c5ff8937f23526ccb207a5684c1fc94a7854e19c021b39d944e51f5baef2.
+- SHA-256 of showcase fallback: ca43944b37f349fbf2841f100250fee5d35e7a800c2c6c29cf548c1a513a38ff.
+- Logs report text_sha256, text_bytes, blocks and delivered; no message bodies or response URLs.

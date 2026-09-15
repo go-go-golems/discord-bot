@@ -2,7 +2,9 @@ package jsslack
 
 import (
 	"context"
+	"crypto/sha256"
 	"encoding/json"
+	"fmt"
 	"strings"
 	"sync"
 	"time"
@@ -165,7 +167,14 @@ func claimReply(s *invocationState) error {
 	s.replied = true
 	return nil
 }
-func (h *Host) sendReply(s *invocationState, message slackbot.MessagePayload) (any, error) {
+func (h *Host) sendReply(s *invocationState, message slackbot.MessagePayload) (result any, replyErr error) {
+	logger := h.logger.With().Str("bot", h.descriptor.Name).Str("invocation", s.input.ID).
+		Str("command", s.input.Command).Str("text_sha256", fmt.Sprintf("%x", sha256.Sum256([]byte(message.Text)))).
+		Int("text_bytes", len(message.Text)).Int("blocks", len(message.Blocks)).Logger()
+	logger.Debug().Msg("Slack reply sending")
+	defer func() {
+		logger.Debug().Bool("delivered", replyErr == nil).Msg("Slack reply finished")
+	}()
 	if s.input.Command != "" || s.input.Action != nil {
 		if s.responder == nil {
 			return nil, slackbot.Fail("unavailable", "reply", "no response capability")
