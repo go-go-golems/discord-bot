@@ -1,4 +1,4 @@
-// Package slacktransport connects the Slack host to an explicitly local Socket Mode server.
+// Package slacktransport connects the Slack host to Slack Socket Mode and Web API services.
 package slacktransport
 
 import (
@@ -26,13 +26,23 @@ type LocalOptions struct {
 	AllowedChannels                           []string
 	Logger                                    zerolog.Logger
 }
+
+// RemoteOptions configures a real Slack workspace connection. Tokens are
+// supplied explicitly by the caller; this package does not read environment
+// variables or credential files.
+type RemoteOptions struct {
+	BotToken, AppToken, TeamID, AppID string
+	AllowedChannels                   []string
+	Logger                            zerolog.Logger
+}
 type Client struct {
-	api       *slack.Client
-	socket    *socketmode.Client
-	http      *http.Client
-	transport *http.Transport
-	origin    *url.URL
-	opts      LocalOptions
+	api           *slack.Client
+	socket        *socketmode.Client
+	http          *http.Client
+	transport     *http.Transport
+	origin        *url.URL
+	responseHosts map[string]struct{}
+	opts          LocalOptions
 }
 
 var _ slackbot.MessageService = (*Client)(nil)
@@ -50,7 +60,7 @@ func NewLocal(opts LocalOptions) (*Client, error) {
 		return nil, errors.New("bot token, app token, team ID and app ID are required")
 	}
 	opts.AllowedChannels = append([]string(nil), opts.AllowedChannels...)
-	c := &Client{origin: u, opts: opts}
+	c := &Client{origin: u, responseHosts: map[string]struct{}{u.Host: {}}, opts: opts}
 	dial := func(ctx context.Context, network, address string) (net.Conn, error) {
 		if address != u.Host {
 			return nil, errors.New("local transport refused unexpected destination")
@@ -62,6 +72,20 @@ func NewLocal(opts LocalOptions) (*Client, error) {
 	c.api = slack.New(opts.BotToken, slack.OptionAppLevelToken(opts.AppToken), slack.OptionAPIURL(opts.APIURL), slack.OptionHTTPClient(c.http))
 	c.socket = socketmode.New(c.api, socketmode.OptionDialer(&websocket.Dialer{NetDialContext: dial, HandshakeTimeout: 5 * time.Second}))
 	return c, nil
+}
+
+// NewRemote creates a client for Slack's public API and Socket Mode endpoints.
+func NewRemote(opts RemoteOptions) (*Client, error) {
+	if opts.BotToken == "" || opts.AppToken == "" || opts.TeamID == "" || opts.AppID == "" {
+		return nil, errors.New("bot token, app token, team ID and app ID are required")
+	}
+	httpClient := &http.Client{Timeout: 30 * time.Second}
+	api := slack.New(opts.BotToken, slack.OptionAppLevelToken(opts.AppToken), slack.OptionHTTPClient(httpClient))
+	return &Client{
+		api: api, socket: socketmode.New(api), http: httpClient,
+		responseHosts: map[string]struct{}{"hooks.slack.com": {}, "hooks.slack-gov.com": {}},
+		opts:          LocalOptions{BotToken: opts.BotToken, AppToken: opts.AppToken, TeamID: opts.TeamID, AppID: opts.AppID, AllowedChannels: append([]string(nil), opts.AllowedChannels...), Logger: opts.Logger},
+	}, nil
 }
 func (c *Client) Close() { c.transport.CloseIdleConnections() }
 func (c *Client) Post(ctx context.Context, m slackbot.PostMessage) (slackbot.MessageRef, error) {
@@ -134,7 +158,17 @@ func (r *responder) Reply(ctx context.Context, text slackbot.Text) error {
 }
 func (c *Client) responseCapability(target string) (slackbot.Responder, error) {
 	u, err := url.Parse(target)
-	if err != nil || u.Scheme != "http" || u.Host != c.origin.Host || u.User != nil || u.Fragment != "" {
+	if err != nil || u.User != nil || u.Fragment != "" || u.Host == "" || u.Path == "" {
+		return nil, errors.New("invalid response capability")
+	}
+	if c.origin != nil {
+		if u.Scheme != "http" || u.Host != c.origin.Host {
+			return nil, errors.New("invalid local response capability")
+		}
+	} else if u.Scheme != "https" {
+		return nil, errors.New("invalid Slack response capability")
+	}
+	if _, ok := c.responseHosts[u.Host]; !ok {
 		return nil, errors.New("invalid local response capability")
 	}
 	return &responder{client: c, target: target}, nil

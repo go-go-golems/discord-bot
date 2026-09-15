@@ -12,3 +12,6 @@
 - [x] Add a profile-based bots install command using Slack CLI developerInstall <!-- t:46bm -->
 - [x] Persist returned bot and Socket Mode tokens to installation and app records <!-- t:7wca -->
 - [x] Add request, response, mismatch, and secret-redaction tests and update help <!-- t:aytz -->
+- [ ] Add a remote Slack Web API and Socket Mode client using explicit profile credentials <!-- t:y3sa -->
+- [ ] Add bots run to resolve an installed profile and dispatch the JavaScript bot <!-- t:8qti -->
+- [ ] Test remote credential resolution and Slack response URL validation; update help <!-- t:axvn -->

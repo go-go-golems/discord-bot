@@ -597,3 +597,60 @@ Review the successful command output above, the metadata diff, and Step 9's requ
 ### Technical details
 
 The successful API response was accepted only after matching app ID and non-empty bot/app-level token fields. The command wrote `config.yaml` metadata and `credentials.json` secrets with the existing private atomic writer.
+
+## Step 11: Add the real Slack runtime command
+
+The installed credentials were previously stored but unused by the CLI runtime. This milestone adds a remote Slack client constructor and a `bots run` command that loads the selected profile installation, hosts the JavaScript bot, and reuses the existing Socket Mode ingress loop. The deterministic `run-local` mock path remains unchanged.
+
+### Prompt Context
+
+**User prompt (verbatim):** "ok, let's do it."
+
+**Assistant interpretation:** Implement the next step identified after installation: connect the stored credentials to a real Slack runtime and make the bot runnable.
+
+**Inferred user intent:** Run `ping` against Slack with one profile-based command instead of manually constructing a mock connection file.
+
+### What I did
+
+- Added `slacktransport.NewRemote`, using the pinned Slack SDK with explicit bot and Socket Mode tokens.
+- Added `bots run NAME`, which resolves app/installation records, loads optional declared bot configuration, and dispatches through `slackhost.Host`.
+- Allowed Slack's HTTPS response URLs for slash-command ephemeral replies while retaining strict host checks; local response URLs remain loopback-only.
+- Added remote credential-resolution and response-capability tests.
+- Updated the embedded help with the real runtime command and profile requirements.
+- Added three runtime tasks to the ticket.
+
+### Why
+
+The existing `Client.Run` already verifies `auth.test`, acknowledges envelopes, filters ingress, and dispatches JavaScript. A remote constructor lets that reviewed behavior operate against Slack without duplicating transport logic.
+
+### What worked
+
+Focused CLI and transport tests passed. The remote runtime command rejects missing bot/app tokens before opening a network connection. Slack response-capability tests accept `https://hooks.slack.com/...` and reject non-Slack, non-HTTPS, and empty-path URLs.
+
+### What didn't work
+
+No live runtime session was started. Starting it would wait for events and could send real messages; the implementation is validated through local tests and is ready for an explicit smoke run.
+
+### What I learned
+
+The stored app-level token can be selected from the app record, with the installation copy as a fallback for credentials imported through the manual runtime path.
+
+### What was tricky to build
+
+The local client previously assumed every response URL matched a loopback origin. Remote slash commands require a controlled Slack webhook host instead, while arbitrary redirect or exfiltration URLs must remain rejected.
+
+### What warrants a second pair of eyes
+
+Review the allowed Slack webhook host list for GovSlack or future Slack response URL domains, and verify the SDK's reconnect behavior during a supervised live run.
+
+### What should be done in the future
+
+Run the process with `bots run ping --profile go-go-golems`, then add a small live smoke procedure for an app mention and slash command. Keep the mock transport tests as the default validation path.
+
+### Code review instructions
+
+Inspect `internal/slacktransport/client.go`, `pkg/slackcli/run_remote.go`, and the new tests. Compare `NewRemote` with `NewLocal` and confirm credentials are passed only into SDK clients and never into JavaScript configuration or logs.
+
+### Technical details
+
+`bots run` uses the profile's installation team ID and app ID, calls `auth.test` through the Slack SDK, and then invokes `Client.Run`. It accepts `--bot-config-file` for declared fields and `--timeout-ms` for host/invocation deadlines. Shutdown follows the existing context cancellation path.

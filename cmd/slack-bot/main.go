@@ -16,7 +16,7 @@ import (
 
 func newRoot() (*cobra.Command, error) {
 	logger := zerolog.New(zerolog.ConsoleWriter{Out: os.Stderr}).With().Timestamp().Logger()
-	root := &cobra.Command{Use: "slack-bot", Short: "Inspect, create and run Go-hosted Slack bots", SilenceUsage: true, SilenceErrors: true, Long: "Inspect, generate manifests, and simulate Slack bot behavior offline. The create-app command creates a Slack app using an explicit configuration token file. The run-local command connects to an explicitly configured loopback Socket Mode mock."}
+	root := &cobra.Command{Use: "slack-bot", Short: "Inspect, create and run Go-hosted Slack bots", SilenceUsage: true, SilenceErrors: true, Long: "Inspect, generate manifests, and simulate Slack bot behavior offline. The create-app command creates a Slack app using an explicit configuration token file. The install command installs a local app and saves runtime credentials. The run command connects to Slack using a selected profile; run-local connects only to an explicitly configured loopback Socket Mode mock."}
 	bots, err := slackcli.NewBotsCommand(logger)
 	if err != nil {
 		return nil, err

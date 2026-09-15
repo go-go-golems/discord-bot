@@ -99,6 +99,18 @@ func TestConnectionTokenRouting(t *testing.T) {
 	require.ErrorContains(t, err, "unexpected destination")
 }
 
+func TestRemoteResponseCapabilityAllowsSlackHooks(t *testing.T) {
+	c, err := NewRemote(RemoteOptions{BotToken: "synthetic-bot", AppToken: "synthetic-app", TeamID: "T", AppID: "A"})
+	require.NoError(t, err)
+	reply, err := c.responseCapability("https://hooks.slack.com/commands/synthetic")
+	require.NoError(t, err)
+	require.NotNil(t, reply)
+	for _, target := range []string{"http://hooks.slack.com/commands/synthetic", "https://example.com/commands/synthetic", "https://hooks.slack.com"} {
+		_, err := c.responseCapability(target)
+		require.Error(t, err)
+	}
+}
+
 func TestAcceptedThenLostResponseIsNotRetried(t *testing.T) {
 	var count atomic.Int32
 	c := localClient(t, func(w http.ResponseWriter, r *http.Request) {

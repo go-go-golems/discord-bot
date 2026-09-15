@@ -169,13 +169,29 @@ err = host.Dispatch(ctx, slackbot.Invocation{
 
 Import `pkg/slackbot` and `pkg/slackhost` from this repository's module. Inject context-aware `MessageService` and `Responder` implementations; keep any future tokens and response URLs private to those implementations. The public host serializes whole invocations, and a deadline interrupts CPU-bound JavaScript. Go services must honor context cancellation; a service that blocks forever cannot be forcibly stopped safely by the host.
 
-`slackbot.NewIngress` accepts a dispatcher, workspace/app policy, queue capacity, dedupe capacity and TTL. `Admit` takes a detached envelope and an `Acknowledger`. Receipt does not enter JS, duplicate events are keyed by workspace/event ID, and full queues/dedupe caches return `busy`. The worker uses host lifetime, not the ACK context. Shutdown cancels pending work. This is best-effort memory admission, not durable delivery. The local transport connects this ingress to the pinned Slack SDK. Rate-limit retry policy and reconnect tests remain pending.
+`slackbot.NewIngress` accepts a dispatcher, workspace/app policy, queue capacity, dedupe capacity and TTL. `Admit` takes a detached envelope and an `Acknowledger`. Receipt does not enter JS, duplicate events are keyed by workspace/event ID, and full queues/dedupe caches return `busy`. The worker uses host lifetime, not the ACK context. Shutdown cancels pending work. This is best-effort memory admission, not durable delivery. The local and remote transports connect this ingress to the pinned Slack SDK. Rate-limit retry policy remains intentionally out of scope.
+
+## Run against the installed Slack app
+
+The `run` verb resolves the profile's installation and connects to Slack's
+public Web API and Socket Mode endpoints:
+
+```sh
+go run ./cmd/slack-bot bots run ping --profile go-go-golems --log-level debug
+```
+
+The profile must have an app ID, workspace installation, bot token, and
+Socket Mode app token. The command verifies the workspace with `auth.test`,
+acknowledges Socket Mode envelopes before dispatching JavaScript, and uses the
+existing ingress and host contracts for `app_mention` and slash-command
+handlers. Press Ctrl-C to cancel the connection. Use `--bot-config-file` for
+declared bot configuration fields; credentials never enter JavaScript.
 
 ## Validation and remaining work
 
 Run `go test ./...`, `go build ./...`, `go vet ./...`, and race tests for the Slack packages. On the development workstation the ticket's `scripts/04-go-offline.sh` selects the cached matching Go 1.26.4 toolchain, disables downloads and bypasses the mismatched parent workspace.
 
-A pinned SDK/mock probe, a complete local CLI scenario, and baseline HTTP/WebSocket fixtures now exercise real network encoding. External Slack connections, rate-limit retries, reconnect acceptance tests, buttons, modals and xgoja providers remain pending. See the ticket's intern guide and local-testing plan for those phases. Offline tests require no Slack tokens or test-message authorization.
+A pinned SDK/mock probe, a complete local CLI scenario, and baseline HTTP/WebSocket fixtures exercise real network encoding. Extended reconnect and deployment tests, buttons, modals and xgoja providers remain pending. See the ticket's intern guide and local-testing plan for those phases. Offline tests require no Slack tokens or test-message authorization.
 
 ## Run against a prepared local mock
 

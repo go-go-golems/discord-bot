@@ -54,13 +54,16 @@ func NewBotsCommand(logger zerolog.Logger) (*cobra.Command, error) {
 
 func newBotsCommand(logger zerolog.Logger, appClient *http.Client) (*cobra.Command, error) {
 	root := &cobra.Command{Use: "bots", Short: "Inspect, create, install and run Slack bots"}
-	for _, op := range []string{"list", "inspect", "manifest", "create-app", "install", "simulate", "run-local"} {
+	for _, op := range []string{"list", "inspect", "manifest", "create-app", "install", "simulate", "run", "run-local"} {
 		short := op + " a Slack bot (offline)"
 		if op == "create-app" {
 			short = "Create a Slack app from the bot's manifest using the Slack API"
 		}
 		if op == "install" {
 			short = "Install a local Slack app and save runtime tokens"
+		}
+		if op == "run" {
+			short = "Run a Slack bot using stored workspace credentials"
 		}
 		desc := cmds.NewCommandDescription(op, cmds.WithShort(short), cmds.WithFlags(
 			fields.New("log-level", fields.TypeString, fields.WithDefault("info"), fields.WithHelp("Log level (debug, info, warn, error)")),
@@ -86,6 +89,13 @@ func newBotsCommand(logger zerolog.Logger, appClient *http.Client) (*cobra.Comma
 				fields.New("config-dir", fields.TypeString, fields.WithHelp("Local Slack profile and credentials directory (default: user config directory)")),
 				fields.New("profile", fields.TypeString, fields.WithHelp("Named local profile")),
 				fields.New("team-id", fields.TypeString, fields.WithHelp("Slack workspace/team ID")),
+			)(desc)
+		}
+		if op == "run" {
+			cmds.WithFlags(
+				fields.New("config-dir", fields.TypeString, fields.WithHelp("Local Slack profile and credentials directory (default: user config directory)")),
+				fields.New("profile", fields.TypeString, fields.WithHelp("Named local profile")),
+				fields.New("bot-config-file", fields.TypeString, fields.WithHelp("Optional declared bot configuration JSON")),
 			)(desc)
 		}
 		if op == "simulate" {
@@ -149,6 +159,8 @@ func (c *command) RunIntoWriter(ctx context.Context, vals *values.Values, w io.W
 		return c.createApp(ctx, d, s, w)
 	case "install":
 		return c.installApp(ctx, d, s, w)
+	case "run":
+		return c.runRemote(ctx, d, s)
 	case "run-local":
 		var connection struct {
 			APIURL, BotToken, AppToken, TeamID, AppID, UserID string
