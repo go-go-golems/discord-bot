@@ -35,3 +35,7 @@ Proved pinned Go Slack SDK interoperability with the local Bun Socket Mode mock:
 ## 2026-09-10
 
 Connected local-only Socket Mode transport to the real JavaScript CLI; strict HTTP/WebSocket fixtures and complete mock process scenario pass, including dedupe while handler blocked and SIGTERM with exit 0. Broader retry/reconnect catalog remains open.
+
+## 2026-09-14
+
+Deprecated credentials design 03 in favor of SLACK-CREDENTIALS-001. Broad Slack-support ticket remains active.
