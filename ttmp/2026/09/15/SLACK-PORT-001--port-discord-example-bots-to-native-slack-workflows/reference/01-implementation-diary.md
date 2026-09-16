@@ -550,3 +550,21 @@ interactive port to try. The existing app/profile is reused, one bot at a time.
   workflow acceptance. No bot-authored test message was sent by the agent.
 - Verified final startup at 21:58: manifest permissions_updated=false,
   authentication succeeded, Socket Mode connected and hello received (PID227789).
+
+## Step 11: Switch the live installation to Hater
+
+User requested "ok another one." and then "continue" after interrupting the
+installation attempt. Stopped Poker, synchronized Hater's manifest, installed
+its changed permissions and restarted it in the existing slack-bot tmux session.
+
+- Initial startup stopped correctly with permissions_updated=true. The first
+  install tool call was interrupted; the resumed install completed successfully.
+- Command: `bots install hater --profile go-go-golems --team-id T0C1UJMCPGA`,
+  then `bots run hater --profile go-go-golems --log-level debug`, both through
+  `GOWORK=off GOCACHE=/tmp/go-build-cache-slack-ui go run -buildvcs=false ./cmd/slack-bot`.
+- Verified at 22:08: manifest permissions_updated=false, authentication succeeded,
+  Socket Mode connected and hello received (PID238463).
+- Try /hate, its Write apology button, /apology-status, /roast and /compliment.
+  User interaction remains necessary to qualify the live form workflow.
+- No implementation changes or additional test messages were made. Poker's prior
+  logs showed successful interactive dispatch and reply delivery before stopping.
