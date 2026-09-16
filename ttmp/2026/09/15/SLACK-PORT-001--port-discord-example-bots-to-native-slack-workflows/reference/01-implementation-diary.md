@@ -280,3 +280,60 @@ See Step 2. **Assistant interpretation:** Implement persistence and operational 
 - Generated files are UTF-8 content, maximum8 MiB.
 - Bot scopes are merged without duplicates. Native API parameters use Slack wire keys.
 - T5 persistence is complete; T4 still has conditional administrative and broader event coverage gaps.
+
+## Step 6: Implement the native example workflow collection
+
+Added native entries for the remaining example names and expanded Ping, Hater, Interaction Types and UI Showcase. This checkpoint establishes the collection and validates representative multi-step workflows. It does not mark every acceptance row complete: source-level review and conditional token/event coverage remain in progress.
+
+### Prompt Context
+See Step 2 and the full-feature clarification in Step 1. **Assistant interpretation:** Preserve equivalent workflows with Slack-native controls and services. **Inferred user intent:** A usable Slack example collection with reviewable feature mappings.
+
+### What I did
+- Reused Poker's pure card/ranking algorithms and replaced Discord state scoping with workspace/channel/user round state.
+- Added Support drafts, private follow-ups and channel/thread operations.
+- Added SQLite Custom KB, Knowledge Base and Show Space; all persistent tables include a workspace key.
+- Added Knowledge Base search, review mutations, editing, source/export and reaction promotion with configurable reviewer IDs/groups.
+- Added Archive Helper with cursor pagination, chronological output, attachment links and external file upload.
+- Added native moderation routes and UI Showcase search/review/pager/cards/forms/selects/aliases.
+- Formatted the JS with an already installed Prettier binary.
+
+### Why
+- Domain algorithms can be reused without exposing Discord API objects or compatibility namespaces.
+- Show management must retain Slack's returned channel/timestamp instead of guessing the most recent posted message.
+- Authorization is checked before mutation; Show Space and Moderation deny mutations when no authorized actors are configured.
+
+### What worked
+- Targeted slackcli, cmd/slack-bot and jsslack tests passed.
+- Poker tests cover redraw-once semantics, user isolation, ranking and reset.
+- SQLite tests cover link upsert, reopen and workspace isolation.
+- Knowledge review tests reject unauthorized actors and allow configured reviewers.
+- Show tests verify denial and pinning the exact returned message reference.
+- Archive tests follow a second page and retain attachment URLs.
+- The external file upload transport test passed, including token-free transfer.
+
+### What didn't work
+- No test failures observed. These are local fixtures, not a claim of live Slack qualification.
+- Default five-second invocations may be too short for a large archive; operators must select a suitable timeout (maximum60 seconds) and respect Slack rate-limit errors.
+
+### What I learned
+- Slack thread membership does not map to Discord thread join/leave; native channel membership commands are explicitly named as such.
+- Slack user groups are membership lists, not Discord permission roles.
+
+### What was tricky to build
+- ACKing an accepted Show Space form before network publication while recording the message reference before attempting its pin.
+- Avoiding a partial-history success claim when a cursor repeats or an API page fails.
+
+### What warrants a second pair of eyes
+- Remaining source-handler acceptance review, conditional admin user-token routing, and message subtype event coverage.
+- Modal result lookups that call Slack must finish within the existing receipt deadline.
+
+### What should be done in the future
+- Complete remaining framework coverage and update every acceptance mapping before declaring parity.
+
+### Code review instructions
+- Review examples/slack-bots and pkg/slackcli/port_workflows_test.go.
+- Compare each example against its source entry in the ticket inventory.
+
+### Technical details
+- New defaults use separate local SQLite filenames; manifest inspection never opens them.
+- No live workspace mutations or bot restarts were performed for these ports.

@@ -94,8 +94,8 @@ func TestInspectOfflineExample(t *testing.T) {
 	defer func() { _ = h.Close(context.Background()) }()
 	d := h.Descriptor()
 	require.Equal(t, "ping", d.Name)
-	require.Len(t, d.Commands, 1)
-	require.Equal(t, []string{"app_mention"}, d.Events)
+	require.Len(t, d.Commands, 5)
+	require.Equal(t, []string{"app_mention", "message"}, d.Events)
 	d.Run.Fields["greeting"] = slackbot.Field{Type: "bool"}
 	require.Equal(t, "string", h.Descriptor().Run.Fields["greeting"].Type)
 }
@@ -134,7 +134,7 @@ func TestAsyncPostAndRejection(t *testing.T) {
 func TestRegistrationFailures(t *testing.T) {
 	for _, tc := range []struct{ name, source, contains string }{
 		{"duplicate", `module.exports=require("slack").defineBot(({configure,event})=>{configure({name:"x"});event("app_mention",()=>{});event("app_mention",()=>{});});`, "duplicate"},
-		{"unknown event", `module.exports=require("slack").defineBot(({configure,event})=>{configure({name:"x"});event("message",()=>{});});`, "only app_mention"},
+		{"unknown event", `module.exports=require("slack").defineBot(({configure,event})=>{configure({name:"x"});event("unsupported",()=>{});});`, "unsupported event"},
 		{"async registration", `module.exports=require("slack").defineBot(async()=>{});`, "synchronous"},
 		{"invalid schema", `module.exports=require("slack").defineBot(({configure})=>configure({name:"x",run:{fields:{a:{type:"bogus"}}}}));`, "unsupported type"},
 		{"no fs capability", `require("fs");`, "module"},

@@ -31,3 +31,42 @@ func TestInitialNativeSlackPorts(t *testing.T) {
 		})
 	}
 }
+
+func TestPokerRoundAndIsolation(t *testing.T) {
+	d, err := Resolve(context.Background(), "../../examples/slack-bots", "poker", 0)
+	require.NoError(t, err)
+	rec := &slackbot.Recorder{}
+	h, err := slackhost.Load(context.Background(), d.ScriptPath, slackhost.Options{Messages: rec, Views: rec, Operations: rec})
+	require.NoError(t, err)
+	defer h.Close(context.Background())
+	dispatch := func(user, cmd, text string) string {
+		require.NoError(t, h.Dispatch(context.Background(), slackbot.Invocation{TeamID: "T", ChannelID: "C", UserID: user, Command: cmd, Text: text}, rec))
+		ops := rec.Operations()
+		return ops[len(ops)-1].Reply.Text
+	}
+	require.Contains(t, dispatch("U", "/poker-deal", ""), "Round 1")
+	require.Contains(t, dispatch("OTHER", "/poker-score", ""), "No hand")
+	require.Contains(t, dispatch("U", "/poker-draw", "1,3,5"), "draw used: true")
+	require.Contains(t, dispatch("U", "/poker-draw", "1"), "already used")
+	require.Contains(t, dispatch("U", "/poker-rank", "As Ks Qs Js Ts"), "Straight")
+	require.Contains(t, dispatch("U", "/poker-rank", "As As Qs Js Ts"), "Duplicate")
+	require.Contains(t, dispatch("U", "/poker-reset", ""), "cleared")
+	require.Contains(t, dispatch("U", "/poker-score", ""), "No hand")
+}
+
+func TestSupportDraftAndThreadWorkflows(t *testing.T) {
+	d, err := Resolve(context.Background(), "../../examples/slack-bots", "support", 0)
+	require.NoError(t, err)
+	rec := &slackbot.Recorder{}
+	h, err := slackhost.Load(context.Background(), d.ScriptPath, slackhost.Options{Messages: rec, Views: rec, Operations: rec})
+	require.NoError(t, err)
+	defer h.Close(context.Background())
+	i := slackbot.Invocation{TeamID: "T", ChannelID: "C", UserID: "U", Command: "/support-ticket", Text: "Printer"}
+	require.NoError(t, h.Dispatch(context.Background(), i, rec))
+	require.Equal(t, "ephemeral_reply", rec.Operations()[0].Kind)
+	require.Equal(t, "messages.ephemeral", rec.Operations()[1].Kind)
+	i.Command = "/support-start-thread"
+	require.NoError(t, h.Dispatch(context.Background(), i, rec))
+	ops := rec.Operations()
+	require.Equal(t, ops[2].Ref.TS, ops[3].Message.ThreadTS)
+}
