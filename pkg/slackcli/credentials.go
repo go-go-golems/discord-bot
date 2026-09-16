@@ -129,12 +129,53 @@ func newImportRuntimeCommand() *cobra.Command {
 // NewProfilesCommand exposes profile listing at the root, alongside the credentials group.
 func NewProfilesCommand() *cobra.Command { return newProfilesCommand() }
 
-func configDirFlag(cmd *cobra.Command, target *string) {
-	cmd.Flags().StringVar(target, "config-dir", defaultConfigDir(), "Local Slack configuration directory")
+type credentialSettings struct {
+	Dir         string `glazed:"config-dir"`
+	Profile     string `glazed:"profile"`
+	Management  string `glazed:"management"`
+	AccessFile  string `glazed:"access-token-file"`
+	RefreshFile string `glazed:"refresh-token-file"`
 }
+
+// The pinned Glazed parser supplies schema flags while RunE preserves errors for the caller.
+func credentialCommand(name, short string, flags []*fields.Definition, run func(*cobra.Command, credentialSettings) error) *cobra.Command {
+	flags = append(flags, fields.New("config-dir", fields.TypeString, fields.WithDefault(defaultConfigDir()), fields.WithHelp("Local Slack configuration directory")))
+	desc := cmds.NewCommandDescription(name, cmds.WithShort(short), cmds.WithFlags(flags...))
+	c := cli.NewCobraCommandFromCommandDescription(desc)
+	parser, setupErr := cli.NewCobraParserFromSections(desc.Schema, &cli.CobraParserConfig{
+		SkipCommandSettingsSection: true,
+		MiddlewaresFunc: func(_ *values.Values, cmd *cobra.Command, args []string) ([]sources.Middleware, error) {
+			return []sources.Middleware{sources.FromCobra(cmd), sources.FromArgs(args), sources.FromDefaults()}, nil
+		},
+	})
+	if setupErr == nil {
+		setupErr = parser.AddToCobraCommand(c)
+	}
+	c.RunE = func(cmd *cobra.Command, args []string) error {
+		if setupErr != nil {
+			return setupErr
+		}
+		vals, err := parser.Parse(cmd, args)
+		if err != nil {
+			return err
+		}
+		var settings credentialSettings
+		if err := vals.DecodeSectionInto(schema.DefaultSlug, &settings); err != nil {
+			return err
+		}
+		return run(cmd, settings)
+	}
+	return c
+}
+
 func newImportManagementCommand() *cobra.Command {
-	var dir, profile, management, access, refresh string
-	c := &cobra.Command{Use: "import-management", Short: "Import a configuration token pair", RunE: func(cmd *cobra.Command, _ []string) error {
+	return credentialCommand("import-management", "Import a configuration token pair", []*fields.Definition{
+		fields.New("profile", fields.TypeString, fields.WithShortFlag("p"), fields.WithRequired(true), fields.WithHelp("Profile name")),
+		fields.New("management", fields.TypeString, fields.WithRequired(true), fields.WithHelp("Management identity name")),
+		fields.New("access-token-file", fields.TypeString, fields.WithRequired(true), fields.WithHelp("Configuration access-token file")),
+		fields.New("refresh-token-file", fields.TypeString, fields.WithRequired(true), fields.WithHelp("Configuration refresh-token file")),
+	}, func(cmd *cobra.Command, settings credentialSettings) error {
+		dir, profile, management, access, refresh := settings.Dir, settings.Profile, settings.Management, settings.AccessFile, settings.RefreshFile
 		if profile == "" || management == "" {
 			return errors.New("--profile and --management are required")
 		}
@@ -157,23 +198,16 @@ func newImportManagementCommand() *cobra.Command {
 			cfg.DefaultProfile = profile
 		}
 		return s.Save(cfg, cr)
-	}}
-	configDirFlag(c, &dir)
-	c.Flags().StringVarP(&profile, "profile", "p", "", "Profile name")
-	c.Flags().StringVar(&management, "management", "", "Management identity name")
-	c.Flags().StringVar(&access, "access-token-file", "", "Configuration access-token file")
-	c.Flags().StringVar(&refresh, "refresh-token-file", "", "Configuration refresh-token file")
-	return c
+	})
 }
+
 func mergeProfile(p slackconfig.Profile, _ string, management string) slackconfig.Profile {
 	p.Management = management
 	return p
 }
 func newProfilesCommand() *cobra.Command {
-	var dir string
-	c := &cobra.Command{Use: "profiles", Short: "List configured Slack profiles"}
-	configDirFlag(c, &dir)
-	c.RunE = func(cmd *cobra.Command, _ []string) error {
+	return credentialCommand("profiles", "List configured Slack profiles", nil, func(cmd *cobra.Command, settings credentialSettings) error {
+		dir := settings.Dir
 		cfg, _, e := slackconfig.New(dir).Load()
 		if e != nil {
 			return e
@@ -184,12 +218,13 @@ func newProfilesCommand() *cobra.Command {
 		}
 		sort.Strings(names)
 		return json.NewEncoder(cmd.OutOrStdout()).Encode(names)
-	}
-	return c
+	})
 }
 func newStatusCommand() *cobra.Command {
-	var dir, profile string
-	c := &cobra.Command{Use: "status", Short: "Show safe credential status", RunE: func(cmd *cobra.Command, _ []string) error {
+	return credentialCommand("status", "Show safe credential status", []*fields.Definition{
+		fields.New("profile", fields.TypeString, fields.WithHelp("Profile name")),
+	}, func(cmd *cobra.Command, settings credentialSettings) error {
+		dir, profile := settings.Dir, settings.Profile
 		cfg, cr, e := slackconfig.New(dir).Load()
 		if e != nil {
 			return e
@@ -201,10 +236,7 @@ func newStatusCommand() *cobra.Command {
 		m := cr.Management[p.Management]
 		out := map[string]any{"profile": name, "management": p.Management, "app": p.App, "installation": p.Installation, "has_user_token": cr.Installations[p.Installation].UserToken != "", "has_access_token": m.AccessToken != "", "has_refresh_token": m.RefreshToken != "", "expires_at": m.ExpiresAt}
 		return json.NewEncoder(cmd.OutOrStdout()).Encode(out)
-	}}
-	configDirFlag(c, &dir)
-	c.Flags().StringVar(&profile, "profile", "", "Profile name")
-	return c
+	})
 }
 func readSecretFile(path string) (string, error) {
 	if path == "" {
@@ -222,8 +254,10 @@ func readSecretFile(path string) (string, error) {
 }
 
 func newRefreshCommand(client *http.Client) *cobra.Command {
-	var dir, profile string
-	c := &cobra.Command{Use: "refresh", Short: "Refresh a management token pair", RunE: func(cmd *cobra.Command, _ []string) error {
+	return credentialCommand("refresh", "Refresh a management token pair", []*fields.Definition{
+		fields.New("profile", fields.TypeString, fields.WithHelp("Profile name")),
+	}, func(cmd *cobra.Command, settings credentialSettings) error {
+		dir, profile := settings.Dir, settings.Profile
 		store := slackconfig.New(dir)
 		cfg, cr, err := store.Load()
 		if err != nil {
@@ -299,8 +333,5 @@ func newRefreshCommand(client *http.Client) *cobra.Command {
 			return errors.Wrap(err, "save refreshed credentials")
 		}
 		return json.NewEncoder(cmd.OutOrStdout()).Encode(map[string]any{"profile": name, "management": p.Management, "expires_at": updated.ExpiresAt})
-	}}
-	configDirFlag(c, &dir)
-	c.Flags().StringVar(&profile, "profile", "", "Profile name")
-	return c
+	})
 }

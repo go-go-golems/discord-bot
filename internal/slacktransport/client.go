@@ -185,7 +185,7 @@ func (c *Client) Open(ctx context.Context, triggerID string, view slackbot.Modal
 	if err != nil {
 		return slackbot.ViewRef{}, safeError(ctx, err, "views.open")
 	}
-	return slackbot.ViewRef{ID: response.View.ID, Hash: response.View.Hash}, nil
+	return slackbot.ViewRef{ID: response.ID, Hash: response.Hash}, nil
 }
 
 func textBlock(block slackbot.Block) *slack.TextBlockObject {

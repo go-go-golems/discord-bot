@@ -97,7 +97,7 @@ func readOptional(path string) ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
-	defer f.Close()
+	defer func() { _ = f.Close() }()
 	b, err := io.ReadAll(io.LimitReader(f, maxFileSize+1))
 	if err != nil {
 		return nil, err
@@ -149,13 +149,13 @@ func writeAtomic(path string, write func(io.Writer) error) error {
 		return err
 	}
 	tmpName := tmp.Name()
-	defer os.Remove(tmpName)
+	defer func() { _ = os.Remove(tmpName) }()
 	if err := tmp.Chmod(0600); err != nil {
-		tmp.Close()
+		_ = tmp.Close()
 		return err
 	}
 	if err := write(tmp); err != nil {
-		tmp.Close()
+		_ = tmp.Close()
 		return err
 	}
 	if err := tmp.Close(); err != nil {

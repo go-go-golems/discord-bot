@@ -37,3 +37,5 @@ moderation or workspace mutation was performed during this porting work.
 The full Go tests, build and vet passed. Repository-wide lint and vulnerability
 checks retain existing findings; see the Step 7 diary and validation artifacts.
 - [x] Harden archive pagination against cursor cycles and verify no partial upload on API failures <!-- t:dj85 -->
+- [x] Address PR 19 review: failed credentials-file cleanup and documented profiles invocation <!-- t:qkhd -->
+- [ ] Align lefthook and CI checks with pinned Glazed tooling; fix lint/security jobs <!-- t:sl8h -->

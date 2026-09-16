@@ -52,7 +52,7 @@ func TestShowcaseWireDoesNotReplyPong(t *testing.T) {
 			t.Error(err)
 			return
 		}
-		defer conn.Close()
+		defer func() { _ = conn.Close() }()
 		_ = conn.SetReadDeadline(time.Now().Add(4 * time.Second))
 		_ = conn.WriteJSON(map[string]any{"type": "hello"})
 		for _, command := range []string{"/golem-ping", "/ui-showcase"} {
@@ -83,7 +83,7 @@ func TestShowcaseWireDoesNotReplyPong(t *testing.T) {
 	defer c.Close()
 	h, err := slackhost.Load(ctx, d.ScriptPath, slackhost.Options{Messages: c, Views: c})
 	require.NoError(t, err)
-	defer h.Close(context.Background())
+	defer func() { require.NoError(t, h.Close(context.Background())) }()
 	var group errgroup.Group
 	group.Go(func() error { return c.Run(ctx, h) })
 	defer func() { cancel(); require.NoError(t, group.Wait()) }()

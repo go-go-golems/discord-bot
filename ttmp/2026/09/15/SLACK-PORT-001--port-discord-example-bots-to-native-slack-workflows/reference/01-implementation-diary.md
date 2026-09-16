@@ -619,3 +619,77 @@ different identity, producing artificial merge conflicts in README, go.mod,
   and generated internal/slackconfig/logcopter.go. Stopped this turn's hook process
   tree and restored only those generated changes. Retrying this history-only push
   with local hooks skipped; server-side secret protection remains enabled.
+
+## Step 14: Fix PR 19 review findings and CLI/runtime lint violations
+
+The review identified two operator-facing defects: a failed create-app call left
+an empty reserved credential file, and the guide advertised a nonexistent
+profiles list subcommand. Fixed both, added regression coverage, and corrected
+the runtime and credential-command violations reported by the pinned linters.
+
+### Prompt Context
+**User prompt (verbatim):** "Address code review issues: https://github.com/go-go-golems/discord-bot/pull/19 and failing jobs and setup proper lefthook linting and glazed linting and all that (see ../"
+**Clarification (verbatim):** "see ~/code/wesen/go-go-golems/glazed is what i mean"
+**Assistant interpretation:** Fix the review and failing checks, using Glazed's
+project conventions while keeping this module's dependency/API contract stable.
+**Inferred user intent:** A reviewable PR with reproducible, blocking local and CI checks.
+
+### What I did
+- Read review comments 4021942496 and 4021942498 and the failing lint/security logs.
+- Keep credentials-file cleanup armed until write and close succeed. Failed
+  creation removes the reservation; later stdout/profile errors preserve saved
+  credentials. Existing files are still rejected before making the API call.
+- Test failure cleanup, corrected retry with the same path, and preservation when
+  output fails after successful app creation.
+- Correct the shipped guide to `slack-bot profiles` and test that exact root command.
+- Convert remaining credential flags to Glazed fields/parser settings. Retain the
+  pinned v1.3.6 parser/RunE behavior so errors propagate to callers.
+- Split dispatch/delivery from logging wrappers to remove named return values;
+  handle cleanup returns and remove a redundant embedded-field selector.
+- Suppress only G703 on the CLI's intentional arbitrary local repository-root
+  stat, with the operator-controlled boundary explained at the call site.
+
+### Why
+- A rejected manifest must not make the corrected invocation fail on O_EXCL.
+- Successfully persisted credentials must survive an unrelated output failure.
+- Pinning an analyzer is useful only if command code follows its policy; broad
+  exclusions would hide the raw flag definitions rather than fixing them.
+
+### What worked
+- Affected-package tests passed with loopback access.
+- Review regression tests passed, including retry and output-failure cases.
+- Full module tests passed after dependency updates prepared for the next step.
+- Golangci-lint reported zero issues; GoSec reported zero issues and one explained
+  local-path suppression. Build and vet passed with VCS stamping disabled.
+
+### What didn't work
+- Sandboxed HTTP fixture tests failed to listen on loopback; reran the same tests
+  with approved local-server access.
+- Plain `go build ./...` in this linked environment returned
+  `error obtaining VCS status: exit status 128`. Validation now defaults to
+  GOFLAGS=-buildvcs=false; release builds remain explicit.
+
+### What I learned
+- The workspace checkout of Glazed has newer APIs than this module's v1.3.6.
+  Running hooks against that workspace caused the earlier API mismatch; silently
+  falling back to a different analyzer version creates another source of drift.
+
+### What was tricky to build
+- Disarming cleanup only after successful write/close, while preserving the
+  original exclusive-create guarantee and retaining recovery instructions.
+
+### What warrants a second pair of eyes
+- Local repository paths intentionally may be outside cwd; G703 is not a remote
+  untrusted path boundary here. The suppression must remain limited to this stat.
+
+### What should be done in the future
+- Complete shared tooling/security validation and observe the pushed PR checks.
+
+### Code review instructions
+- Start with pkg/slackcli/create_app.go and its regression tests, then
+  credentials.go and internal/jsslack/dispatch.go.
+- Original CI failure receipts are in artifacts/pr-19/ci-*-before.txt.
+
+### Technical details
+- No live Slack API calls or bot restarts were required for these fixes.
+- Existing reserved destinations remain untouched and no test uses real tokens.

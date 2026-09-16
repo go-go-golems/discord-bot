@@ -105,13 +105,19 @@ func (c *command) createApp(ctx context.Context, d slackbot.Descriptor, s settin
 		}
 	}
 	var credentials *os.File
+	credentialsSaved := false
 	if s.CredentialsFile != "" {
 		// Reserve before calling Slack: an existing/unwritable destination must not create an app.
 		credentials, err = os.OpenFile(s.CredentialsFile, os.O_WRONLY|os.O_CREATE|os.O_EXCL, 0600)
 		if err != nil {
 			return errors.Wrap(err, "create credentials-file")
 		}
-		defer func() { _ = credentials.Close() }()
+		defer func() {
+			_ = credentials.Close()
+			if !credentialsSaved {
+				_ = os.Remove(s.CredentialsFile)
+			}
+		}()
 	}
 	manifest, err := json.Marshal(Manifest(d))
 	if err != nil {
@@ -180,6 +186,7 @@ func (c *command) createApp(ctx context.Context, d slackbot.Descriptor, s settin
 		if err := credentials.Close(); err != nil {
 			return errors.Errorf("app %s created, but credentials-file close failed; inspect the file and app settings", result.AppID)
 		}
+		credentialsSaved = true
 	}
 	if managed {
 		var returned struct {

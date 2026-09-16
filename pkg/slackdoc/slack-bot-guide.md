@@ -91,7 +91,7 @@ slack-bot credentials import-management \
   --profile ping-dev --management owner \
   --access-token-file /tmp/access-token.txt \
   --refresh-token-file /tmp/refresh-token.txt
-slack-bot profiles list
+slack-bot profiles
 slack-bot credentials status --profile ping-dev
 slack-bot credentials refresh --profile ping-dev
 slack-bot bots create-app ping --profile ping-dev

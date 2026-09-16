@@ -12,6 +12,7 @@ import (
 	"testing"
 
 	"github.com/go-go-golems/discord-bot/internal/slackconfig"
+	"github.com/go-go-golems/discord-bot/pkg/slackbot"
 	"github.com/pkg/errors"
 	"github.com/rs/zerolog"
 	"github.com/stretchr/testify/require"
@@ -129,7 +130,9 @@ func TestCreateAppFailureAndNoRetry(t *testing.T) {
 				calls++
 				return appResponse(tc.status, tc.body), nil
 			})}
-			out, err := executeApp(t, client, testToken(t))
+			path := filepath.Join(t.TempDir(), "credentials.json")
+			out, err := executeApp(t, client, testToken(t), "--credentials-file", path)
+			require.NoFileExists(t, path)
 			require.ErrorContains(t, err, tc.expected)
 			require.NotContains(t, out+err.Error(), "synthetic-config-secret")
 			require.Equal(t, 1, calls)
@@ -169,4 +172,44 @@ func TestCreateAppRequiresToken(t *testing.T) {
 	})}
 	_, err := executeApp(t, client, filepath.Join(t.TempDir(), "missing"))
 	require.ErrorContains(t, err, "config-token-file")
+}
+
+func TestCreateAppCanRetryWithSameCredentialsPath(t *testing.T) {
+	path := filepath.Join(t.TempDir(), "credentials.json")
+	calls := 0
+	client := &http.Client{Transport: appRoundTrip(func(*http.Request) (*http.Response, error) {
+		calls++
+		if calls == 1 {
+			return appResponse(200, `{"ok":false,"error":"invalid_manifest"}`), nil
+		}
+		return appResponse(200, `{"ok":true,"app_id":"A_RETRY","credentials":{"client_secret":"synthetic-secret"}}`), nil
+	})}
+	token := testToken(t)
+	_, err := executeApp(t, client, token, "--credentials-file", path)
+	require.ErrorContains(t, err, "invalid_manifest")
+	require.NoFileExists(t, path)
+	_, err = executeApp(t, client, token, "--credentials-file", path)
+	require.NoError(t, err)
+	require.FileExists(t, path)
+	require.Equal(t, 2, calls)
+}
+
+type failingAppOutput struct{}
+
+var _ io.Writer = failingAppOutput{}
+
+func (failingAppOutput) Write([]byte) (int, error) { return 0, errors.New("output unavailable") }
+
+func TestCreateAppKeepsCredentialsAfterOutputFailure(t *testing.T) {
+	path := filepath.Join(t.TempDir(), "credentials.json")
+	client := &http.Client{Transport: appRoundTrip(func(*http.Request) (*http.Response, error) {
+		return appResponse(200, `{"ok":true,"app_id":"A_SAVED","credentials":{"client_secret":"synthetic-secret"}}`), nil
+	})}
+	c := &command{appClient: client}
+	err := c.createApp(context.Background(), slackbot.Descriptor{Name: "test"}, settings{ConfigTokenFile: testToken(t), CredentialsFile: path}, failingAppOutput{})
+	require.ErrorContains(t, err, "output failed; do not recreate")
+	content, readErr := os.ReadFile(path)
+	require.NoError(t, readErr)
+	require.Contains(t, string(content), "A_SAVED")
+	require.Contains(t, string(content), "synthetic-secret")
 }

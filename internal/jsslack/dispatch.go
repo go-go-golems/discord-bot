@@ -32,27 +32,30 @@ type outcome struct {
 
 // Dispatch serializes complete invocations, while network work and promise settlement
 // run outside the owner. A timeout is bounded even for CPU-bound JavaScript.
-func (h *Host) Dispatch(ctx context.Context, input slackbot.Invocation, responder slackbot.Responder) (dispatchErr error) {
+func (h *Host) Dispatch(ctx context.Context, input slackbot.Invocation, responder slackbot.Responder) error {
 	started := time.Now()
 	logger := h.logger.With().Str("bot", h.descriptor.Name).Str("invocation", input.ID).
 		Str("command", input.Command).Str("event", input.Event).Logger()
 	logger.Debug().Msg("Slack dispatch started")
-	defer func() {
-		if dispatchErr == nil {
-			logger.Debug().Dur("duration_ms", time.Since(started)).Msg("Slack dispatch completed")
-			return
-		}
-		failure := logger.Warn().Dur("duration_ms", time.Since(started))
-		var domainErr *slackbot.Error
-		if errors.As(dispatchErr, &domainErr) {
-			failure = failure.Str("error_code", domainErr.Code)
-		} else if errors.Is(dispatchErr, context.DeadlineExceeded) {
-			failure = failure.Str("error_code", "deadline_exceeded")
-		} else {
-			failure = failure.Str("error_code", "handler_error")
-		}
-		failure.Msg("Slack dispatch failed")
-	}()
+	dispatchErr := h.dispatch(ctx, input, responder)
+	if dispatchErr == nil {
+		logger.Debug().Dur("duration_ms", time.Since(started)).Msg("Slack dispatch completed")
+		return nil
+	}
+	failure := logger.Warn().Dur("duration_ms", time.Since(started))
+	var domainErr *slackbot.Error
+	if errors.As(dispatchErr, &domainErr) {
+		failure = failure.Str("error_code", domainErr.Code)
+	} else if errors.Is(dispatchErr, context.DeadlineExceeded) {
+		failure = failure.Str("error_code", "deadline_exceeded")
+	} else {
+		failure = failure.Str("error_code", "handler_error")
+	}
+	failure.Msg("Slack dispatch failed")
+	return dispatchErr
+}
+
+func (h *Host) dispatch(ctx context.Context, input slackbot.Invocation, responder slackbot.Responder) error {
 	if err := input.Validate(); err != nil {
 		return err
 	}
@@ -173,14 +176,17 @@ func claimReply(s *invocationState) error {
 	s.replied = true
 	return nil
 }
-func (h *Host) sendReply(s *invocationState, message slackbot.MessagePayload) (result any, replyErr error) {
+func (h *Host) sendReply(s *invocationState, message slackbot.MessagePayload) (any, error) {
 	logger := h.logger.With().Str("bot", h.descriptor.Name).Str("invocation", s.input.ID).
 		Str("command", s.input.Command).Str("text_sha256", fmt.Sprintf("%x", sha256.Sum256([]byte(message.Text)))).
 		Int("text_bytes", len(message.Text)).Int("blocks", len(message.Blocks)).Logger()
 	logger.Debug().Msg("Slack reply sending")
-	defer func() {
-		logger.Debug().Bool("delivered", replyErr == nil).Msg("Slack reply finished")
-	}()
+	result, err := h.deliverReply(s, message)
+	logger.Debug().Bool("delivered", err == nil).Msg("Slack reply finished")
+	return result, err
+}
+
+func (h *Host) deliverReply(s *invocationState, message slackbot.MessagePayload) (any, error) {
 	if s.input.Command != "" || s.input.Action != nil {
 		if s.responder == nil {
 			return nil, slackbot.Fail("unavailable", "reply", "no response capability")

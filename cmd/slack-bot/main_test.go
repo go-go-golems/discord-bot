@@ -90,3 +90,9 @@ func TestLocalUnifiedVerb(t *testing.T) {
 	_, err = execute(t, "bots", "invoke", "unified-demo", "missing", "--bot-repository", "../../examples/slack-bots")
 	require.ErrorContains(t, err, "not found")
 }
+
+func TestDocumentedProfilesCommand(t *testing.T) {
+	out, err := execute(t, "profiles", "--config-dir", t.TempDir())
+	require.NoError(t, err)
+	require.JSONEq(t, "[]", out)
+}

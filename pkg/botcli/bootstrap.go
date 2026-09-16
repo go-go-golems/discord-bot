@@ -185,7 +185,7 @@ func normalizeRepositoryPath(path string, cwd string) (string, error) {
 		path = filepath.Join(cwd, path)
 	}
 	path = filepath.Clean(path)
-	info, err := os.Stat(path)
+	info, err := os.Stat(path) // #nosec G703 -- Local CLI operator selects repository roots; paths outside cwd are intentionally supported.
 	if err != nil {
 		return "", err
 	}
