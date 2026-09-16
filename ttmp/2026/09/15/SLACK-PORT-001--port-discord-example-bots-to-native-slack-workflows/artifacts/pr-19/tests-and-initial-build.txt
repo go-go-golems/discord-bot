@@ -1,0 +1,34 @@
+go test ./...
+?   	github.com/go-go-golems/discord-bot	[no test files]
+ok  	github.com/go-go-golems/discord-bot/cmd/discord-bot	1.353s
+ok  	github.com/go-go-golems/discord-bot/cmd/slack-bot	1.596s
+?   	github.com/go-go-golems/discord-bot/examples/framework-combined	[no test files]
+?   	github.com/go-go-golems/discord-bot/examples/framework-custom-module	[no test files]
+?   	github.com/go-go-golems/discord-bot/examples/framework-single-bot	[no test files]
+?   	github.com/go-go-golems/discord-bot/internal/bot	[no test files]
+?   	github.com/go-go-golems/discord-bot/internal/config	[no test files]
+ok  	github.com/go-go-golems/discord-bot/internal/jsdiscord	1.406s
+ok  	github.com/go-go-golems/discord-bot/internal/jsslack	0.426s
+ok  	github.com/go-go-golems/discord-bot/internal/slackconfig	0.028s
+ok  	github.com/go-go-golems/discord-bot/internal/slackprobe	0.016s
+ok  	github.com/go-go-golems/discord-bot/internal/slacktransport	0.308s
+ok  	github.com/go-go-golems/discord-bot/pkg/botcli	1.462s
+?   	github.com/go-go-golems/discord-bot/pkg/doc	[no test files]
+ok  	github.com/go-go-golems/discord-bot/pkg/framework	0.069s
+ok  	github.com/go-go-golems/discord-bot/pkg/slackbot	0.014s
+ok  	github.com/go-go-golems/discord-bot/pkg/slackcli	5.956s
+?   	github.com/go-go-golems/discord-bot/pkg/slackdoc	[no test files]
+ok  	github.com/go-go-golems/discord-bot/pkg/slackhost	0.049s
+ok  	github.com/go-go-golems/discord-bot/pkg/xgoja/provider	0.086s
+go build ./...
+error obtaining VCS status: exit status 128
+	Use -buildvcs=false to disable VCS stamping.
+error obtaining VCS status: exit status 128
+	Use -buildvcs=false to disable VCS stamping.
+error obtaining VCS status: exit status 128
+	Use -buildvcs=false to disable VCS stamping.
+error obtaining VCS status: exit status 128
+	Use -buildvcs=false to disable VCS stamping.
+error obtaining VCS status: exit status 128
+	Use -buildvcs=false to disable VCS stamping.
+make: *** [Makefile:72: build] Error 1

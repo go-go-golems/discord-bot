@@ -15,3 +15,7 @@ Completed all 13 native example implementations and local qualification; added e
 ## 2026-09-15
 
 Reject archive cursor cycles of any length; add regression coverage proving repeated cursors and page API failures do not upload partial archives. Targeted archive tests passed; existing showcase process left running.
+
+## 2026-09-15
+
+PR 19 remediation: fix credential reservation cleanup and profiles guide; migrate remaining credential flags to Glazed; clear lint/security findings; align blocking hooks and CI with module-isolated pinned checks. Local tests/build/vet/lint/loggers/GoSec/govulncheck pass. Review fixes committed de46607.

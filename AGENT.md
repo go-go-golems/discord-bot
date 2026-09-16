@@ -10,9 +10,9 @@ discord-bot is a Go-hosted Discord bot runtime with a JavaScript authoring API. 
 
 ## Key Commands
 
-- `make lint` — run golangci-lint
+- `make lint` — run pinned golangci-lint and Glazed CLI policy checks
 - `make test` — run all tests
-- `make build` — build the binary
+- `make build` — compile all packages without generating files
 - `make goreleaser` — snapshot release (local, no publish)
 - `make tag-patch && git push upstream --tags` — create and push a new release tag
 
@@ -47,7 +47,14 @@ go test ./pkg/framework      # Embedding tests
 
 Version is injected via ldflags: `var version = "dev"` in `cmd/discord-bot/main.go`, set by GoReleaser.
 
-## Known Issues
+## Local checks and CI
 
-- ~30 pre-existing lint issues in `internal/jsdiscord/` (unused functions, exhaustive switches). These are tracked separately.
-- Lint hooks are non-blocking (`|| true` in lefthook.yml) until the lint debt is cleaned up.
+- Install hooks with `make hooks-install`; pre-commit lint/tests and pre-push
+  `make check` are blocking.
+- Make targets default to `GOWORK=off`, matching CI's pinned module dependencies.
+- `make check` runs lint, test, build, vet, logcopter-check, gosec and govulncheck.
+- Run `make logcopter-generate` explicitly after logger-affecting changes and
+  commit its output. Build/check targets do not modify source files.
+- Release snapshots are explicit; they do not run in push hooks.
+- Slack entrypoint: `cmd/slack-bot`; runtime: `internal/jsslack`; CLI:
+  `pkg/slackcli`; embedded documentation: `pkg/slackdoc`.

@@ -309,8 +309,23 @@ Discord gateway → discordgo session → jsdiscord.Host
 
 ## Development
 
+Install local hooks with `make hooks-install`. `make check` runs the blocking
+push checks: lint (including Glazed policy), tests, build, vet, generated logger
+verification, GoSec and govulncheck. CI uses the same Makefile targets.
+
+These targets default to `GOWORK=off` so a surrounding workspace cannot silently
+replace pinned APIs. Validation defaults to `GOFLAGS=-buildvcs=false` so it also
+works in linked or restricted worktrees. Glazed's analyzer is built from the exact version in go.mod;
+there is no fallback to an older analyzer. Tools live under ignored `.bin/`.
+GoSec and govulncheck versions are pinned in the Makefile. When changing source
+that affects package logging, run `make logcopter-generate` and commit generated
+files; checks only verify them. Release snapshots remain explicit via
+`make goreleaser` and never run as a push hook because their tidy/generate steps
+modify the checkout.
+
+
 ```bash
-make lint          # Run golangci-lint
+make lint          # Run pinned golangci-lint and Glazed CLI policy checks
 make test          # Run all tests
 make build         # Build binary
 make goreleaser    # Snapshot release (local)

@@ -1,0 +1,25 @@
+mkdir -p /home/manuel/workspaces/2026-09-10/add-slack-support/discord-bot/.bin/
+GOBIN=/home/manuel/workspaces/2026-09-10/add-slack-support/discord-bot/.bin/ go install github.com/golangci/golangci-lint/v2/cmd/golangci-lint@v2.11.2
+mkdir -p /home/manuel/workspaces/2026-09-10/add-slack-support/discord-bot/.bin/
+GOBIN=/home/manuel/workspaces/2026-09-10/add-slack-support/discord-bot/.bin/ go install github.com/go-go-golems/glazed/cmd/tools/glazed-lint@v1.3.6
+/home/manuel/workspaces/2026-09-10/add-slack-support/discord-bot/.bin/golangci-lint config verify
+/home/manuel/workspaces/2026-09-10/add-slack-support/discord-bot/.bin/golangci-lint run -v --timeout=5m ./cmd/... ./pkg/... ./internal/...
+level=info msg="golangci-lint has version 2.11.2 built with go1.26.6 from (unknown, modified: ?, mod sum: \"h1:4Icd3mEqthcFcFww8L67OBtfKB/obXxko8aFUMqP/5w=\") on (unknown)"
+level=info msg="[config_reader] Config search paths: [./ /home/manuel/workspaces/2026-09-10/add-slack-support/discord-bot/cmd /home/manuel/workspaces/2026-09-10/add-slack-support/discord-bot /home/manuel/workspaces/2026-09-10/add-slack-support /home/manuel/workspaces/2026-09-10 /home/manuel/workspaces /home/manuel /home /]"
+level=info msg="[config_reader] Used config file .golangci.yml"
+level=info msg="[config_reader] Module name \"github.com/go-go-golems/discord-bot\""
+level=info msg="[goenv] Read go env for 75.802931ms: map[string]string{\"GOCACHE\":\"/home/manuel/.cache/go-build\", \"GOROOT\":\"/home/manuel/go/pkg/mod/golang.org/toolchain@v0.0.1-go1.26.6.linux-amd64\"}"
+level=info msg="[lintersdb] Active 9 linters: [errcheck exhaustive gofmt govet ineffassign nonamedreturns predeclared staticcheck unused]"
+level=info msg="[loader] Go packages loading at mode 8767 (compiled_files|deps|exports_file|files|imports|name|types_sizes) took 2m12.290673703s"
+level=info msg="[runner/filename_unadjuster] Pre-built 0 adjustments in 146.419442ms"
+level=info msg="[linters_context/goanalysis] analyzers took 4m29.796457488s with top 10 stages: buildir: 3m25.263502644s, exhaustive: 13.501524973s, printf: 7.89695853s, inspect: 4.171351835s, fact_purity: 3.671595396s, nilness: 2.947327291s, ctrlflow: 2.620710348s, typedness: 2.464594145s, SA5012: 2.000891409s, gofmt: 1.843399009s"
+level=info msg="[runner/exclusion_rules] Skipped 0 issues by rules: [Text: \"SA1019: cli.CreateProcessorLegacy\", Linters: \"staticcheck\"]"
+level=info msg="[runner] Issues before processing: 8, after processing: 0"
+level=info msg="[runner] Processors filtering stat (in/out): path_absoluter: 8/8, nolint_filter: 8/0, invalid_issue: 8/8, path_relativity: 8/8, generated_file_filter: 8/8, exclusion_rules: 8/8, cgo: 8/8, filename_unadjuster: 8/8, exclusion_paths: 8/8"
+level=info msg="[runner] processing took 12.816474ms with stages: nolint_filter: 12.573751ms, generated_file_filter: 136.657µs, exclusion_rules: 70.215µs, path_relativity: 20.547µs, sort_results: 2.124µs, invalid_issue: 2.025µs, path_absoluter: 1.734µs, cgo: 1.48µs, max_same_issues: 1.425µs, filename_unadjuster: 1.15µs, exclusion_paths: 1.139µs, fixer: 788ns, max_from_linter: 577ns, diff: 501ns, uniq_by_line: 436ns, max_per_file_from_linter: 434ns, source_code: 432ns, path_prettifier: 381ns, path_shortener: 358ns, severity-rules: 320ns"
+level=info msg="[runner] linters took 51.169638572s with stages: goanalysis_metalinter: 51.156684393s"
+0 issues.
+level=info msg="File cache stats: 0 entries of total size 0B"
+level=info msg="Memory: 1819 samples, avg is 329.2MB, max is 1671.7MB"
+level=info msg="Execution took 3m3.683395772s"
+GOWORK=off go vet -vettool=/home/manuel/workspaces/2026-09-10/add-slack-support/discord-bot/.bin/glazed-lint  ./cmd/... ./internal/... ./pkg/...

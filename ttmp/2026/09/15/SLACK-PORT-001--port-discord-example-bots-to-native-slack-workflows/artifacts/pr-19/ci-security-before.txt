@@ -1,0 +1,301 @@
+GoSec Security Scan	Run Gosec Security Scanner	﻿2026-09-16T02:23:54.5961902Z ##[group]Run gosec -exclude=G101,G304,G301,G306,G204 -exclude-dir=.history -exclude-dir=ttmp ./...
+GoSec Security Scan	Run Gosec Security Scanner	2026-09-16T02:23:54.5962558Z gosec -exclude=G101,G304,G301,G306,G204 -exclude-dir=.history -exclude-dir=ttmp ./...
+GoSec Security Scan	Run Gosec Security Scanner	2026-09-16T02:23:54.5984277Z shell: /usr/bin/bash -e {0}
+GoSec Security Scan	Run Gosec Security Scanner	2026-09-16T02:23:54.5984563Z env:
+GoSec Security Scan	Run Gosec Security Scanner	2026-09-16T02:23:54.5984766Z   GOTOOLCHAIN: local
+GoSec Security Scan	Run Gosec Security Scanner	2026-09-16T02:23:54.5984980Z ##[endgroup]
+GoSec Security Scan	Run Gosec Security Scanner	2026-09-16T02:23:54.6470532Z [gosec] 2026/09/16 02:23:54 Including rules: default
+GoSec Security Scan	Run Gosec Security Scanner	2026-09-16T02:23:54.6471021Z [gosec] 2026/09/16 02:23:54 Excluding rules: G101,G304,G301,G306,G204
+GoSec Security Scan	Run Gosec Security Scanner	2026-09-16T02:23:54.6471676Z [gosec] 2026/09/16 02:23:54 Including analyzers: default
+GoSec Security Scan	Run Gosec Security Scanner	2026-09-16T02:23:54.6472301Z [gosec] 2026/09/16 02:23:54 Excluding analyzers: G101,G304,G301,G306,G204
+GoSec Security Scan	Run Gosec Security Scanner	2026-09-16T02:23:54.6540724Z [gosec] 2026/09/16 02:23:54 Import directory: /home/runner/work/discord-bot/discord-bot/internal/jsslack
+GoSec Security Scan	Run Gosec Security Scanner	2026-09-16T02:23:54.6575933Z [gosec] 2026/09/16 02:23:54 Import directory: /home/runner/work/discord-bot/discord-bot/internal/slackprobe
+GoSec Security Scan	Run Gosec Security Scanner	2026-09-16T02:23:54.6577541Z [gosec] 2026/09/16 02:23:54 Import directory: /home/runner/work/discord-bot/discord-bot/internal/slacktransport
+GoSec Security Scan	Run Gosec Security Scanner	2026-09-16T02:23:54.6579230Z [gosec] 2026/09/16 02:23:54 Import directory: /home/runner/work/discord-bot/discord-bot/cmd/slack-bot
+GoSec Security Scan	Run Gosec Security Scanner	2026-09-16T02:23:54.6776537Z [gosec] 2026/09/16 02:23:54 Checking package: discordbot
+GoSec Security Scan	Run Gosec Security Scanner	2026-09-16T02:23:54.6783705Z [gosec] 2026/09/16 02:23:54 Checking file: /home/runner/work/discord-bot/discord-bot/logcopter_generate.go
+GoSec Security Scan	Run Gosec Security Scanner	2026-09-16T02:23:54.6785020Z [gosec] 2026/09/16 02:23:54 Import directory: /home/runner/work/discord-bot/discord-bot
+GoSec Security Scan	Run Gosec Security Scanner	2026-09-16T02:23:54.6924703Z [gosec] 2026/09/16 02:23:54 Checking package: discordbot
+GoSec Security Scan	Run Gosec Security Scanner	2026-09-16T02:23:54.6925819Z [gosec] 2026/09/16 02:23:54 Checking file: /home/runner/work/discord-bot/discord-bot/logcopter_generate.go
+GoSec Security Scan	Run Gosec Security Scanner	2026-09-16T02:23:54.6928811Z [gosec] 2026/09/16 02:23:54 Import directory: /home/runner/work/discord-bot/discord-bot/pkg/doc
+GoSec Security Scan	Run Gosec Security Scanner	2026-09-16T02:23:59.3598139Z [gosec] 2026/09/16 02:23:59 Checking package: slacktransport
+GoSec Security Scan	Run Gosec Security Scanner	2026-09-16T02:23:59.3708754Z [gosec] 2026/09/16 02:23:59 Checking file: /home/runner/work/discord-bot/discord-bot/internal/slacktransport/client.go
+GoSec Security Scan	Run Gosec Security Scanner	2026-09-16T02:23:59.3888306Z [gosec] 2026/09/16 02:23:59 Checking file: /home/runner/work/discord-bot/discord-bot/internal/slacktransport/logcopter.go
+GoSec Security Scan	Run Gosec Security Scanner	2026-09-16T02:23:59.4008257Z [gosec] 2026/09/16 02:23:59 Checking file: /home/runner/work/discord-bot/discord-bot/internal/slacktransport/operations.go
+GoSec Security Scan	Run Gosec Security Scanner	2026-09-16T02:23:59.4128226Z [gosec] 2026/09/16 02:23:59 Checking file: /home/runner/work/discord-bot/discord-bot/internal/slacktransport/run.go
+GoSec Security Scan	Run Gosec Security Scanner	2026-09-16T02:23:59.5878760Z [gosec] 2026/09/16 02:23:59 Import directory: /home/runner/work/discord-bot/discord-bot/pkg/framework
+GoSec Security Scan	Run Gosec Security Scanner	2026-09-16T02:25:27.9098126Z [gosec] 2026/09/16 02:25:27 Checking package: jsslack
+GoSec Security Scan	Run Gosec Security Scanner	2026-09-16T02:25:27.9158261Z [gosec] 2026/09/16 02:25:27 Checking file: /home/runner/work/discord-bot/discord-bot/internal/jsslack/dispatch.go
+GoSec Security Scan	Run Gosec Security Scanner	2026-09-16T02:25:27.9258157Z [gosec] 2026/09/16 02:25:27 Checking file: /home/runner/work/discord-bot/discord-bot/internal/jsslack/host.go
+GoSec Security Scan	Run Gosec Security Scanner	2026-09-16T02:25:27.9280507Z [gosec] 2026/09/16 02:25:27 Checking file: /home/runner/work/discord-bot/discord-bot/internal/jsslack/logcopter.go
+GoSec Security Scan	Run Gosec Security Scanner	2026-09-16T02:25:27.9311523Z [gosec] 2026/09/16 02:25:27 Checking file: /home/runner/work/discord-bot/discord-bot/internal/jsslack/module.go
+GoSec Security Scan	Run Gosec Security Scanner	2026-09-16T02:25:27.9327922Z [gosec] 2026/09/16 02:25:27 Checking file: /home/runner/work/discord-bot/discord-bot/internal/jsslack/operations.go
+GoSec Security Scan	Run Gosec Security Scanner	2026-09-16T02:25:27.9329236Z [gosec] 2026/09/16 02:25:27 Checking file: /home/runner/work/discord-bot/discord-bot/internal/jsslack/store.go
+GoSec Security Scan	Run Gosec Security Scanner	2026-09-16T02:25:27.9330341Z [gosec] 2026/09/16 02:25:27 Checking file: /home/runner/work/discord-bot/discord-bot/internal/jsslack/ui_elements.go
+GoSec Security Scan	Run Gosec Security Scanner	2026-09-16T02:25:27.9331418Z [gosec] 2026/09/16 02:25:27 Checking file: /home/runner/work/discord-bot/discord-bot/internal/jsslack/ui_module.go
+GoSec Security Scan	Run Gosec Security Scanner	2026-09-16T02:25:27.9358674Z [gosec] 2026/09/16 02:25:27 Checking file: /home/runner/work/discord-bot/discord-bot/internal/jsslack/verbs.go
+GoSec Security Scan	Run Gosec Security Scanner	2026-09-16T02:25:28.0685465Z [gosec] 2026/09/16 02:25:28 Import directory: /home/runner/work/discord-bot/discord-bot/pkg/slackbot
+GoSec Security Scan	Run Gosec Security Scanner	2026-09-16T02:25:28.3815366Z [gosec] 2026/09/16 02:25:28 Checking package: slackbot
+GoSec Security Scan	Run Gosec Security Scanner	2026-09-16T02:25:28.3838194Z [gosec] 2026/09/16 02:25:28 Checking file: /home/runner/work/discord-bot/discord-bot/pkg/slackbot/ingress.go
+GoSec Security Scan	Run Gosec Security Scanner	2026-09-16T02:25:28.3860336Z [gosec] 2026/09/16 02:25:28 Checking file: /home/runner/work/discord-bot/discord-bot/pkg/slackbot/logcopter.go
+GoSec Security Scan	Run Gosec Security Scanner	2026-09-16T02:25:28.3887978Z [gosec] 2026/09/16 02:25:28 Checking file: /home/runner/work/discord-bot/discord-bot/pkg/slackbot/model.go
+GoSec Security Scan	Run Gosec Security Scanner	2026-09-16T02:25:28.3907924Z [gosec] 2026/09/16 02:25:28 Checking file: /home/runner/work/discord-bot/discord-bot/pkg/slackbot/operations.go
+GoSec Security Scan	Run Gosec Security Scanner	2026-09-16T02:25:28.3928669Z [gosec] 2026/09/16 02:25:28 Checking file: /home/runner/work/discord-bot/discord-bot/pkg/slackbot/recording.go
+GoSec Security Scan	Run Gosec Security Scanner	2026-09-16T02:25:28.3974400Z [gosec] 2026/09/16 02:25:28 Import directory: /home/runner/work/discord-bot/discord-bot/cmd/discord-bot
+GoSec Security Scan	Run Gosec Security Scanner	2026-09-16T02:25:28.5500172Z [gosec] 2026/09/16 02:25:28 Checking package: main
+GoSec Security Scan	Run Gosec Security Scanner	2026-09-16T02:25:28.5530688Z [gosec] 2026/09/16 02:25:28 Checking file: /home/runner/work/discord-bot/discord-bot/cmd/slack-bot/main.go
+GoSec Security Scan	Run Gosec Security Scanner	2026-09-16T02:25:28.5694262Z [gosec] 2026/09/16 02:25:28 Import directory: /home/runner/work/discord-bot/discord-bot/examples/framework-combined
+GoSec Security Scan	Run Gosec Security Scanner	2026-09-16T02:25:33.2649266Z [gosec] 2026/09/16 02:25:33 Checking package: doc
+GoSec Security Scan	Run Gosec Security Scanner	2026-09-16T02:25:33.2729340Z [gosec] 2026/09/16 02:25:33 Checking file: /home/runner/work/discord-bot/discord-bot/pkg/doc/doc.go
+GoSec Security Scan	Run Gosec Security Scanner	2026-09-16T02:25:33.2839715Z [gosec] 2026/09/16 02:25:33 Checking file: /home/runner/work/discord-bot/discord-bot/pkg/doc/logcopter.go
+GoSec Security Scan	Run Gosec Security Scanner	2026-09-16T02:25:33.2948269Z [gosec] 2026/09/16 02:25:33 Import directory: /home/runner/work/discord-bot/discord-bot/internal/bot
+GoSec Security Scan	Run Gosec Security Scanner	2026-09-16T02:25:33.4126515Z [gosec] 2026/09/16 02:25:33 Checking package: framework
+GoSec Security Scan	Run Gosec Security Scanner	2026-09-16T02:25:33.4188227Z [gosec] 2026/09/16 02:25:33 Checking file: /home/runner/work/discord-bot/discord-bot/pkg/framework/framework.go
+GoSec Security Scan	Run Gosec Security Scanner	2026-09-16T02:25:33.4248465Z [gosec] 2026/09/16 02:25:33 Checking file: /home/runner/work/discord-bot/discord-bot/pkg/framework/logcopter.go
+GoSec Security Scan	Run Gosec Security Scanner	2026-09-16T02:25:33.4323326Z [gosec] 2026/09/16 02:25:33 Import directory: /home/runner/work/discord-bot/discord-bot/internal/jsdiscord
+GoSec Security Scan	Run Gosec Security Scanner	2026-09-16T02:25:34.0888149Z [gosec] 2026/09/16 02:25:34 Checking package: bot
+GoSec Security Scan	Run Gosec Security Scanner	2026-09-16T02:25:34.0908286Z [gosec] 2026/09/16 02:25:34 Checking file: /home/runner/work/discord-bot/discord-bot/internal/bot/bot.go
+GoSec Security Scan	Run Gosec Security Scanner	2026-09-16T02:25:34.1048203Z [gosec] 2026/09/16 02:25:34 Checking file: /home/runner/work/discord-bot/discord-bot/internal/bot/logcopter.go
+GoSec Security Scan	Run Gosec Security Scanner	2026-09-16T02:25:34.1828036Z [gosec] 2026/09/16 02:25:34 Import directory: /home/runner/work/discord-bot/discord-bot/pkg/xgoja/provider
+GoSec Security Scan	Run Gosec Security Scanner	2026-09-16T02:25:37.2617904Z [gosec] 2026/09/16 02:25:37 Checking package: jsdiscord
+GoSec Security Scan	Run Gosec Security Scanner	2026-09-16T02:25:37.2698688Z [gosec] 2026/09/16 02:25:37 Checking file: /home/runner/work/discord-bot/discord-bot/internal/jsdiscord/bot_compile.go
+GoSec Security Scan	Run Gosec Security Scanner	2026-09-16T02:25:37.2808545Z [gosec] 2026/09/16 02:25:37 Checking file: /home/runner/work/discord-bot/discord-bot/internal/jsdiscord/bot_context.go
+GoSec Security Scan	Run Gosec Security Scanner	2026-09-16T02:25:37.2838161Z [gosec] 2026/09/16 02:25:37 Checking file: /home/runner/work/discord-bot/discord-bot/internal/jsdiscord/bot_dispatch.go
+GoSec Security Scan	Run Gosec Security Scanner	2026-09-16T02:25:37.2868036Z [gosec] 2026/09/16 02:25:37 Checking file: /home/runner/work/discord-bot/discord-bot/internal/jsdiscord/bot_logging.go
+GoSec Security Scan	Run Gosec Security Scanner	2026-09-16T02:25:37.2909193Z [gosec] 2026/09/16 02:25:37 Checking file: /home/runner/work/discord-bot/discord-bot/internal/jsdiscord/bot_ops.go
+GoSec Security Scan	Run Gosec Security Scanner	2026-09-16T02:25:37.2978037Z [gosec] 2026/09/16 02:25:37 Checking file: /home/runner/work/discord-bot/discord-bot/internal/jsdiscord/bot_store.go
+GoSec Security Scan	Run Gosec Security Scanner	2026-09-16T02:25:37.2987817Z [gosec] 2026/09/16 02:25:37 Checking file: /home/runner/work/discord-bot/discord-bot/internal/jsdiscord/descriptor.go
+GoSec Security Scan	Run Gosec Security Scanner	2026-09-16T02:25:37.3068075Z [gosec] 2026/09/16 02:25:37 Checking file: /home/runner/work/discord-bot/discord-bot/internal/jsdiscord/host.go
+GoSec Security Scan	Run Gosec Security Scanner	2026-09-16T02:25:37.3108062Z [gosec] 2026/09/16 02:25:37 Checking file: /home/runner/work/discord-bot/discord-bot/internal/jsdiscord/host_commands.go
+GoSec Security Scan	Run Gosec Security Scanner	2026-09-16T02:25:37.3127989Z [gosec] 2026/09/16 02:25:37 Checking file: /home/runner/work/discord-bot/discord-bot/internal/jsdiscord/host_dispatch.go
+GoSec Security Scan	Run Gosec Security Scanner	2026-09-16T02:25:37.3137988Z [gosec] 2026/09/16 02:25:37 Checking file: /home/runner/work/discord-bot/discord-bot/internal/jsdiscord/host_logging.go
+GoSec Security Scan	Run Gosec Security Scanner	2026-09-16T02:25:37.3168040Z [gosec] 2026/09/16 02:25:37 Checking file: /home/runner/work/discord-bot/discord-bot/internal/jsdiscord/host_maps.go
+GoSec Security Scan	Run Gosec Security Scanner	2026-09-16T02:25:37.3197922Z [gosec] 2026/09/16 02:25:37 Checking file: /home/runner/work/discord-bot/discord-bot/internal/jsdiscord/host_ops.go
+GoSec Security Scan	Run Gosec Security Scanner	2026-09-16T02:25:37.3228016Z [gosec] 2026/09/16 02:25:37 Checking file: /home/runner/work/discord-bot/discord-bot/internal/jsdiscord/host_ops_channels.go
+GoSec Security Scan	Run Gosec Security Scanner	2026-09-16T02:25:37.3229839Z [gosec] 2026/09/16 02:25:37 Checking file: /home/runner/work/discord-bot/discord-bot/internal/jsdiscord/host_ops_guilds.go
+GoSec Security Scan	Run Gosec Security Scanner	2026-09-16T02:25:37.3258171Z [gosec] 2026/09/16 02:25:37 Checking file: /home/runner/work/discord-bot/discord-bot/internal/jsdiscord/host_ops_helpers.go
+GoSec Security Scan	Run Gosec Security Scanner	2026-09-16T02:25:37.3288046Z [gosec] 2026/09/16 02:25:37 Checking file: /home/runner/work/discord-bot/discord-bot/internal/jsdiscord/host_ops_members.go
+GoSec Security Scan	Run Gosec Security Scanner	2026-09-16T02:25:37.3317964Z [gosec] 2026/09/16 02:25:37 Checking file: /home/runner/work/discord-bot/discord-bot/internal/jsdiscord/host_ops_messages.go
+GoSec Security Scan	Run Gosec Security Scanner	2026-09-16T02:25:37.3319785Z [gosec] 2026/09/16 02:25:37 Checking file: /home/runner/work/discord-bot/discord-bot/internal/jsdiscord/host_ops_roles.go
+GoSec Security Scan	Run Gosec Security Scanner	2026-09-16T02:25:37.3348085Z [gosec] 2026/09/16 02:25:37 Checking file: /home/runner/work/discord-bot/discord-bot/internal/jsdiscord/host_ops_threads.go
+GoSec Security Scan	Run Gosec Security Scanner	2026-09-16T02:25:37.3378795Z [gosec] 2026/09/16 02:25:37 Checking file: /home/runner/work/discord-bot/discord-bot/internal/jsdiscord/host_options.go
+GoSec Security Scan	Run Gosec Security Scanner	2026-09-16T02:25:37.3408005Z [gosec] 2026/09/16 02:25:37 Checking file: /home/runner/work/discord-bot/discord-bot/internal/jsdiscord/host_responses.go
+GoSec Security Scan	Run Gosec Security Scanner	2026-09-16T02:25:37.3409633Z [gosec] 2026/09/16 02:25:37 Checking file: /home/runner/work/discord-bot/discord-bot/internal/jsdiscord/logcopter.go
+GoSec Security Scan	Run Gosec Security Scanner	2026-09-16T02:25:37.3438023Z [gosec] 2026/09/16 02:25:37 Checking file: /home/runner/work/discord-bot/discord-bot/internal/jsdiscord/payload_components.go
+GoSec Security Scan	Run Gosec Security Scanner	2026-09-16T02:25:37.3468010Z [gosec] 2026/09/16 02:25:37 Checking file: /home/runner/work/discord-bot/discord-bot/internal/jsdiscord/payload_embeds.go
+GoSec Security Scan	Run Gosec Security Scanner	2026-09-16T02:25:37.3498059Z [gosec] 2026/09/16 02:25:37 Checking file: /home/runner/work/discord-bot/discord-bot/internal/jsdiscord/payload_files.go
+GoSec Security Scan	Run Gosec Security Scanner	2026-09-16T02:25:37.3499497Z [gosec] 2026/09/16 02:25:37 Checking file: /home/runner/work/discord-bot/discord-bot/internal/jsdiscord/payload_mentions.go
+GoSec Security Scan	Run Gosec Security Scanner	2026-09-16T02:25:37.3528061Z [gosec] 2026/09/16 02:25:37 Checking file: /home/runner/work/discord-bot/discord-bot/internal/jsdiscord/payload_message.go
+GoSec Security Scan	Run Gosec Security Scanner	2026-09-16T02:25:37.3558113Z [gosec] 2026/09/16 02:25:37 Checking file: /home/runner/work/discord-bot/discord-bot/internal/jsdiscord/payload_model.go
+GoSec Security Scan	Run Gosec Security Scanner	2026-09-16T02:25:37.3588040Z [gosec] 2026/09/16 02:25:37 Checking file: /home/runner/work/discord-bot/discord-bot/internal/jsdiscord/runtime.go
+GoSec Security Scan	Run Gosec Security Scanner	2026-09-16T02:25:37.3608151Z [gosec] 2026/09/16 02:25:37 Checking file: /home/runner/work/discord-bot/discord-bot/internal/jsdiscord/snapshot_builders.go
+GoSec Security Scan	Run Gosec Security Scanner	2026-09-16T02:25:37.3618486Z [gosec] 2026/09/16 02:25:37 Checking file: /home/runner/work/discord-bot/discord-bot/internal/jsdiscord/snapshot_types.go
+GoSec Security Scan	Run Gosec Security Scanner	2026-09-16T02:25:37.3647978Z [gosec] 2026/09/16 02:25:37 Checking file: /home/runner/work/discord-bot/discord-bot/internal/jsdiscord/store.go
+GoSec Security Scan	Run Gosec Security Scanner	2026-09-16T02:25:37.3678050Z [gosec] 2026/09/16 02:25:37 Checking file: /home/runner/work/discord-bot/discord-bot/internal/jsdiscord/ui_components.go
+GoSec Security Scan	Run Gosec Security Scanner	2026-09-16T02:25:37.3707834Z [gosec] 2026/09/16 02:25:37 Checking file: /home/runner/work/discord-bot/discord-bot/internal/jsdiscord/ui_embed.go
+GoSec Security Scan	Run Gosec Security Scanner	2026-09-16T02:25:37.3709577Z [gosec] 2026/09/16 02:25:37 Checking file: /home/runner/work/discord-bot/discord-bot/internal/jsdiscord/ui_errors.go
+GoSec Security Scan	Run Gosec Security Scanner	2026-09-16T02:25:37.3738134Z [gosec] 2026/09/16 02:25:37 Checking file: /home/runner/work/discord-bot/discord-bot/internal/jsdiscord/ui_form.go
+GoSec Security Scan	Run Gosec Security Scanner	2026-09-16T02:25:37.3768028Z [gosec] 2026/09/16 02:25:37 Checking file: /home/runner/work/discord-bot/discord-bot/internal/jsdiscord/ui_helpers.go
+GoSec Security Scan	Run Gosec Security Scanner	2026-09-16T02:25:37.3798045Z [gosec] 2026/09/16 02:25:37 Checking file: /home/runner/work/discord-bot/discord-bot/internal/jsdiscord/ui_message.go
+GoSec Security Scan	Run Gosec Security Scanner	2026-09-16T02:25:37.3799536Z [gosec] 2026/09/16 02:25:37 Checking file: /home/runner/work/discord-bot/discord-bot/internal/jsdiscord/ui_module.go
+GoSec Security Scan	Run Gosec Security Scanner	2026-09-16T02:25:37.6738347Z [gosec] 2026/09/16 02:25:37 Import directory: /home/runner/work/discord-bot/discord-bot/examples/framework-custom-module
+GoSec Security Scan	Run Gosec Security Scanner	2026-09-16T02:25:38.3157970Z [gosec] 2026/09/16 02:25:38 Checking package: main
+GoSec Security Scan	Run Gosec Security Scanner	2026-09-16T02:25:38.3168459Z [gosec] 2026/09/16 02:25:38 Checking file: /home/runner/work/discord-bot/discord-bot/examples/framework-custom-module/main.go
+GoSec Security Scan	Run Gosec Security Scanner	2026-09-16T02:25:38.4988360Z [gosec] 2026/09/16 02:25:38 Import directory: /home/runner/work/discord-bot/discord-bot/examples/framework-single-bot
+GoSec Security Scan	Run Gosec Security Scanner	2026-09-16T02:25:39.1138155Z [gosec] 2026/09/16 02:25:39 Checking package: main
+GoSec Security Scan	Run Gosec Security Scanner	2026-09-16T02:25:39.1168361Z [gosec] 2026/09/16 02:25:39 Checking file: /home/runner/work/discord-bot/discord-bot/examples/framework-single-bot/main.go
+GoSec Security Scan	Run Gosec Security Scanner	2026-09-16T02:25:39.1198114Z [gosec] 2026/09/16 02:25:39 Import directory: /home/runner/work/discord-bot/discord-bot/internal/config
+GoSec Security Scan	Run Gosec Security Scanner	2026-09-16T02:25:39.8037192Z [gosec] 2026/09/16 02:25:39 Checking package: config
+GoSec Security Scan	Run Gosec Security Scanner	2026-09-16T02:25:39.8043654Z [gosec] 2026/09/16 02:25:39 Checking file: /home/runner/work/discord-bot/discord-bot/internal/config/config.go
+GoSec Security Scan	Run Gosec Security Scanner	2026-09-16T02:25:39.8068239Z [gosec] 2026/09/16 02:25:39 Checking file: /home/runner/work/discord-bot/discord-bot/internal/config/logcopter.go
+GoSec Security Scan	Run Gosec Security Scanner	2026-09-16T02:25:39.8108256Z [gosec] 2026/09/16 02:25:39 Import directory: /home/runner/work/discord-bot/discord-bot/internal/slackconfig
+GoSec Security Scan	Run Gosec Security Scanner	2026-09-16T02:25:40.1457891Z [gosec] 2026/09/16 02:25:40 Checking package: slackconfig
+GoSec Security Scan	Run Gosec Security Scanner	2026-09-16T02:25:40.1548263Z [gosec] 2026/09/16 02:25:40 Checking file: /home/runner/work/discord-bot/discord-bot/internal/slackconfig/store.go
+GoSec Security Scan	Run Gosec Security Scanner	2026-09-16T02:25:40.1788178Z [gosec] 2026/09/16 02:25:40 Import directory: /home/runner/work/discord-bot/discord-bot/pkg/botcli
+GoSec Security Scan	Run Gosec Security Scanner	2026-09-16T02:25:49.4968051Z [gosec] 2026/09/16 02:25:49 Checking package: main
+GoSec Security Scan	Run Gosec Security Scanner	2026-09-16T02:25:49.4991090Z [gosec] 2026/09/16 02:25:49 Checking file: /home/runner/work/discord-bot/discord-bot/examples/framework-combined/main.go
+GoSec Security Scan	Run Gosec Security Scanner	2026-09-16T02:25:49.4992434Z [gosec] 2026/09/16 02:25:49 Import directory: /home/runner/work/discord-bot/discord-bot/pkg/slackcli
+GoSec Security Scan	Run Gosec Security Scanner	2026-09-16T02:25:50.3467928Z [gosec] 2026/09/16 02:25:50 Checking package: main
+GoSec Security Scan	Run Gosec Security Scanner	2026-09-16T02:25:50.3498116Z [gosec] 2026/09/16 02:25:50 Checking file: /home/runner/work/discord-bot/discord-bot/cmd/discord-bot/commands.go
+GoSec Security Scan	Run Gosec Security Scanner	2026-09-16T02:25:50.3528041Z [gosec] 2026/09/16 02:25:50 Checking file: /home/runner/work/discord-bot/discord-bot/cmd/discord-bot/main.go
+GoSec Security Scan	Run Gosec Security Scanner	2026-09-16T02:25:50.3558044Z [gosec] 2026/09/16 02:25:50 Checking file: /home/runner/work/discord-bot/discord-bot/cmd/discord-bot/root.go
+GoSec Security Scan	Run Gosec Security Scanner	2026-09-16T02:25:50.3798134Z [gosec] 2026/09/16 02:25:50 Import directory: /home/runner/work/discord-bot/discord-bot/pkg/slackdoc
+GoSec Security Scan	Run Gosec Security Scanner	2026-09-16T02:25:50.7898096Z [gosec] 2026/09/16 02:25:50 Checking package: slackcli
+GoSec Security Scan	Run Gosec Security Scanner	2026-09-16T02:25:50.7918314Z [gosec] 2026/09/16 02:25:50 Checking file: /home/runner/work/discord-bot/discord-bot/pkg/slackcli/commands.go
+GoSec Security Scan	Run Gosec Security Scanner	2026-09-16T02:25:50.7948469Z [gosec] 2026/09/16 02:25:50 Checking file: /home/runner/work/discord-bot/discord-bot/pkg/slackcli/create_app.go
+GoSec Security Scan	Run Gosec Security Scanner	2026-09-16T02:25:50.7978430Z [gosec] 2026/09/16 02:25:50 Checking file: /home/runner/work/discord-bot/discord-bot/pkg/slackcli/credentials.go
+GoSec Security Scan	Run Gosec Security Scanner	2026-09-16T02:25:50.7985468Z [gosec] 2026/09/16 02:25:50 Checking file: /home/runner/work/discord-bot/discord-bot/pkg/slackcli/discover.go
+GoSec Security Scan	Run Gosec Security Scanner	2026-09-16T02:25:50.7987465Z [gosec] 2026/09/16 02:25:50 Checking file: /home/runner/work/discord-bot/discord-bot/pkg/slackcli/install_app.go
+GoSec Security Scan	Run Gosec Security Scanner	2026-09-16T02:25:50.7989028Z [gosec] 2026/09/16 02:25:50 Checking file: /home/runner/work/discord-bot/discord-bot/pkg/slackcli/logcopter.go
+GoSec Security Scan	Run Gosec Security Scanner	2026-09-16T02:25:50.7990457Z [gosec] 2026/09/16 02:25:50 Checking file: /home/runner/work/discord-bot/discord-bot/pkg/slackcli/run_remote.go
+GoSec Security Scan	Run Gosec Security Scanner	2026-09-16T02:25:50.7991918Z [gosec] 2026/09/16 02:25:50 Checking file: /home/runner/work/discord-bot/discord-bot/pkg/slackcli/update_manifest.go
+GoSec Security Scan	Run Gosec Security Scanner	2026-09-16T02:25:50.8019617Z [gosec] 2026/09/16 02:25:50 Checking package: slackdoc
+GoSec Security Scan	Run Gosec Security Scanner	2026-09-16T02:25:50.8027157Z [gosec] 2026/09/16 02:25:50 Checking file: /home/runner/work/discord-bot/discord-bot/pkg/slackdoc/doc.go
+GoSec Security Scan	Run Gosec Security Scanner	2026-09-16T02:25:50.8033835Z [gosec] 2026/09/16 02:25:50 Checking file: /home/runner/work/discord-bot/discord-bot/pkg/slackdoc/logcopter.go
+GoSec Security Scan	Run Gosec Security Scanner	2026-09-16T02:25:50.8035640Z [gosec] 2026/09/16 02:25:50 Import directory: /home/runner/work/discord-bot/discord-bot/pkg/slackhost
+GoSec Security Scan	Run Gosec Security Scanner	2026-09-16T02:25:50.8648042Z [gosec] 2026/09/16 02:25:50 Checking package: provider
+GoSec Security Scan	Run Gosec Security Scanner	2026-09-16T02:25:50.8649668Z [gosec] 2026/09/16 02:25:50 Checking file: /home/runner/work/discord-bot/discord-bot/pkg/xgoja/provider/logcopter.go
+GoSec Security Scan	Run Gosec Security Scanner	2026-09-16T02:25:50.8678259Z [gosec] 2026/09/16 02:25:50 Checking file: /home/runner/work/discord-bot/discord-bot/pkg/xgoja/provider/provider.go
+GoSec Security Scan	Run Gosec Security Scanner	2026-09-16T02:25:51.0731517Z [gosec] 2026/09/16 02:25:51 Checking package: slackhost
+GoSec Security Scan	Run Gosec Security Scanner	2026-09-16T02:25:51.0732977Z [gosec] 2026/09/16 02:25:51 Checking file: /home/runner/work/discord-bot/discord-bot/pkg/slackhost/host.go
+GoSec Security Scan	Run Gosec Security Scanner	2026-09-16T02:25:51.0735117Z [gosec] 2026/09/16 02:25:51 Checking file: /home/runner/work/discord-bot/discord-bot/pkg/slackhost/logcopter.go
+GoSec Security Scan	Run Gosec Security Scanner	2026-09-16T02:25:53.0480653Z [gosec] 2026/09/16 02:25:53 Checking package: botcli
+GoSec Security Scan	Run Gosec Security Scanner	2026-09-16T02:25:53.0481814Z [gosec] 2026/09/16 02:25:53 Checking file: /home/runner/work/discord-bot/discord-bot/pkg/botcli/bootstrap.go
+GoSec Security Scan	Run Gosec Security Scanner	2026-09-16T02:25:53.0487173Z [gosec] 2026/09/16 02:25:53 Checking file: /home/runner/work/discord-bot/discord-bot/pkg/botcli/command_help.go
+GoSec Security Scan	Run Gosec Security Scanner	2026-09-16T02:25:53.0489326Z [gosec] 2026/09/16 02:25:53 Checking file: /home/runner/work/discord-bot/discord-bot/pkg/botcli/command_list.go
+GoSec Security Scan	Run Gosec Security Scanner	2026-09-16T02:25:53.0490339Z [gosec] 2026/09/16 02:25:53 Checking file: /home/runner/work/discord-bot/discord-bot/pkg/botcli/command_root.go
+GoSec Security Scan	Run Gosec Security Scanner	2026-09-16T02:25:53.0493827Z [gosec] 2026/09/16 02:25:53 Checking file: /home/runner/work/discord-bot/discord-bot/pkg/botcli/command_run.go
+GoSec Security Scan	Run Gosec Security Scanner	2026-09-16T02:25:53.0494914Z [gosec] 2026/09/16 02:25:53 Checking file: /home/runner/work/discord-bot/discord-bot/pkg/botcli/discover.go
+GoSec Security Scan	Run Gosec Security Scanner	2026-09-16T02:25:53.0500291Z [gosec] 2026/09/16 02:25:53 Checking file: /home/runner/work/discord-bot/discord-bot/pkg/botcli/doc.go
+GoSec Security Scan	Run Gosec Security Scanner	2026-09-16T02:25:53.0501179Z [gosec] 2026/09/16 02:25:53 Checking file: /home/runner/work/discord-bot/discord-bot/pkg/botcli/host_options_context.go
+GoSec Security Scan	Run Gosec Security Scanner	2026-09-16T02:25:53.0501862Z [gosec] 2026/09/16 02:25:53 Checking file: /home/runner/work/discord-bot/discord-bot/pkg/botcli/invoker.go
+GoSec Security Scan	Run Gosec Security Scanner	2026-09-16T02:25:53.0502579Z [gosec] 2026/09/16 02:25:53 Checking file: /home/runner/work/discord-bot/discord-bot/pkg/botcli/logcopter.go
+GoSec Security Scan	Run Gosec Security Scanner	2026-09-16T02:25:53.0503249Z [gosec] 2026/09/16 02:25:53 Checking file: /home/runner/work/discord-bot/discord-bot/pkg/botcli/model.go
+GoSec Security Scan	Run Gosec Security Scanner	2026-09-16T02:25:53.0503925Z [gosec] 2026/09/16 02:25:53 Checking file: /home/runner/work/discord-bot/discord-bot/pkg/botcli/options.go
+GoSec Security Scan	Run Gosec Security Scanner	2026-09-16T02:25:53.0505397Z [gosec] 2026/09/16 02:25:53 Checking file: /home/runner/work/discord-bot/discord-bot/pkg/botcli/run_description.go
+GoSec Security Scan	Run Gosec Security Scanner	2026-09-16T02:25:53.0508139Z [gosec] 2026/09/16 02:25:53 Checking file: /home/runner/work/discord-bot/discord-bot/pkg/botcli/runtime_factory.go
+GoSec Security Scan	Run Gosec Security Scanner	2026-09-16T02:25:53.0509931Z [gosec] 2026/09/16 02:25:53 Checking file: /home/runner/work/discord-bot/discord-bot/pkg/botcli/runtime_helpers.go
+GoSec Security Scan	Run Gosec Security Scanner	2026-09-16T02:25:53.1093701Z Results:
+GoSec Security Scan	Run Gosec Security Scanner	2026-09-16T02:25:53.1093960Z
+GoSec Security Scan	Run Gosec Security Scanner	2026-09-16T02:25:53.1093989Z
+GoSec Security Scan	Run Gosec Security Scanner	2026-09-16T02:25:53.1095115Z [/home/runner/work/discord-bot/discord-bot/pkg/botcli/bootstrap.go:188] - G703 (CWE-22): Path traversal via taint analysis (Confidence: HIGH, Severity: HIGH)
+GoSec Security Scan	Run Gosec Security Scanner	2026-09-16T02:25:53.1096213Z     187: 	path = filepath.Clean(path)
+GoSec Security Scan	Run Gosec Security Scanner	2026-09-16T02:25:53.1096666Z   > 188: 	info, err := os.Stat(path)
+GoSec Security Scan	Run Gosec Security Scanner	2026-09-16T02:25:53.1097223Z     189: 	if err != nil {
+GoSec Security Scan	Run Gosec Security Scanner	2026-09-16T02:25:53.1097442Z
+GoSec Security Scan	Run Gosec Security Scanner	2026-09-16T02:25:53.1097571Z Autofix:
+GoSec Security Scan	Run Gosec Security Scanner	2026-09-16T02:25:53.1097733Z
+GoSec Security Scan	Run Gosec Security Scanner	2026-09-16T02:25:53.1098492Z [/home/runner/work/discord-bot/discord-bot/internal/slackconfig/store.go:158] - G104 (CWE-703): Errors unhandled (Confidence: HIGH, Severity: LOW)
+GoSec Security Scan	Run Gosec Security Scanner	2026-09-16T02:25:53.1099556Z     157: 	if err := write(tmp); err != nil {
+GoSec Security Scan	Run Gosec Security Scanner	2026-09-16T02:25:53.1099996Z   > 158: 		tmp.Close()
+GoSec Security Scan	Run Gosec Security Scanner	2026-09-16T02:25:53.1100351Z     159: 		return err
+GoSec Security Scan	Run Gosec Security Scanner	2026-09-16T02:25:53.1100546Z
+GoSec Security Scan	Run Gosec Security Scanner	2026-09-16T02:25:53.1100663Z Autofix:
+GoSec Security Scan	Run Gosec Security Scanner	2026-09-16T02:25:53.1100832Z
+GoSec Security Scan	Run Gosec Security Scanner	2026-09-16T02:25:53.1101562Z [/home/runner/work/discord-bot/discord-bot/internal/slackconfig/store.go:154] - G104 (CWE-703): Errors unhandled (Confidence: HIGH, Severity: LOW)
+GoSec Security Scan	Run Gosec Security Scanner	2026-09-16T02:25:53.1102579Z     153: 	if err := tmp.Chmod(0600); err != nil {
+GoSec Security Scan	Run Gosec Security Scanner	2026-09-16T02:25:53.1103005Z   > 154: 		tmp.Close()
+GoSec Security Scan	Run Gosec Security Scanner	2026-09-16T02:25:53.1103345Z     155: 		return err
+GoSec Security Scan	Run Gosec Security Scanner	2026-09-16T02:25:53.1103530Z
+GoSec Security Scan	Run Gosec Security Scanner	2026-09-16T02:25:53.1103667Z Autofix:
+GoSec Security Scan	Run Gosec Security Scanner	2026-09-16T02:25:53.1103819Z
+GoSec Security Scan	Run Gosec Security Scanner	2026-09-16T02:25:53.1103942Z Summary:
+GoSec Security Scan	Run Gosec Security Scanner	2026-09-16T02:25:53.1104220Z   Gosec  : dev
+GoSec Security Scan	Run Gosec Security Scanner	2026-09-16T02:25:53.1104508Z   Files  : 105
+GoSec Security Scan	Run Gosec Security Scanner	2026-09-16T02:25:53.1104798Z   Lines  : 14955
+GoSec Security Scan	Run Gosec Security Scanner	2026-09-16T02:25:53.1105093Z   Nosec  : 0
+GoSec Security Scan	Run Gosec Security Scanner	2026-09-16T02:25:53.1105374Z   Issues : 3
+GoSec Security Scan	Run Gosec Security Scanner	2026-09-16T02:25:53.1105934Z
+GoSec Security Scan	Run Gosec Security Scanner	2026-09-16T02:25:53.1142046Z ##[error]Process completed with exit code 1.
+Go Vulnerability Check	Run govulncheck	﻿2026-09-16T02:23:12.7654106Z ##[group]Run govulncheck ./...
+Go Vulnerability Check	Run govulncheck	2026-09-16T02:23:12.7654368Z govulncheck ./...
+Go Vulnerability Check	Run govulncheck	2026-09-16T02:23:12.7686545Z shell: /usr/bin/bash -e {0}
+Go Vulnerability Check	Run govulncheck	2026-09-16T02:23:12.7686775Z env:
+Go Vulnerability Check	Run govulncheck	2026-09-16T02:23:12.7686935Z   GOTOOLCHAIN: local
+Go Vulnerability Check	Run govulncheck	2026-09-16T02:23:12.7687118Z ##[endgroup]
+Go Vulnerability Check	Run govulncheck	2026-09-16T02:24:00.7500052Z === Symbol Results ===
+Go Vulnerability Check	Run govulncheck	2026-09-16T02:24:00.7500331Z
+Go Vulnerability Check	Run govulncheck	2026-09-16T02:24:00.7500480Z Vulnerability #1: GO-2026-6218
+Go Vulnerability Check	Run govulncheck	2026-09-16T02:24:00.7501109Z     Avoid quadratic complexity in resolvePath in net/url
+Go Vulnerability Check	Run govulncheck	2026-09-16T02:24:00.7501697Z   More info: https://pkg.go.dev/vuln/GO-2026-6218
+Go Vulnerability Check	Run govulncheck	2026-09-16T02:24:00.7502139Z   Standard library
+Go Vulnerability Check	Run govulncheck	2026-09-16T02:24:00.7502465Z     Found in: net/url@go1.26.4
+Go Vulnerability Check	Run govulncheck	2026-09-16T02:24:00.7503033Z     Fixed in: net/url@go1.26.6
+Go Vulnerability Check	Run govulncheck	2026-09-16T02:24:00.7503568Z     Example traces found:
+Go Vulnerability Check	Run govulncheck	2026-09-16T02:24:00.7525044Z ##[error]      #1: internal/slacktransport/client.go:261:35: slacktransport.responder.sendMessage calls http.Client.Do, which eventually calls url.URL.Parse
+Go Vulnerability Check	Run govulncheck	2026-09-16T02:24:00.7534220Z ##[error]      #2: internal/jsdiscord/host_dispatch.go:432:83: jsdiscord.Host.dispatchModalSubmitInteraction calls goja.CompilerSyntaxError.Error, which eventually calls url.URL.ResolveReference
+Go Vulnerability Check	Run govulncheck	2026-09-16T02:24:00.7536262Z
+Go Vulnerability Check	Run govulncheck	2026-09-16T02:24:00.7536404Z Vulnerability #2: GO-2026-6090
+Go Vulnerability Check	Run govulncheck	2026-09-16T02:24:00.7536973Z     Limit handshake messages we are willing to accept post-handshake in
+Go Vulnerability Check	Run govulncheck	2026-09-16T02:24:00.7537472Z     crypto/tls
+Go Vulnerability Check	Run govulncheck	2026-09-16T02:24:00.7537832Z   More info: https://pkg.go.dev/vuln/GO-2026-6090
+Go Vulnerability Check	Run govulncheck	2026-09-16T02:24:00.7538237Z   Standard library
+Go Vulnerability Check	Run govulncheck	2026-09-16T02:24:00.7538747Z     Found in: crypto/tls@go1.26.4
+Go Vulnerability Check	Run govulncheck	2026-09-16T02:24:00.7539121Z     Fixed in: crypto/tls@go1.26.6
+Go Vulnerability Check	Run govulncheck	2026-09-16T02:24:00.7539477Z     Example traces found:
+Go Vulnerability Check	Run govulncheck	2026-09-16T02:24:00.7540660Z ##[error]      #1: internal/bot/bot.go:81:26: bot.Bot.Open calls discordgo.Session.Open, which eventually calls tls.Conn.HandshakeContext
+Go Vulnerability Check	Run govulncheck	2026-09-16T02:24:00.7542823Z ##[error]      #2: internal/slacktransport/client.go:266:18: slacktransport.responder.sendMessage calls io.Copy, which eventually calls tls.Conn.Read
+Go Vulnerability Check	Run govulncheck	2026-09-16T02:24:00.7544737Z ##[error]      #3: cmd/discord-bot/main.go:17:14: discord.main calls fmt.Fprintf, which calls tls.Conn.Write
+Go Vulnerability Check	Run govulncheck	2026-09-16T02:24:00.7546981Z ##[error]      #4: internal/slacktransport/client.go:261:35: slacktransport.responder.sendMessage calls http.Client.Do, which eventually calls tls.Dialer.DialContext
+Go Vulnerability Check	Run govulncheck	2026-09-16T02:24:00.7548306Z
+Go Vulnerability Check	Run govulncheck	2026-09-16T02:24:00.7548557Z Vulnerability #3: GO-2026-6088
+Go Vulnerability Check	Run govulncheck	2026-09-16T02:24:00.7549042Z     Add recursion depth guard during decode in encoding/xml
+Go Vulnerability Check	Run govulncheck	2026-09-16T02:24:00.7549556Z   More info: https://pkg.go.dev/vuln/GO-2026-6088
+Go Vulnerability Check	Run govulncheck	2026-09-16T02:24:00.7549950Z   Standard library
+Go Vulnerability Check	Run govulncheck	2026-09-16T02:24:00.7550282Z     Found in: encoding/xml@go1.26.4
+Go Vulnerability Check	Run govulncheck	2026-09-16T02:24:00.7550664Z     Fixed in: encoding/xml@go1.26.6
+Go Vulnerability Check	Run govulncheck	2026-09-16T02:24:00.7551023Z     Example traces found:
+Go Vulnerability Check	Run govulncheck	2026-09-16T02:24:00.7552106Z ##[error]      #1: internal/jsslack/host.go:133:16: jsslack.Host.Close calls sync.Once.Do, which eventually calls xml.Decoder.Decode
+Go Vulnerability Check	Run govulncheck	2026-09-16T02:24:00.7554035Z ##[error]      #2: cmd/slack-bot/main.go:12:2: slack.init calls cmd.init, which eventually calls xml.Decoder.DecodeElement
+Go Vulnerability Check	Run govulncheck	2026-09-16T02:24:00.7556546Z ##[error]      #3: pkg/botcli/command_help.go:50:22: botcli.helpBotsCommand.RunIntoGlazeProcessor calls middlewares.TableProcessor.AddRow, which eventually calls xml.Decoder.Token
+Go Vulnerability Check	Run govulncheck	2026-09-16T02:24:00.7557957Z
+Go Vulnerability Check	Run govulncheck	2026-09-16T02:24:00.7558095Z Vulnerability #4: GO-2026-5972
+Go Vulnerability Check	Run govulncheck	2026-09-16T02:24:00.7558670Z     Enforce maximum recursion depth in encoding/asn1
+Go Vulnerability Check	Run govulncheck	2026-09-16T02:24:00.7559170Z   More info: https://pkg.go.dev/vuln/GO-2026-5972
+Go Vulnerability Check	Run govulncheck	2026-09-16T02:24:00.7559564Z   Standard library
+Go Vulnerability Check	Run govulncheck	2026-09-16T02:24:00.7559888Z     Found in: encoding/asn1@go1.26.4
+Go Vulnerability Check	Run govulncheck	2026-09-16T02:24:00.7560271Z     Fixed in: encoding/asn1@go1.26.6
+Go Vulnerability Check	Run govulncheck	2026-09-16T02:24:00.7560630Z     Example traces found:
+Go Vulnerability Check	Run govulncheck	2026-09-16T02:24:00.7561659Z ##[error]      #1: internal/jsslack/host.go:133:16: jsslack.Host.Close calls sync.Once.Do, which eventually calls asn1.Unmarshal
+Go Vulnerability Check	Run govulncheck	2026-09-16T02:24:00.7563145Z
+Go Vulnerability Check	Run govulncheck	2026-09-16T02:24:00.7563279Z Vulnerability #5: GO-2026-5970
+Go Vulnerability Check	Run govulncheck	2026-09-16T02:24:00.7563734Z     Infinite loop on invalid input in golang.org/x/text
+Go Vulnerability Check	Run govulncheck	2026-09-16T02:24:00.7564230Z   More info: https://pkg.go.dev/vuln/GO-2026-5970
+Go Vulnerability Check	Run govulncheck	2026-09-16T02:24:00.7564652Z   Module: golang.org/x/text
+Go Vulnerability Check	Run govulncheck	2026-09-16T02:24:00.7565027Z     Found in: golang.org/x/text@v0.37.0
+Go Vulnerability Check	Run govulncheck	2026-09-16T02:24:00.7565432Z     Fixed in: golang.org/x/text@v0.39.0
+Go Vulnerability Check	Run govulncheck	2026-09-16T02:24:00.7565810Z     Example traces found:
+Go Vulnerability Check	Run govulncheck	2026-09-16T02:24:00.7567044Z ##[error]      #1: internal/jsdiscord/runtime.go:152:17: jsdiscord.RuntimeState.Loader calls goja.Runtime.Get, which eventually calls norm.Form.Append
+Go Vulnerability Check	Run govulncheck	2026-09-16T02:24:00.7569609Z ##[error]      #2: internal/jsdiscord/runtime.go:152:17: jsdiscord.RuntimeState.Loader calls goja.Runtime.Get, which eventually calls norm.Form.AppendString
+Go Vulnerability Check	Run govulncheck	2026-09-16T02:24:00.7571923Z ##[error]      #3: internal/jsdiscord/runtime.go:152:17: jsdiscord.RuntimeState.Loader calls goja.Runtime.Get, which eventually calls norm.Form.Bytes
+Go Vulnerability Check	Run govulncheck	2026-09-16T02:24:00.7574260Z ##[error]      #4: internal/jsdiscord/runtime.go:152:17: jsdiscord.RuntimeState.Loader calls goja.Runtime.Get, which eventually calls norm.Form.FirstBoundary
+Go Vulnerability Check	Run govulncheck	2026-09-16T02:24:00.7576942Z ##[error]      #5: internal/jsdiscord/runtime.go:152:17: jsdiscord.RuntimeState.Loader calls goja.Runtime.Get, which eventually calls norm.Form.FirstBoundaryInString
+Go Vulnerability Check	Run govulncheck	2026-09-16T02:24:00.7579523Z ##[error]      #6: internal/jsdiscord/runtime.go:152:17: jsdiscord.RuntimeState.Loader calls goja.Runtime.Get, which eventually calls norm.Form.IsNormalString
+Go Vulnerability Check	Run govulncheck	2026-09-16T02:24:00.7581713Z ##[error]      #7: cmd/discord-bot/main.go:17:14: discord.main calls fmt.Fprintf, which eventually calls norm.Form.Properties
+Go Vulnerability Check	Run govulncheck	2026-09-16T02:24:00.7583996Z ##[error]      #8: internal/jsdiscord/runtime.go:152:17: jsdiscord.RuntimeState.Loader calls goja.Runtime.Get, which eventually calls norm.Form.PropertiesString
+Go Vulnerability Check	Run govulncheck	2026-09-16T02:24:00.7586346Z ##[error]      #9: internal/jsdiscord/runtime.go:152:17: jsdiscord.RuntimeState.Loader calls goja.Runtime.Get, which eventually calls norm.Form.QuickSpan
+Go Vulnerability Check	Run govulncheck	2026-09-16T02:24:00.7588747Z ##[error]      #10: internal/jsdiscord/runtime.go:152:17: jsdiscord.RuntimeState.Loader calls goja.Runtime.Get, which eventually calls norm.Form.String
+Go Vulnerability Check	Run govulncheck	2026-09-16T02:24:00.7590037Z
+Go Vulnerability Check	Run govulncheck	2026-09-16T02:24:00.7590167Z Vulnerability #6: GO-2026-5960
+Go Vulnerability Check	Run govulncheck	2026-09-16T02:24:00.7590750Z     Excelize: Unbounded Row Index Allocation in Worksheet Parser (checkSheet
+Go Vulnerability Check	Run govulncheck	2026-09-16T02:24:00.7591357Z     OOM/Panic DoS) in github.com/xuri/excelize
+Go Vulnerability Check	Run govulncheck	2026-09-16T02:24:00.7591825Z   More info: https://pkg.go.dev/vuln/GO-2026-5960
+Go Vulnerability Check	Run govulncheck	2026-09-16T02:24:00.7592272Z   Module: github.com/xuri/excelize/v2
+Go Vulnerability Check	Run govulncheck	2026-09-16T02:24:00.7592727Z     Found in: github.com/xuri/excelize/v2@v2.10.0
+Go Vulnerability Check	Run govulncheck	2026-09-16T02:24:00.7593200Z     Fixed in: github.com/xuri/excelize/v2@v2.11.0
+Go Vulnerability Check	Run govulncheck	2026-09-16T02:24:00.7593610Z     Example traces found:
+Go Vulnerability Check	Run govulncheck	2026-09-16T02:24:00.7595339Z ##[error]      #1: pkg/botcli/command_help.go:50:22: botcli.helpBotsCommand.RunIntoGlazeProcessor calls middlewares.TableProcessor.AddRow, which eventually calls excelize.File.NewSheet
+Go Vulnerability Check	Run govulncheck	2026-09-16T02:24:00.7597915Z ##[error]      #2: examples/framework-combined/main.go:20:24: framework.main calls cobra.Command.Execute, which eventually calls excelize.File.SetActiveSheet
+Go Vulnerability Check	Run govulncheck	2026-09-16T02:24:00.7600774Z ##[error]      #3: pkg/botcli/command_help.go:50:22: botcli.helpBotsCommand.RunIntoGlazeProcessor calls middlewares.TableProcessor.AddRow, which eventually calls excelize.File.SetCellStyle
+Go Vulnerability Check	Run govulncheck	2026-09-16T02:24:00.7603785Z ##[error]      #4: pkg/botcli/command_help.go:50:22: botcli.helpBotsCommand.RunIntoGlazeProcessor calls middlewares.TableProcessor.AddRow, which eventually calls excelize.File.SetCellValue
+Go Vulnerability Check	Run govulncheck	2026-09-16T02:24:00.7606664Z ##[error]      #5: pkg/botcli/command_help.go:50:22: botcli.helpBotsCommand.RunIntoGlazeProcessor calls middlewares.TableProcessor.AddRow, which eventually calls excelize.NewFile
+Go Vulnerability Check	Run govulncheck	2026-09-16T02:24:00.7608037Z
+Go Vulnerability Check	Run govulncheck	2026-09-16T02:24:00.7608174Z Vulnerability #7: GO-2026-5856
+Go Vulnerability Check	Run govulncheck	2026-09-16T02:24:00.7609020Z     Invoking Encrypted Client Hello privacy leak in crypto/tls
+Go Vulnerability Check	Run govulncheck	2026-09-16T02:24:00.7609553Z   More info: https://pkg.go.dev/vuln/GO-2026-5856
+Go Vulnerability Check	Run govulncheck	2026-09-16T02:24:00.7609956Z   Standard library
+Go Vulnerability Check	Run govulncheck	2026-09-16T02:24:00.7610274Z     Found in: crypto/tls@go1.26.4
+Go Vulnerability Check	Run govulncheck	2026-09-16T02:24:00.7610646Z     Fixed in: crypto/tls@go1.26.5
+Go Vulnerability Check	Run govulncheck	2026-09-16T02:24:00.7611003Z     Example traces found:
+Go Vulnerability Check	Run govulncheck	2026-09-16T02:24:00.7612128Z ##[error]      #1: internal/bot/bot.go:81:26: bot.Bot.Open calls discordgo.Session.Open, which eventually calls tls.Conn.HandshakeContext
+Go Vulnerability Check	Run govulncheck	2026-09-16T02:24:00.7614359Z ##[error]      #2: internal/slacktransport/client.go:266:18: slacktransport.responder.sendMessage calls io.Copy, which eventually calls tls.Conn.Read
+Go Vulnerability Check	Run govulncheck	2026-09-16T02:24:00.7616223Z ##[error]      #3: cmd/discord-bot/main.go:17:14: discord.main calls fmt.Fprintf, which calls tls.Conn.Write
+Go Vulnerability Check	Run govulncheck	2026-09-16T02:24:00.7618542Z ##[error]      #4: internal/slacktransport/client.go:261:35: slacktransport.responder.sendMessage calls http.Client.Do, which eventually calls tls.Dialer.DialContext
+Go Vulnerability Check	Run govulncheck	2026-09-16T02:24:00.7619859Z
+Go Vulnerability Check	Run govulncheck	2026-09-16T02:24:00.7619996Z Vulnerability #8: GO-2026-5026
+Go Vulnerability Check	Run govulncheck	2026-09-16T02:24:00.7620729Z     Invoking failure to reject ASCII-only Punycode-encoded labels in
+Go Vulnerability Check	Run govulncheck	2026-09-16T02:24:00.7621238Z     golang.org/x/net/idna
+Go Vulnerability Check	Run govulncheck	2026-09-16T02:24:00.7621625Z   More info: https://pkg.go.dev/vuln/GO-2026-5026
+Go Vulnerability Check	Run govulncheck	2026-09-16T02:24:00.7622013Z   Standard library
+Go Vulnerability Check	Run govulncheck	2026-09-16T02:24:00.7622330Z     Found in: net/http@go1.26.4
+Go Vulnerability Check	Run govulncheck	2026-09-16T02:24:00.7622678Z     Fixed in: net/http@go1.26.6
+Go Vulnerability Check	Run govulncheck	2026-09-16T02:24:00.7623015Z     Example traces found:
+Go Vulnerability Check	Run govulncheck	2026-09-16T02:24:00.7624063Z ##[error]      #1: internal/slacktransport/client.go:140:55: slacktransport.Client.Close calls http.Client.CloseIdleConnections
+Go Vulnerability Check	Run govulncheck	2026-09-16T02:24:00.7625912Z ##[error]      #2: internal/slacktransport/client.go:261:35: slacktransport.responder.sendMessage calls http.Client.Do
+Go Vulnerability Check	Run govulncheck	2026-09-16T02:24:00.7626981Z
+Go Vulnerability Check	Run govulncheck	2026-09-16T02:24:00.7627312Z Your code is affected by 8 vulnerabilities from 2 modules and the Go standard library.
+Go Vulnerability Check	Run govulncheck	2026-09-16T02:24:00.7628000Z This scan also found 5 vulnerabilities in packages you import and 18
+Go Vulnerability Check	Run govulncheck	2026-09-16T02:24:00.7628765Z vulnerabilities in modules you require, but your code doesn't appear to call
+Go Vulnerability Check	Run govulncheck	2026-09-16T02:24:00.7629299Z these vulnerabilities.
+Go Vulnerability Check	Run govulncheck	2026-09-16T02:24:00.7629609Z Use '-show verbose' for more details.
+Go Vulnerability Check	Run govulncheck	2026-09-16T02:24:00.7706376Z ##[error]Process completed with exit code 3.

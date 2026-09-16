@@ -693,3 +693,83 @@ project conventions while keeping this module's dependency/API contract stable.
 ### Technical details
 - No live Slack API calls or bot restarts were required for these fixes.
 - Existing reserved destinations remain untouched and no test uses real tokens.
+
+## Step 15: Make local hooks and CI reproducible and blocking
+
+Aligned validation with the Glazed repository's lint/security conventions while
+removing the release snapshot from ordinary push hooks. All local validation
+now succeeds using pinned module/tool versions. The review fixes were committed
+as **de46607**, with the repaired pre-commit lint and test hooks passing.
+
+### Prompt Context
+See Step 14 for the exact request and Glazed repository clarification.
+**Assistant interpretation:** Use one module-isolated validation contract for
+local hooks and CI, and fix findings rather than accepting failing gates.
+**Inferred user intent:** Prevent future broken pushes without mutating developer
+files or accidentally importing another checkout's Glazed API.
+
+### What I did
+- Export GOWORK=off in Makefile; allow explicit make command-line overrides.
+- Default local validation GOFLAGS to -buildvcs=false for linked worktrees.
+- Build glazed-lint from the exact go.mod version (v1.3.6), remove fallback to
+  v1.3.5, and keep tools under ignored .bin instead of shared /tmp binaries.
+- Keep golangci-lint pinned at v2.11.2; pin GoSec v2.29.0 and govulncheck v1.8.0.
+- Add make check, vet and hooks-install. Pre-push runs blocking make check;
+  pre-commit runs lint/logger checks and tests for matching changes.
+- Remove implicit generation from build and release snapshots from hooks.
+  Explicit logcopter-generate and goreleaser commands remain available.
+- Make CI use matching Makefile checks, generated-logger verification and an
+  offline Slack discovery smoke test. Commit the missing slackconfig logger.
+- Upgrade Go 1.26.4 to 1.26.6, x/text to v0.39.0 and excelize/v2 to v2.11.0,
+  including their module-selected transitive updates, then run module tidy.
+- Correct README and AGENT.md descriptions of validation and blocking hooks.
+
+### Why
+- Local workspace overrides previously caused NewGlazedSchema and output-flag
+  mismatches even though isolated CI tests passed.
+- Release tidy/generate hooks mutated files concurrently with tests/lint during
+  pushes. Validation should inspect the committed source, with generation explicit.
+- CI reported eight reachable vulnerabilities; its diagnostics identify fixed
+  patch/module versions, so no broad release-train migration was necessary.
+
+### What worked
+- Full module tests passed; make build vet passed with VCS stamping disabled.
+- make lint passed both golangci-lint (zero findings) and glazed-lint.
+- make gosec passed with zero issues; make govulncheck reports zero reachable
+  vulnerabilities. It still reports one imported-package and five module-level
+  advisories not called by this program, which are not hidden or suppressed.
+- logcopter-check passed. lefthook validate passed; make hooks-install installed
+  pre-commit/pre-push. The first real pre-commit invocation passed both checks.
+- Review regression tests passed, and git diff --check is clean.
+
+### What didn't work
+- The initial full-validation build hit the known worktree VCS-stamping failure.
+  The successful build/vet rerun and original failure are both archived.
+- Compiling the updated CGO/SQLite dependency graph made the first parallel
+  validation run take several minutes; subsequent cached hooks took seconds.
+
+### What I learned
+- Analyzer installation must not silently downgrade when a module-matched build
+  fails. That failure should be visible so authors can fix the actual tool contract.
+
+### What was tricky to build
+- Keeping ordinary verification free of source mutations while retaining useful
+  explicit generation/release commands and checking generated-file freshness.
+
+### What warrants a second pair of eyes
+- The single GoSec suppression documents a local operator-selected repository
+  path, not a remotely supplied path; other G703 sites remain checked.
+- Glazed stays at v1.3.6 intentionally. Its newer workspace APIs are not pulled
+  into this PR merely to make local checks resemble a different module version.
+
+### What should be done in the future
+- Observe the pushed PR jobs and investigate any fresh remote-only failures.
+
+### Code review instructions
+- Compare Makefile, lefthook.yml and .github/workflows together, then go.mod/go.sum.
+- Run make check from this module even when its parent has a go.work file.
+- Inspect artifacts/pr-19 for before/after CI diagnostics and local receipts.
+
+### Technical details
+- No release tag, live Slack mutation or bot restart was performed.
+- Secrets scanning remains enabled; no hook/security bypass is used for these commits.

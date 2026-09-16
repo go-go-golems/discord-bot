@@ -1,14 +1,19 @@
+# Use this module's pinned APIs for hooks and CI, even inside a multi-repo workspace.
+# Explicit development overrides remain possible with `make GOWORK=...`.
+export GOWORK := off
+# Local validation needs no VCS stamp (also works in linked/restricted worktrees).
+export GOFLAGS ?= -buildvcs=false
+
 .PHONY: all test build lint lintmax golangci-lint-install gosec govulncheck \
         glazed-lint-build glazed-lint goreleaser tag-major tag-minor tag-patch release bump-glazed install
 
 all: test build
 
 VERSION=v0.0.1
-GLAZED_LINT_BIN ?= /tmp/glazed-lint
+GLAZED_LINT_BIN ?= $(CURDIR)/.bin/glazed-lint
 GLAZED_LINT_PKG ?= github.com/go-go-golems/glazed/cmd/tools/glazed-lint
 GLAZED_VERSION ?= $(shell GOWORK=off go list -m -f '{{.Version}}' github.com/go-go-golems/glazed 2>/dev/null)
-GLAZED_LINT_TOOL_VERSION ?= v1.3.5
-GLAZED_LINT_FLAGS ?= -glazedclilint.allow-paths=pkg/analysis/,pkg/cli/,pkg/cmds/fields/,pkg/cmds/logging/,pkg/cmds/sources/,pkg/help/
+GLAZED_LINT_FLAGS ?=
 GLAZED_LINT_DIRS ?= ./cmd/... ./internal/... ./pkg/...
 GORELEASER_ARGS ?= --skip=sign --snapshot --clean
 GORELEASER_TARGET ?= --single-target
@@ -21,15 +26,9 @@ golangci-lint-install:
 	mkdir -p $(dir $(GOLANGCI_LINT_BIN))
 	GOBIN=$(dir $(GOLANGCI_LINT_BIN)) go install github.com/golangci/golangci-lint/v2/cmd/golangci-lint@$(GOLANGCI_LINT_VERSION)
 glazed-lint-build:
-	@echo "Building glazed-lint from Glazed module..."
-	@if [ -n "$(GLAZED_VERSION)" ] && [ "$(GLAZED_VERSION)" != "(devel)" ]; then \
-		echo "Installing $(GLAZED_LINT_PKG)@$(GLAZED_VERSION)"; \
-		GOBIN=$(dir $(GLAZED_LINT_BIN)) GOWORK=off go install $(GLAZED_LINT_PKG)@$(GLAZED_VERSION) || \
-			GOBIN=$(dir $(GLAZED_LINT_BIN)) GOWORK=off go install $(GLAZED_LINT_PKG)@$(GLAZED_LINT_TOOL_VERSION); \
-	else \
-		echo "Installing $(GLAZED_LINT_PKG)@$(GLAZED_LINT_TOOL_VERSION)"; \
-		GOBIN=$(dir $(GLAZED_LINT_BIN)) GOWORK=off go install $(GLAZED_LINT_PKG)@$(GLAZED_LINT_TOOL_VERSION); \
-	fi
+	@test -n "$(GLAZED_VERSION)" || (echo "Cannot resolve pinned Glazed module version"; exit 1)
+	mkdir -p $(dir $(GLAZED_LINT_BIN))
+	GOBIN=$(dir $(GLAZED_LINT_BIN)) go install $(GLAZED_LINT_PKG)@$(GLAZED_VERSION)
 
 glazed-lint: glazed-lint-build
 	GOWORK=off go vet -vettool=$(GLAZED_LINT_BIN) $(GLAZED_LINT_FLAGS) $(GLAZED_LINT_DIRS)
@@ -44,19 +43,34 @@ lintmax: golangci-lint-install glazed-lint-build
 	$(GOLANGCI_LINT_BIN) run -v --max-same-issues=100 $(GOLANGCI_LINT_ARGS)
 	GOWORK=off go vet -vettool=$(GLAZED_LINT_BIN) $(GLAZED_LINT_FLAGS) $(GLAZED_LINT_DIRS)
 
+GOSEC_VERSION ?= v2.29.0
+GOVULNCHECK_VERSION ?= v1.8.0
+GOSEC_BIN ?= $(CURDIR)/.bin/gosec
+GOVULNCHECK_BIN ?= $(CURDIR)/.bin/govulncheck
+
 gosec:
-	go install github.com/securego/gosec/v2/cmd/gosec@latest
-	gosec -exclude-generated -exclude=G101,G304,G301,G306 ./...
+	mkdir -p $(dir $(GOSEC_BIN))
+	GOBIN=$(dir $(GOSEC_BIN)) go install github.com/securego/gosec/v2/cmd/gosec@$(GOSEC_VERSION)
+	$(GOSEC_BIN) -exclude-generated -exclude=G101,G304,G301,G306,G204 -exclude-dir=.history -exclude-dir=ttmp ./...
 
 govulncheck:
-	go install golang.org/x/vuln/cmd/govulncheck@latest
-	govulncheck ./...
+	mkdir -p $(dir $(GOVULNCHECK_BIN))
+	GOBIN=$(dir $(GOVULNCHECK_BIN)) go install golang.org/x/vuln/cmd/govulncheck@$(GOVULNCHECK_VERSION)
+	$(GOVULNCHECK_BIN) ./...
+
+.PHONY: check hooks-install vet
+check: lint test build vet logcopter-check gosec govulncheck
+
+hooks-install:
+	lefthook install
+
+vet:
+	go vet ./...
 
 test:
 	go test ./...
 
 build:
-	go generate ./...
 	go build ./...
 
 goreleaser:
