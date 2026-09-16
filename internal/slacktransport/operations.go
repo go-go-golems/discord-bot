@@ -54,13 +54,20 @@ func (c *Client) webCall(ctx context.Context, method string, params map[string]a
 	if err != nil {
 		return nil, slackbot.Fail("invalid_argument", operation, "invalid request")
 	}
-	req.Header.Set("Authorization", "Bearer "+c.opts.BotToken)
+	token := c.opts.BotToken
+	if strings.HasPrefix(method, "admin.") || strings.HasSuffix(operation, "AsUser") {
+		token = c.opts.UserToken
+		if token == "" {
+			return nil, slackbot.Fail("missing_user_token", operation, "separately authorized user token required")
+		}
+	}
+	req.Header.Set("Authorization", "Bearer "+token)
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 	resp, err := c.http.Do(req)
 	if err != nil {
 		return nil, safeError(ctx, err, operation)
 	}
-	defer resp.Body.Close()
+	defer func() { _ = resp.Body.Close() }()
 	if resp.StatusCode == 429 {
 		return nil, slackbot.Fail("rate_limited", operation, "Slack rate limit reached; retry later")
 	}
@@ -75,7 +82,7 @@ func (c *Client) webCall(ctx context.Context, method string, params map[string]a
 		code, _ := result["error"].(string)
 		// Expose only stable known error codes; never arbitrary upstream text.
 		switch code {
-		case "missing_scope", "not_authed", "invalid_auth", "token_revoked", "not_in_channel", "channel_not_found", "user_not_found", "message_not_found", "cant_delete_message", "restricted_action", "not_allowed_token_type", "paid_teams_only", "invalid_arguments", "is_archived", "already_pinned", "no_pin":
+		case "permission_denied", "plan_upgrade_required", "feature_not_enabled", "team_access_not_granted", "missing_scope", "not_authed", "invalid_auth", "token_revoked", "not_in_channel", "channel_not_found", "user_not_found", "message_not_found", "cant_delete_message", "restricted_action", "not_allowed_token_type", "paid_teams_only", "invalid_arguments", "is_archived", "already_pinned", "no_pin":
 		default:
 			code = "service_error"
 		}

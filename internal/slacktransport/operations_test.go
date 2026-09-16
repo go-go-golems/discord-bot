@@ -15,9 +15,9 @@ func TestOperationsKeepPaginationAndErrors(t *testing.T) {
 		switch r.URL.Path {
 		case "/api/conversations.history":
 			require.Equal(t, "cursor-1", r.Form.Get("cursor"))
-			fmt.Fprint(w, `{"ok":true,"messages":[{"ts":"1.000001","text":"hello"}],"response_metadata":{"next_cursor":"cursor-2"}}`)
+			_, _ = fmt.Fprint(w, `{"ok":true,"messages":[{"ts":"1.000001","text":"hello"}],"response_metadata":{"next_cursor":"cursor-2"}}`)
 		case "/api/chat.delete":
-			fmt.Fprint(w, `{"ok":false,"error":"cant_delete_message"}`)
+			_, _ = fmt.Fprint(w, `{"ok":false,"error":"cant_delete_message"}`)
 		default:
 			t.Fatalf("unexpected method %s", r.URL.Path)
 		}
@@ -40,7 +40,7 @@ func TestExternalUploadSequence(t *testing.T) {
 		calls = append(calls, r.URL.Path)
 		if r.URL.Path == "/upload" {
 			require.Empty(t, r.Header.Get("Authorization"))
-			fmt.Fprint(w, "ok")
+			_, _ = fmt.Fprint(w, "ok")
 			return
 		}
 		require.NoError(t, r.ParseForm())
@@ -50,7 +50,7 @@ func TestExternalUploadSequence(t *testing.T) {
 		case "/api/files.completeUploadExternal":
 			require.Equal(t, "C", r.Form.Get("channel_id"))
 			require.Contains(t, r.Form.Get("files"), "F1")
-			fmt.Fprint(w, `{"ok":true,"files":[{"id":"F1"}]}`)
+			_, _ = fmt.Fprint(w, `{"ok":true,"files":[{"id":"F1"}]}`)
 		default:
 			t.Fatalf("unexpected %s", r.URL.Path)
 		}
@@ -59,4 +59,33 @@ func TestExternalUploadSequence(t *testing.T) {
 	_, err := c.Call(context.Background(), "files.upload", map[string]any{"filename": "report.md", "channel_id": "C", "content": "Report"})
 	require.NoError(t, err)
 	require.Equal(t, []string{"/api/files.getUploadURLExternal", "/upload", "/api/files.completeUploadExternal"}, calls)
+}
+
+func TestAdminOperationsRequireSeparateUserToken(t *testing.T) {
+	calls := 0
+	c := localClient(t, func(w http.ResponseWriter, r *http.Request) {
+		calls++
+		require.Equal(t, "/api/admin.users.remove", r.URL.Path)
+		require.Equal(t, "Bearer synthetic-admin", r.Header.Get("Authorization"))
+		_, _ = fmt.Fprint(w, `{"ok":true}`)
+	})
+	_, err := c.Call(context.Background(), "admin.removeUser", map[string]any{"team_id": "T", "user_id": "U"})
+	require.ErrorContains(t, err, "missing_user_token")
+	require.Zero(t, calls)
+	c.opts.UserToken = "synthetic-admin"
+	_, err = c.Call(context.Background(), "admin.removeUser", map[string]any{"team_id": "T", "user_id": "U"})
+	require.NoError(t, err)
+	require.Equal(t, 1, calls)
+}
+
+func TestExplicitUserTokenWebOperations(t *testing.T) {
+	c := localClient(t, func(w http.ResponseWriter, r *http.Request) {
+		require.Equal(t, "Bearer user-token", r.Header.Get("Authorization"))
+		_, _ = fmt.Fprint(w, `{"ok":true}`)
+	})
+	c.opts.UserToken = "user-token"
+	for _, operation := range []string{"messages.deleteAsUser", "usergroups.setMembersAsUser"} {
+		_, err := c.Call(context.Background(), operation, map[string]any{})
+		require.NoError(t, err)
+	}
 }

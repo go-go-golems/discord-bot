@@ -24,6 +24,7 @@ module.exports = defineBot(({ configure, command, event }) => {
         moderatorIds: { type: "string", default: "" },
         moderatorGroups: { type: "string", default: "" },
         enableWorkspaceRemoval: { type: "bool", default: false },
+        useUserToken: { type: "bool", default: false },
       },
     },
   });
@@ -62,16 +63,17 @@ module.exports = defineBot(({ configure, command, event }) => {
       }),
     ),
   );
-  add("fetch-message", "Fetch a message by timestamp", async (ctx, args) =>
-    pretty(
-      await ctx.slack.conversations.history({
-        channel: ctx.channelId,
-        latest: args[0],
-        inclusive: true,
-        limit: 1,
-      }),
-    ),
-  );
+  add("fetch-message", "Fetch a message by timestamp", async (ctx, args) => {
+    if (!args[0]) return { text: "Message timestamp required." };
+    const result = await ctx.slack.conversations.history({
+      channel: ctx.channelId,
+      latest: args[0],
+      inclusive: true,
+      limit: 1,
+    });
+    const message = (result.messages || []).find((m) => m.ts === args[0]);
+    return message ? pretty(message) : { text: "Message not found." };
+  });
   add("pin", "Pin message timestamp", async (ctx, args) =>
     pretty(
       await ctx.slack.pins.add({ channel: ctx.channelId, timestamp: args[0] }),
@@ -97,7 +99,11 @@ module.exports = defineBot(({ configure, command, event }) => {
       let deleted = 0;
       for (const ts of args) {
         try {
-          await ctx.slack.messages.delete({ channel: ctx.channelId, ts });
+          await (
+            ctx.config.useUserToken
+              ? ctx.slack.messages.deleteAsUser
+              : ctx.slack.messages.delete
+          )({ channel: ctx.channelId, ts });
           deleted++;
         } catch (err) {
           return {
@@ -143,21 +149,19 @@ module.exports = defineBot(({ configure, command, event }) => {
   add("fetch-member", "Fetch Slack user ID", async (ctx, args) =>
     pretty(await ctx.slack.users.info({ user: args[0] })),
   );
-  add("list-members", "List channel members [cursor]", async (ctx, args) =>
-    pretty(
-      await ctx.slack.conversations.members({
-        channel: ctx.channelId,
-        limit: 100,
-        cursor: args[0] || "",
-      }),
-    ),
+  add("list-members", "List workspace members [cursor]", async (ctx, args) =>
+    pretty(await ctx.slack.users.list({ limit: 100, cursor: args[0] || "" })),
   );
   add("add-group-member", "group-id user-id", async (ctx, args) => {
     if (args.length !== 2)
       return { text: "Usage: /mod-add-group-member group-id user-id" };
     const result = await ctx.slack.usergroups.members({ usergroup: args[0] });
     const users = Array.from(new Set((result.users || []).concat([args[1]])));
-    await ctx.slack.usergroups.setMembers({
+    await (
+      ctx.config.useUserToken
+        ? ctx.slack.usergroups.setMembersAsUser
+        : ctx.slack.usergroups.setMembers
+    )({
       usergroup: args[0],
       users: users.join(","),
     });
@@ -195,6 +199,9 @@ module.exports = defineBot(({ configure, command, event }) => {
   );
   for (const name of [
     "message",
+    "message_changed",
+    "message_deleted",
+    "user_change",
     "reaction_added",
     "reaction_removed",
     "member_joined_channel",

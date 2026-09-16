@@ -7,7 +7,11 @@ Topics:
 DocType: design-doc
 Intent: long-term
 Owners: []
-RelatedFiles: []
+RelatedFiles:
+    - Path: repo://pkg/slackcli/port_workflows_test.go
+      Note: Workflow validation for persistence authorization state and pagination
+    - Path: repo://pkg/slackdoc/slack-example-ports.md
+      Note: Current operational guide for the thirteen native ports
 ExternalSources: []
 Summary: ""
 LastUpdated: 2026-09-15T20:06:08.612721797-04:00

@@ -3,6 +3,7 @@ const { defineBot } = require("slack"),
 const { createStore } = require("../lib/sqlite");
 const { authorized } = require("../lib/authorized");
 const seeds = require("./shows.json");
+const dates = require("./lib/dates");
 const store = createStore([
   "CREATE TABLE IF NOT EXISTS shows(team TEXT,id TEXT,artist TEXT,date TEXT,doors TEXT,age TEXT,price TEXT,notes TEXT,status TEXT,channel TEXT,ts TEXT,PRIMARY KEY(team,id))",
 ]);
@@ -130,7 +131,7 @@ module.exports = defineBot(({ configure, command, action, view }) => {
     const rows = store.query(
       "SELECT * FROM shows WHERE team=? AND date>=? AND status='active' ORDER BY date",
       ctx.teamId,
-      new Date().toISOString().slice(0, 10),
+      dates.todayISO(),
     );
     return {
       text:
@@ -151,7 +152,7 @@ module.exports = defineBot(({ configure, command, action, view }) => {
             .query(
               "SELECT * FROM shows WHERE team=? AND (date<? OR status!='active') ORDER BY date DESC",
               ctx.teamId,
-              new Date().toISOString().slice(0, 10),
+              dates.todayISO(),
             )
             .map(
               (s) =>
@@ -187,7 +188,7 @@ module.exports = defineBot(({ configure, command, action, view }) => {
           .metadata(ctx.channelId);
         for (const [id, label] of [
           ["artist", "Artist"],
-          ["date", "Date (YYYY-MM-DD)"],
+          ["date", "Date (YYYY-MM-DD or month/day)"],
           ["doors", "Doors time"],
           ["age", "Age restriction"],
           ["price", "Price"],
@@ -207,14 +208,12 @@ module.exports = defineBot(({ configure, command, action, view }) => {
     const show = {};
     for (const id of ["artist", "date", "doors", "age", "price", "notes"])
       show[id] = (ctx.values.text(id, "value") || "").trim();
-    if (
-      !/^\d{4}-\d{2}-\d{2}$/.test(show.date) ||
-      !Number.isFinite(Date.parse(show.date)) ||
-      new Date(show.date).toISOString().slice(0, 10) !== show.date
-    ) {
-      await ctx.ack.errors({ date: "Use a valid YYYY-MM-DD date." });
+    const parsedDate = dates.parseShowDate(show.date);
+    if (!parsedDate.ok) {
+      await ctx.ack.errors({ date: parsedDate.error });
       return;
     }
+    show.date = parsedDate.dateISO;
     if (!show.artist) {
       await ctx.ack.errors({ artist: "Artist required." });
       return;
@@ -273,7 +272,7 @@ module.exports = defineBot(({ configure, command, action, view }) => {
         const shows = store.query(
           "SELECT * FROM shows WHERE team=? AND date<? AND status='active'",
           ctx.teamId,
-          new Date().toISOString().slice(0, 10),
+          dates.todayISO(),
         );
         for (const show of shows) {
           if (name === "unpin-old") await unpin(ctx, show);

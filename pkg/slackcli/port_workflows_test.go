@@ -3,6 +3,7 @@ package slackcli
 import (
 	"context"
 	"path/filepath"
+	"strings"
 	"testing"
 
 	"github.com/go-go-golems/discord-bot/pkg/slackbot"
@@ -63,6 +64,15 @@ func TestShowManagementAndPinReference(t *testing.T) {
 	require.Equal(t, "pins.add", ops[3].Kind)
 	require.Equal(t, ops[2].Ref.TS, ops[3].Params["timestamp"])
 	require.Equal(t, ops[2].Ref.ChannelID, ops[3].Params["channel"])
+	id := strings.TrimPrefix(ops[4].Params["text"].(string), "Posted and pinned show ")
+	require.NoError(t, portCommand(h, rec, "T", "MANAGER", "/cancel-show", id))
+	ops = rec.Operations()
+	require.Equal(t, "messages.update", ops[5].Kind)
+	require.Equal(t, "pins.remove", ops[6].Kind)
+	require.NoError(t, portCommand(h, rec, "T", "OTHER", "/show", id))
+	ops = rec.Operations()
+	require.Contains(t, ops[len(ops)-1].Reply.Text, "[cancelled]")
+
 }
 
 type archiveFixture struct {
@@ -95,10 +105,90 @@ func TestArchivePaginatesAndPreservesAttachments(t *testing.T) {
 	require.Equal(t, 2, fixture.pages)
 	ops := rec.Operations()
 	require.Equal(t, "next", ops[2].Params["cursor"])
-	require.Equal(t, "files.upload", ops[3].Kind)
-	content := ops[3].Params["content"].(string)
+	require.Equal(t, "files.upload", ops[4].Kind)
+	content := ops[4].Params["content"].(string)
 	require.Contains(t, content, "older")
 	require.Contains(t, content, "newer")
 	require.Contains(t, content, "https://example.test/file")
-	require.Contains(t, ops[4].Reply.Text, "Archived 2")
+	require.Contains(t, ops[5].Reply.Text, "Archived 2")
+}
+
+func TestModerationDeniesBeforeMutation(t *testing.T) {
+	rec := &slackbot.Recorder{}
+	h := portHost(t, "moderation", map[string]any{"moderatorIds": "MODERATOR", "enableWorkspaceRemoval": true}, rec, rec)
+	require.NoError(t, portCommand(h, rec, "T", "OTHER", "/mod-remove-workspace-user", "TARGET"))
+	require.Len(t, rec.Operations(), 1)
+	require.Contains(t, rec.Operations()[0].Reply.Text, "permission required")
+	require.NoError(t, portCommand(h, rec, "T", "MODERATOR", "/mod-remove-workspace-user", "TARGET"))
+	require.Equal(t, "admin.removeUser", rec.Operations()[1].Kind)
+}
+
+func TestShowcaseStateAndModalValidation(t *testing.T) {
+	rec := &slackbot.Recorder{}
+	h := portHost(t, "ui-showcase", nil, rec, rec)
+	require.NoError(t, portCommand(h, rec, "T", "U", "/demo-search", "UI"))
+	require.Contains(t, rec.Operations()[0].Reply.Text, "Articles")
+	i := slackbot.Invocation{TeamID: "T", UserID: "U", ChannelID: "C", Action: &slackbot.Action{ActionID: "demo.article.verify", Value: "art-3"}}
+	require.NoError(t, h.Dispatch(context.Background(), i, rec))
+	require.Equal(t, "replace_original", rec.Operations()[1].Kind)
+	require.Contains(t, rec.Operations()[1].Reply.Text, "[verified]")
+	i.Action = &slackbot.Action{ActionID: "demo.pager.next", Value: "0"}
+	require.NoError(t, h.Dispatch(context.Background(), i, rec))
+	require.Contains(t, rec.Operations()[2].Reply.Text, "page 2")
+	i.Action = nil
+	i.Interaction = &slackbot.Interaction{Type: "view_submission", CallbackID: "demo.form", Values: map[string]map[string]any{"title": {"value": map[string]any{"value": "x"}}}, Ack: rec}
+	require.NoError(t, h.Dispatch(context.Background(), i, nil))
+	require.Equal(t, "errors", rec.Operations()[3].Ack.Kind)
+	i.Interaction.Values["title"]["value"] = map[string]any{"value": "Valid title"}
+	require.NoError(t, h.Dispatch(context.Background(), i, nil))
+	require.Equal(t, "update", rec.Operations()[4].Ack.Kind)
+}
+
+func TestPingFeedbackAndDynamicSearch(t *testing.T) {
+	rec := &slackbot.Recorder{}
+	h := portHost(t, "ping", nil, rec, rec)
+	i := slackbot.Invocation{TeamID: "T", UserID: "U", ChannelID: "C", Command: "/golem-feedback", TriggerID: "trigger"}
+	require.NoError(t, h.Dispatch(context.Background(), i, rec))
+	require.Equal(t, "open_view", rec.Operations()[0].Kind)
+	i.Command = ""
+	i.Interaction = &slackbot.Interaction{Type: "block_suggestion", CallbackID: "ping.search.query", Query: "arch", Ack: rec}
+	require.NoError(t, h.Dispatch(context.Background(), i, nil))
+	require.Len(t, rec.Operations()[1].Ack.Options, 2)
+	require.Equal(t, "architecture", rec.Operations()[1].Ack.Options[0]["value"])
+}
+
+func TestHaterTargetAndApologyResult(t *testing.T) {
+	rec := &slackbot.Recorder{}
+	h := portHost(t, "hater", nil, rec, rec)
+	require.NoError(t, portCommand(h, rec, "T", "U", "/roast", "<@TARGET|target>"))
+	require.Contains(t, rec.Operations()[0].Reply.Text, "TARGET")
+	i := slackbot.Invocation{TeamID: "T", UserID: "U", Interaction: &slackbot.Interaction{Type: "view_submission", CallbackID: "hater.apology.submit", Ack: rec, Values: map[string]map[string]any{"subject": {"value": map[string]any{"value": "Sorry"}}, "details": {"value": map[string]any{"value": "A sufficiently detailed apology"}}}}}
+	require.NoError(t, h.Dispatch(context.Background(), i, nil))
+	require.Equal(t, "update", rec.Operations()[1].Ack.Kind)
+	require.NoError(t, portCommand(h, rec, "T", "U", "/apology-status", ""))
+	require.Contains(t, rec.Operations()[2].Reply.Text, "Apology received")
+}
+
+type operationFixture func(context.Context, string, map[string]any) (map[string]any, error)
+
+func (f operationFixture) Call(ctx context.Context, op string, params map[string]any) (map[string]any, error) {
+	return f(ctx, op, params)
+}
+
+func TestInteractionAvatarAndQuote(t *testing.T) {
+	rec := &slackbot.Recorder{}
+	services := operationFixture(func(ctx context.Context, op string, params map[string]any) (map[string]any, error) {
+		require.Equal(t, "users.info", op)
+		require.Equal(t, "TARGET", params["user"])
+		return map[string]any{"user": map[string]any{"name": "Target", "profile": map[string]any{"image_512": "https://example.test/avatar.png"}}}, nil
+	})
+	h := portHost(t, "interaction-types", nil, rec, services)
+	i := slackbot.Invocation{TeamID: "T", UserID: "U", TriggerID: "trigger", Shortcut: &slackbot.Shortcut{Type: "message_action", CallbackID: "quote-message", Message: map[string]any{"text": "Quoted source"}}}
+	require.NoError(t, h.Dispatch(context.Background(), i, nil))
+	require.Contains(t, rec.Operations()[0].View.Blocks[0]["text"].(map[string]any)["text"], "Quoted source")
+	i.Shortcut = nil
+	i.Interaction = &slackbot.Interaction{Type: "view_submission", CallbackID: "avatar.submit", Ack: rec, Values: map[string]map[string]any{"user": {"selected": map[string]any{"selected_user": "TARGET"}}}}
+	require.NoError(t, h.Dispatch(context.Background(), i, nil))
+	require.Equal(t, "update", rec.Operations()[1].Ack.Kind)
+	require.Equal(t, "https://example.test/avatar.png", rec.Operations()[1].Ack.View.Blocks[0]["accessory"].(map[string]any)["image_url"])
 }

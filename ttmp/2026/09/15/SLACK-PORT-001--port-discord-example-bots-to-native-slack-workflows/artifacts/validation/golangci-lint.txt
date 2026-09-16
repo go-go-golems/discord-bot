@@ -1,0 +1,81 @@
+level=info msg="golangci-lint has version 2.4.0 built with go1.26.1 from (unknown, modified: ?, mod sum: \"h1:qz6O6vr7kVzXJqyvHjHSz5fA3D+PM8v96QU5gxZCNWM=\") on (unknown)"
+level=info msg="[config_reader] Config search paths: [./ /home/manuel/workspaces/2026-09-10/add-slack-support/discord-bot/cmd /home/manuel/workspaces/2026-09-10/add-slack-support/discord-bot /home/manuel/workspaces/2026-09-10/add-slack-support /home/manuel/workspaces/2026-09-10 /home/manuel/workspaces /home/manuel /home /]"
+level=info msg="[config_reader] Used config file .golangci.yml"
+level=info msg="[config_reader] Module name \"github.com/go-go-golems/discord-bot\""
+level=info msg="maxprocs: Leaving GOMAXPROCS=8: CPU quota undefined"
+level=info msg="[goenv] Read go env for 5.599952ms: map[string]string{\"GOCACHE\":\"/tmp/go-build-cache-slack-ui\", \"GOROOT\":\"/home/manuel/go/pkg/mod/golang.org/toolchain@v0.0.1-go1.26.4.linux-amd64\"}"
+level=info msg="[lintersdb] Active 9 linters: [errcheck exhaustive gofmt govet ineffassign nonamedreturns predeclared staticcheck unused]"
+level=info msg="[loader] Go packages loading at mode 8767 (exports_file|name|types_sizes|compiled_files|deps|files|imports) took 299.066369ms"
+level=info msg="[runner/filename_unadjuster] Pre-built 0 adjustments in 20.90456ms"
+level=info msg="[linters_context/goanalysis] analyzers took 1m18.197923395s with top 10 stages: buildir: 53.560915773s, exhaustive: 4.295329804s, inspect: 2.967945362s, fact_deprecated: 1.613511062s, printf: 1.407015854s, fact_purity: 1.359765509s, ctrlflow: 1.254037504s, nilness: 1.091633063s, typedness: 628.137538ms, SA5012: 606.676508ms"
+level=info msg="[runner/exclusion_rules] Skipped 0 issues by rules: [Text: \"SA1019: cli.CreateProcessorLegacy\", Linters: \"staticcheck\"]"
+level=info msg="[runner/max_same_issues] 3/6 issues with text \"Error return value of `fmt.Fprint` is not checked\" were hidden, use --max-same-issues"
+level=info msg="[runner] Issues before processing: 33, after processing: 19"
+level=info msg="[runner] Processors filtering stat (in/out): cgo: 33/33, invalid_issue: 33/33, exclusion_rules: 33/33, nolint_filter: 33/25, diff: 25/25, fixer: 25/25, path_prettifier: 19/19, sort_results: 19/19, path_relativity: 33/33, generated_file_filter: 33/33, uniq_by_line: 25/22, path_shortener: 19/19, severity-rules: 19/19, max_same_issues: 22/19, max_from_linter: 19/19, source_code: 19/19, path_absoluter: 33/33, filename_unadjuster: 33/33, exclusion_paths: 33/33, max_per_file_from_linter: 22/22"
+level=info msg="[runner] processing took 4.60866ms with stages: nolint_filter: 4.334302ms, generated_file_filter: 108.185µs, source_code: 87.447µs, path_relativity: 27.785µs, exclusion_rules: 22.911µs, max_same_issues: 10.96µs, uniq_by_line: 4.828µs, sort_results: 2.669µs, cgo: 1.822µs, max_from_linter: 1.469µs, invalid_issue: 1.27µs, path_shortener: 1.18µs, path_absoluter: 951ns, max_per_file_from_linter: 721ns, filename_unadjuster: 646ns, diff: 388ns, fixer: 369ns, path_prettifier: 321ns, exclusion_paths: 277ns, severity-rules: 159ns"
+level=info msg="[runner] linters took 15.348617743s with stages: goanalysis_metalinter: 15.343964803s"
+internal/slackconfig/store.go:100:15: Error return value of `f.Close` is not checked (errcheck)
+	defer f.Close()
+	             ^
+internal/slackconfig/store.go:152:17: Error return value of `os.Remove` is not checked (errcheck)
+	defer os.Remove(tmpName)
+	               ^
+internal/slackconfig/store.go:154:12: Error return value of `tmp.Close` is not checked (errcheck)
+		tmp.Close()
+		         ^
+internal/slackconfig/store.go:158:12: Error return value of `tmp.Close` is not checked (errcheck)
+		tmp.Close()
+		         ^
+internal/slacktransport/operations_test.go:18:14: Error return value of `fmt.Fprint` is not checked (errcheck)
+			fmt.Fprint(w, `{"ok":true,"messages":[{"ts":"1.000001","text":"hello"}],"response_metadata":{"next_cursor":"cursor-2"}}`)
+			          ^
+internal/slacktransport/operations_test.go:20:14: Error return value of `fmt.Fprint` is not checked (errcheck)
+			fmt.Fprint(w, `{"ok":false,"error":"cant_delete_message"}`)
+			          ^
+internal/slacktransport/operations_test.go:43:14: Error return value of `fmt.Fprint` is not checked (errcheck)
+			fmt.Fprint(w, "ok")
+			          ^
+internal/slacktransport/showcase_wire_test.go:55:19: Error return value of `conn.Close` is not checked (errcheck)
+		defer conn.Close()
+		                ^
+internal/slacktransport/showcase_wire_test.go:86:15: Error return value of `h.Close` is not checked (errcheck)
+	defer h.Close(context.Background())
+	             ^
+pkg/slackcli/ports_test.go:25:20: Error return value of `host.Close` is not checked (errcheck)
+			defer host.Close(context.Background())
+			                ^
+pkg/slackcli/ports_test.go:41:15: Error return value of `h.Close` is not checked (errcheck)
+	defer h.Close(context.Background())
+	             ^
+pkg/slackcli/ports_test.go:63:15: Error return value of `h.Close` is not checked (errcheck)
+	defer h.Close(context.Background())
+	             ^
+internal/jsslack/dispatch.go:35:1: named return "dispatchErr" with type "error" found (nonamedreturns)
+func (h *Host) Dispatch(ctx context.Context, input slackbot.Invocation, responder slackbot.Responder) (dispatchErr error) {
+^
+internal/jsslack/dispatch.go:176:1: named return "result" with type "any" found (nonamedreturns)
+func (h *Host) sendReply(s *invocationState, message slackbot.MessagePayload) (result any, replyErr error) {
+^
+internal/jsslack/ui_elements.go:85:5: variable max has same name as predeclared identifier (predeclared)
+				max := 100
+				^
+internal/jsslack/ui_module.go:134:3: variable min has same name as predeclared identifier (predeclared)
+		min, max := int(call.Argument(0).ToInteger()), int(call.Argument(1).ToInteger())
+		^
+internal/jsslack/ui_elements.go:116:6: QF1001: could apply De Morgan's law (staticcheck)
+		if !(strings.HasPrefix(url, "https://") || strings.HasPrefix(url, "http://")) || alt == "" {
+		   ^
+internal/jsslack/ui_elements.go:123:33: QF1001: could apply De Morgan's law (staticcheck)
+		if id == "" || label == "" || !(strings.HasPrefix(url, "https://") || strings.HasPrefix(url, "http://")) {
+		                              ^
+internal/slacktransport/client.go:188:39: QF1008: could remove embedded field "View" from selector (staticcheck)
+	return slackbot.ViewRef{ID: response.View.ID, Hash: response.View.Hash}, nil
+	                                     ^
+19 issues:
+* errcheck: 12
+* nonamedreturns: 2
+* predeclared: 2
+* staticcheck: 3
+level=info msg="File cache stats: 8 entries of total size 57.9KiB"
+level=info msg="Memory: 151 samples, avg is 915.2MB, max is 1604.1MB"
+level=info msg="Execution took 15.674825579s"

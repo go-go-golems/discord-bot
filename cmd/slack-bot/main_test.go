@@ -81,3 +81,12 @@ func TestLocalRunnerRejectsExternalConfiguration(t *testing.T) {
 	require.NoError(t, err)
 	require.Contains(t, out, "local-connection-file")
 }
+
+func TestLocalUnifiedVerb(t *testing.T) {
+	out, err := execute(t, "bots", "invoke", "unified-demo", "status", "--bot-repository", "../../examples/slack-bots")
+	require.NoError(t, err)
+	require.Contains(t, out, `"active": true`)
+	require.NotContains(t, out, "apiKey")
+	_, err = execute(t, "bots", "invoke", "unified-demo", "missing", "--bot-repository", "../../examples/slack-bots")
+	require.ErrorContains(t, err, "not found")
+}

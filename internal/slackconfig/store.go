@@ -58,8 +58,9 @@ type AppCredential struct {
 	AppToken      string `json:"app_token,omitempty"`
 }
 type InstallationCredential struct {
-	BotToken string `json:"bot_token,omitempty"`
-	AppToken string `json:"app_token,omitempty"`
+	UserToken string `json:"user_token,omitempty"`
+	BotToken  string `json:"bot_token,omitempty"`
+	AppToken  string `json:"app_token,omitempty"`
 }
 
 type Store struct{ Root string }

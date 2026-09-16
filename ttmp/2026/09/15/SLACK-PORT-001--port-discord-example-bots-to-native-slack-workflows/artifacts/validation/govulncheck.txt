@@ -1,0 +1,108 @@
+go install golang.org/x/vuln/cmd/govulncheck@latest
+govulncheck ./...
+=== Symbol Results ===
+
+Vulnerability #1: GO-2026-6218
+    Avoid quadratic complexity in resolvePath in net/url
+  More info: https://pkg.go.dev/vuln/GO-2026-6218
+  Standard library
+    Found in: net/url@go1.26.4
+    Fixed in: net/url@go1.26.6
+    Example traces found:
+      #1: internal/slacktransport/client.go:261:35: slacktransport.responder.sendMessage calls http.Client.Do, which eventually calls url.URL.Parse
+      #2: internal/jsdiscord/host_dispatch.go:432:83: jsdiscord.Host.dispatchModalSubmitInteraction calls goja.CompilerSyntaxError.Error, which eventually calls url.URL.ResolveReference
+
+Vulnerability #2: GO-2026-6090
+    Limit handshake messages we are willing to accept post-handshake in
+    crypto/tls
+  More info: https://pkg.go.dev/vuln/GO-2026-6090
+  Standard library
+    Found in: crypto/tls@go1.26.4
+    Fixed in: crypto/tls@go1.26.6
+    Example traces found:
+      #1: internal/bot/bot.go:81:26: bot.Bot.Open calls discordgo.Session.Open, which eventually calls tls.Conn.HandshakeContext
+      #2: internal/slacktransport/client.go:266:18: slacktransport.responder.sendMessage calls io.Copy, which eventually calls tls.Conn.Read
+      #3: cmd/discord-bot/main.go:17:14: discord.main calls fmt.Fprintf, which calls tls.Conn.Write
+      #4: internal/slacktransport/client.go:261:35: slacktransport.responder.sendMessage calls http.Client.Do, which eventually calls tls.Dialer.DialContext
+
+Vulnerability #3: GO-2026-6088
+    Add recursion depth guard during decode in encoding/xml
+  More info: https://pkg.go.dev/vuln/GO-2026-6088
+  Standard library
+    Found in: encoding/xml@go1.26.4
+    Fixed in: encoding/xml@go1.26.6
+    Example traces found:
+      #1: internal/jsslack/host.go:133:16: jsslack.Host.Close calls sync.Once.Do, which eventually calls xml.Decoder.Decode
+      #2: cmd/slack-bot/main.go:12:2: slack.init calls cmd.init, which eventually calls xml.Decoder.DecodeElement
+      #3: pkg/botcli/command_help.go:50:22: botcli.helpBotsCommand.RunIntoGlazeProcessor calls middlewares.TableProcessor.AddRow, which eventually calls xml.Decoder.Token
+
+Vulnerability #4: GO-2026-5972
+    Enforce maximum recursion depth in encoding/asn1
+  More info: https://pkg.go.dev/vuln/GO-2026-5972
+  Standard library
+    Found in: encoding/asn1@go1.26.4
+    Fixed in: encoding/asn1@go1.26.6
+    Example traces found:
+      #1: internal/jsslack/host.go:133:16: jsslack.Host.Close calls sync.Once.Do, which eventually calls asn1.Unmarshal
+
+Vulnerability #5: GO-2026-5970
+    Infinite loop on invalid input in golang.org/x/text
+  More info: https://pkg.go.dev/vuln/GO-2026-5970
+  Module: golang.org/x/text
+    Found in: golang.org/x/text@v0.37.0
+    Fixed in: golang.org/x/text@v0.39.0
+    Example traces found:
+      #1: internal/jsdiscord/runtime.go:152:17: jsdiscord.RuntimeState.Loader calls goja.Runtime.Get, which eventually calls norm.Form.Append
+      #2: internal/jsdiscord/runtime.go:152:17: jsdiscord.RuntimeState.Loader calls goja.Runtime.Get, which eventually calls norm.Form.AppendString
+      #3: internal/jsdiscord/runtime.go:152:17: jsdiscord.RuntimeState.Loader calls goja.Runtime.Get, which eventually calls norm.Form.Bytes
+      #4: internal/jsdiscord/runtime.go:152:17: jsdiscord.RuntimeState.Loader calls goja.Runtime.Get, which eventually calls norm.Form.FirstBoundary
+      #5: internal/jsdiscord/runtime.go:152:17: jsdiscord.RuntimeState.Loader calls goja.Runtime.Get, which eventually calls norm.Form.FirstBoundaryInString
+      #6: internal/jsdiscord/runtime.go:152:17: jsdiscord.RuntimeState.Loader calls goja.Runtime.Get, which eventually calls norm.Form.IsNormalString
+      #7: cmd/discord-bot/main.go:17:14: discord.main calls fmt.Fprintf, which eventually calls norm.Form.Properties
+      #8: internal/jsdiscord/runtime.go:152:17: jsdiscord.RuntimeState.Loader calls goja.Runtime.Get, which eventually calls norm.Form.PropertiesString
+      #9: internal/jsdiscord/runtime.go:152:17: jsdiscord.RuntimeState.Loader calls goja.Runtime.Get, which eventually calls norm.Form.QuickSpan
+      #10: internal/jsdiscord/runtime.go:152:17: jsdiscord.RuntimeState.Loader calls goja.Runtime.Get, which eventually calls norm.Form.String
+
+Vulnerability #6: GO-2026-5960
+    Excelize: Unbounded Row Index Allocation in Worksheet Parser (checkSheet
+    OOM/Panic DoS) in github.com/xuri/excelize
+  More info: https://pkg.go.dev/vuln/GO-2026-5960
+  Module: github.com/xuri/excelize/v2
+    Found in: github.com/xuri/excelize/v2@v2.10.0
+    Fixed in: github.com/xuri/excelize/v2@v2.11.0
+    Example traces found:
+      #1: pkg/botcli/command_help.go:50:22: botcli.helpBotsCommand.RunIntoGlazeProcessor calls middlewares.TableProcessor.AddRow, which eventually calls excelize.File.NewSheet
+      #2: examples/framework-combined/main.go:20:24: framework.main calls cobra.Command.Execute, which eventually calls excelize.File.SetActiveSheet
+      #3: pkg/botcli/command_help.go:50:22: botcli.helpBotsCommand.RunIntoGlazeProcessor calls middlewares.TableProcessor.AddRow, which eventually calls excelize.File.SetCellStyle
+      #4: pkg/botcli/command_help.go:50:22: botcli.helpBotsCommand.RunIntoGlazeProcessor calls middlewares.TableProcessor.AddRow, which eventually calls excelize.File.SetCellValue
+      #5: pkg/botcli/command_help.go:50:22: botcli.helpBotsCommand.RunIntoGlazeProcessor calls middlewares.TableProcessor.AddRow, which eventually calls excelize.NewFile
+
+Vulnerability #7: GO-2026-5856
+    Invoking Encrypted Client Hello privacy leak in crypto/tls
+  More info: https://pkg.go.dev/vuln/GO-2026-5856
+  Standard library
+    Found in: crypto/tls@go1.26.4
+    Fixed in: crypto/tls@go1.26.5
+    Example traces found:
+      #1: internal/bot/bot.go:81:26: bot.Bot.Open calls discordgo.Session.Open, which eventually calls tls.Conn.HandshakeContext
+      #2: internal/slacktransport/client.go:266:18: slacktransport.responder.sendMessage calls io.Copy, which eventually calls tls.Conn.Read
+      #3: cmd/discord-bot/main.go:17:14: discord.main calls fmt.Fprintf, which calls tls.Conn.Write
+      #4: internal/slacktransport/client.go:261:35: slacktransport.responder.sendMessage calls http.Client.Do, which eventually calls tls.Dialer.DialContext
+
+Vulnerability #8: GO-2026-5026
+    Invoking failure to reject ASCII-only Punycode-encoded labels in
+    golang.org/x/net/idna
+  More info: https://pkg.go.dev/vuln/GO-2026-5026
+  Standard library
+    Found in: net/http@go1.26.4
+    Fixed in: net/http@go1.26.6
+    Example traces found:
+      #1: internal/slacktransport/client.go:140:55: slacktransport.Client.Close calls http.Client.CloseIdleConnections
+      #2: internal/slacktransport/client.go:261:35: slacktransport.responder.sendMessage calls http.Client.Do
+
+Your code is affected by 8 vulnerabilities from 2 modules and the Go standard library.
+This scan also found 5 vulnerabilities in packages you import and 18
+vulnerabilities in modules you require, but your code doesn't appear to call
+these vulnerabilities.
+Use '-show verbose' for more details.
+make: *** [Makefile:53: govulncheck] Error 3

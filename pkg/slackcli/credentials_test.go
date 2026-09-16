@@ -55,6 +55,8 @@ func TestImportRuntimeTokens(t *testing.T) {
 	dir := t.TempDir()
 	bot := filepath.Join(dir, "bot")
 	app := filepath.Join(dir, "app")
+	user := filepath.Join(dir, "user")
+	require.NoError(t, os.WriteFile(user, []byte("user-secret"), 0600))
 	require.NoError(t, os.WriteFile(bot, []byte("bot-secret\n"), 0600))
 	require.NoError(t, os.WriteFile(app, []byte("app-secret\n"), 0600))
 	store := slackconfig.New(dir)
@@ -62,11 +64,12 @@ func TestImportRuntimeTokens(t *testing.T) {
 	root := NewCredentialsCommand(zerolog.Nop(), nil)
 	var out bytes.Buffer
 	root.SetOut(&out)
-	root.SetArgs([]string{"import-runtime", "--config-dir", dir, "--profile", "dev", "--installation", "test", "--team-id", "T1", "--bot-token-file", bot, "--app-token-file", app})
+	root.SetArgs([]string{"import-runtime", "--config-dir", dir, "--profile", "dev", "--installation", "test", "--team-id", "T1", "--bot-token-file", bot, "--app-token-file", app, "--user-token-file", user})
 	require.NoError(t, root.ExecuteContext(context.Background()))
 	_, cr, err := store.Load()
 	require.NoError(t, err)
 	require.Equal(t, "bot-secret", cr.Installations["test"].BotToken)
+	require.Equal(t, "user-secret", cr.Installations["test"].UserToken)
 	require.Equal(t, "app-secret", cr.Apps["app"].AppToken)
 	require.NotContains(t, out.String(), "secret")
 }

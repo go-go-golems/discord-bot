@@ -125,7 +125,9 @@ func (c *command) installApp(ctx context.Context, d slackbot.Descriptor, s setti
 	appCredential.AppID = app.AppID
 	appCredential.AppToken = result.APIAccessTokens.AppLevel
 	creds.Apps[profile.App] = appCredential
-	creds.Installations[installationName] = slackconfig.InstallationCredential{BotToken: result.APIAccessTokens.Bot, AppToken: result.APIAccessTokens.AppLevel}
+	runtimeCredentials := creds.Installations[installationName]
+	runtimeCredentials.BotToken, runtimeCredentials.AppToken = result.APIAccessTokens.Bot, result.APIAccessTokens.AppLevel
+	creds.Installations[installationName] = runtimeCredentials
 	if err := store.Save(cfg, creds); err != nil {
 		return errors.Wrap(err, "save installed app credentials")
 	}

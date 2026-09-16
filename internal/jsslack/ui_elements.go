@@ -82,15 +82,15 @@ func registerRichUI(vm *goja.Runtime, exports *goja.Object) {
 			}
 			if kind == "static_select" || kind == "multi_static_select" || kind == "checkboxes" || kind == "radio_buttons" || kind == "overflow" {
 				options, ok := element["options"].([]any)
-				max := 100
+				maximum := 100
 				if kind == "overflow" {
-					max = 5
+					maximum = 5
 				}
 				if kind == "checkboxes" || kind == "radio_buttons" {
-					max = 10
+					maximum = 10
 				}
-				if !ok || len(options) < 1 || len(options) > max {
-					panic(vm.NewTypeError("slack/ui.%s: provide 1–%d options", name, max))
+				if !ok || len(options) < 1 || len(options) > maximum {
+					panic(vm.NewTypeError("slack/ui.%s: provide 1–%d options", name, maximum))
 				}
 			}
 			return vm.ToValue(element)
@@ -113,15 +113,15 @@ func registerRichUI(vm *goja.Runtime, exports *goja.Object) {
 	})
 	set("image", func(call goja.FunctionCall) goja.Value {
 		url, alt := argString(call, 0), argString(call, 1)
-		if !strings.HasPrefix(url, "https://") || alt == "" {
-			panic(vm.NewTypeError("slack/ui.image: https URL and alt text required"))
+		if (!strings.HasPrefix(url, "https://") && !strings.HasPrefix(url, "http://")) || alt == "" {
+			panic(vm.NewTypeError("slack/ui.image: HTTP(S) URL and alt text required"))
 		}
 		return vm.ToValue(map[string]any{"type": "image", "image_url": url, "alt_text": alt})
 	})
 	set("linkButton", func(call goja.FunctionCall) goja.Value {
 		id, label, url := argString(call, 0), argString(call, 1), argString(call, 2)
-		if id == "" || label == "" || !strings.HasPrefix(url, "https://") {
-			panic(vm.NewTypeError("slack/ui.linkButton: action id, label and https URL required"))
+		if id == "" || label == "" || (!strings.HasPrefix(url, "https://") && !strings.HasPrefix(url, "http://")) {
+			panic(vm.NewTypeError("slack/ui.linkButton: action id, label and HTTP(S) URL required"))
 		}
 		return vm.ToValue(map[string]any{"type": "button", "action_id": id, "text": plainText(label), "url": url})
 	})

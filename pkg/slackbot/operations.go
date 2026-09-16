@@ -11,8 +11,11 @@ type OperationService interface {
 // OperationMethods returns a new map so callers cannot mutate the allowlist.
 func OperationMethods() map[string]string {
 	return map[string]string{
-		"files.upload":    "files.uploadExternal",
-		"messages.update": "chat.update", "messages.delete": "chat.delete", "messages.ephemeral": "chat.postEphemeral", "messages.permalink": "chat.getPermalink",
+		"admin.removeUser":            "admin.users.remove",
+		"messages.deleteAsUser":       "chat.delete",
+		"usergroups.setMembersAsUser": "usergroups.users.update",
+		"files.upload":                "files.uploadExternal",
+		"messages.update":             "chat.update", "messages.delete": "chat.delete", "messages.ephemeral": "chat.postEphemeral", "messages.permalink": "chat.getPermalink",
 		"conversations.history": "conversations.history", "conversations.replies": "conversations.replies", "conversations.info": "conversations.info", "conversations.list": "conversations.list", "conversations.members": "conversations.members", "conversations.join": "conversations.join", "conversations.leave": "conversations.leave", "conversations.setTopic": "conversations.setTopic", "conversations.kick": "conversations.kick", "conversations.archive": "conversations.archive",
 		"users.info": "users.info", "users.list": "users.list",
 		"usergroups.list": "usergroups.list", "usergroups.members": "usergroups.users.list", "usergroups.setMembers": "usergroups.users.update",

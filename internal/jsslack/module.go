@@ -3,6 +3,7 @@ package jsslack
 import (
 	"bytes"
 	"encoding/json"
+	"regexp"
 	"sort"
 	"strings"
 
@@ -10,6 +11,8 @@ import (
 	"github.com/go-go-golems/discord-bot/pkg/slackbot"
 	"github.com/pkg/errors"
 )
+
+var verbNamePattern = regexp.MustCompile(`^[a-z][a-z0-9-]*$`)
 
 // decode rejects unknown fields and non-JSON values rather than reflecting arbitrary Go objects.
 func decode(vm *goja.Runtime, value goja.Value, target any) error {
@@ -74,6 +77,19 @@ func (h *Host) loader(vm *goja.Runtime, module *goja.Object) {
 			}
 			h.register(vm, "command:"+name, c.Argument(2))
 			h.descriptor.Commands = append(h.descriptor.Commands, slackbot.Command{Name: name, Description: spec.Description})
+			return goja.Undefined()
+		}))
+		must(vm, api.Set("verb", func(c goja.FunctionCall) goja.Value {
+			name := argString(c, 0)
+			var spec struct {
+				Description string `json:"description"`
+			}
+			must(vm, decode(vm, c.Argument(1), &spec))
+			if !verbNamePattern.MatchString(name) || spec.Description == "" {
+				panic(vm.NewTypeError("verb requires a name and description"))
+			}
+			h.register(vm, "verb:"+name, c.Argument(2))
+			h.descriptor.Verbs = append(h.descriptor.Verbs, slackbot.Command{Name: name, Description: spec.Description})
 			return goja.Undefined()
 		}))
 		must(vm, api.Set("event", func(c goja.FunctionCall) goja.Value {

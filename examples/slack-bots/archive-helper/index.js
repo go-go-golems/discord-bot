@@ -30,6 +30,11 @@ async function archive(ctx, channel, thread, limit, before) {
   if (!messages.length) return "No messages found.";
   messages.sort((a, b) => a.ts.localeCompare(b.ts));
   const name = (info.channel || {}).name || channel;
+  const link = await ctx.slack.messages.permalink({
+    conversation_id: channel,
+    message_ts: messages[0].ts,
+  });
+  const permalink = String(link.permalink || "").split("?")[0];
   let markdown =
     "# " +
     name +
@@ -40,6 +45,17 @@ async function archive(ctx, channel, thread, limit, before) {
     " (requested limit " +
     limit +
     ")\n";
+  markdown =
+    "---\nsource: slack\nteam_id: " +
+    JSON.stringify(ctx.teamId) +
+    "\nchannel_id: " +
+    JSON.stringify(channel) +
+    "\narchived_at: " +
+    JSON.stringify(new Date().toISOString()) +
+    "\nmessage_count: " +
+    messages.length +
+    "\n---\n\n" +
+    markdown;
   for (const message of messages) {
     markdown +=
       "\n## " +
@@ -49,6 +65,24 @@ async function archive(ctx, channel, thread, limit, before) {
       "\n\n" +
       (message.text || "") +
       "\n";
+    if (message.edited) markdown += "\n*(edited)*\n";
+    if (!message.text && message.blocks)
+      markdown +=
+        "\n```json\n" + JSON.stringify(message.blocks, null, 2) + "\n```\n";
+    for (const attachment of message.attachments || [])
+      markdown +=
+        "\n" +
+        (attachment.title || "") +
+        "\n" +
+        (attachment.text || attachment.fallback || "") +
+        "\n" +
+        (attachment.title_link || "") +
+        "\n";
+    if (permalink)
+      markdown +=
+        "\n[Open in Slack](" +
+        permalink.replace(/p[0-9]+$/, "p" + message.ts.replace(".", "")) +
+        ")\n";
     for (const file of message.files || [])
       markdown +=
         "\nAttachment: [" +

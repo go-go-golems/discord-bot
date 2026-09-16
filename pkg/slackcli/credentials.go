@@ -13,6 +13,12 @@ import (
 	"time"
 
 	"github.com/go-go-golems/discord-bot/internal/slackconfig"
+	"github.com/go-go-golems/glazed/pkg/cli"
+	"github.com/go-go-golems/glazed/pkg/cmds"
+	"github.com/go-go-golems/glazed/pkg/cmds/fields"
+	"github.com/go-go-golems/glazed/pkg/cmds/schema"
+	"github.com/go-go-golems/glazed/pkg/cmds/sources"
+	"github.com/go-go-golems/glazed/pkg/cmds/values"
 	"github.com/pkg/errors"
 	"github.com/rs/zerolog"
 	"github.com/spf13/cobra"
@@ -34,8 +40,43 @@ func NewCredentialsCommand(logger zerolog.Logger, client *http.Client) *cobra.Co
 }
 
 func newImportRuntimeCommand() *cobra.Command {
-	var dir, profile, installation, teamID, botFile, appFile string
-	c := &cobra.Command{Use: "import-runtime", Short: "Import bot and Socket Mode tokens", RunE: func(cmd *cobra.Command, _ []string) error {
+	desc := cmds.NewCommandDescription("import-runtime", cmds.WithShort("Import bot, Socket Mode and optional administrative user tokens"), cmds.WithFlags(
+		fields.New("config-dir", fields.TypeString, fields.WithDefault(defaultConfigDir()), fields.WithHelp("Local credentials directory")),
+		fields.New("profile", fields.TypeString, fields.WithRequired(true), fields.WithHelp("Profile name")),
+		fields.New("installation", fields.TypeString, fields.WithRequired(true), fields.WithHelp("Installation name")),
+		fields.New("team-id", fields.TypeString, fields.WithRequired(true), fields.WithHelp("Slack workspace ID")),
+		fields.New("bot-token-file", fields.TypeString, fields.WithRequired(true), fields.WithHelp("Bot token file")),
+		fields.New("app-token-file", fields.TypeString, fields.WithRequired(true), fields.WithHelp("Socket Mode app token file")),
+		fields.New("user-token-file", fields.TypeString, fields.WithHelp("Optional separately authorized user token file")),
+	))
+	c := cli.NewCobraCommandFromCommandDescription(desc)
+	parser, setupErr := cli.NewCobraParserFromSections(desc.Schema, &cli.CobraParserConfig{SkipCommandSettingsSection: true, MiddlewaresFunc: func(_ *values.Values, cmd *cobra.Command, args []string) ([]sources.Middleware, error) {
+		return []sources.Middleware{sources.FromCobra(cmd), sources.FromArgs(args), sources.FromDefaults()}, nil
+	}})
+	if setupErr == nil {
+		setupErr = parser.AddToCobraCommand(c)
+	}
+	c.RunE = func(cmd *cobra.Command, args []string) error {
+		if setupErr != nil {
+			return setupErr
+		}
+		vals, err := parser.Parse(cmd, args)
+		if err != nil {
+			return err
+		}
+		var settings struct {
+			Dir          string `glazed:"config-dir"`
+			Profile      string `glazed:"profile"`
+			Installation string `glazed:"installation"`
+			TeamID       string `glazed:"team-id"`
+			BotFile      string `glazed:"bot-token-file"`
+			AppFile      string `glazed:"app-token-file"`
+			UserFile     string `glazed:"user-token-file"`
+		}
+		if err := vals.DecodeSectionInto(schema.DefaultSlug, &settings); err != nil {
+			return err
+		}
+		dir, profile, installation, teamID, botFile, appFile, userFile := settings.Dir, settings.Profile, settings.Installation, settings.TeamID, settings.BotFile, settings.AppFile, settings.UserFile
 		if profile == "" || installation == "" || teamID == "" {
 			return errors.New("--profile, --installation, and --team-id are required")
 		}
@@ -68,18 +109,20 @@ func newImportRuntimeCommand() *cobra.Command {
 		ac := cr.Apps[p.App]
 		ac.AppToken = app
 		cr.Apps[p.App] = ac
-		cr.Installations[installation] = slackconfig.InstallationCredential{BotToken: bot, AppToken: app}
+		runtimeCredentials := cr.Installations[installation]
+		runtimeCredentials.BotToken, runtimeCredentials.AppToken = bot, app
+		if userFile != "" {
+			runtimeCredentials.UserToken, err = readSecretFile(userFile)
+			if err != nil {
+				return err
+			}
+		}
+		cr.Installations[installation] = runtimeCredentials
 		if err := store.Save(cfg, cr); err != nil {
 			return err
 		}
 		return json.NewEncoder(cmd.OutOrStdout()).Encode(map[string]any{"profile": name, "installation": installation, "team_id": teamID})
-	}}
-	configDirFlag(c, &dir)
-	c.Flags().StringVar(&profile, "profile", "", "Profile name")
-	c.Flags().StringVar(&installation, "installation", "", "Installation name")
-	c.Flags().StringVar(&teamID, "team-id", "", "Slack workspace/team ID")
-	c.Flags().StringVar(&botFile, "bot-token-file", "", "Bot token file")
-	c.Flags().StringVar(&appFile, "app-token-file", "", "Socket Mode app token file")
+	}
 	return c
 }
 
@@ -156,7 +199,7 @@ func newStatusCommand() *cobra.Command {
 			return e
 		}
 		m := cr.Management[p.Management]
-		out := map[string]any{"profile": name, "management": p.Management, "app": p.App, "installation": p.Installation, "has_access_token": m.AccessToken != "", "has_refresh_token": m.RefreshToken != "", "expires_at": m.ExpiresAt}
+		out := map[string]any{"profile": name, "management": p.Management, "app": p.App, "installation": p.Installation, "has_user_token": cr.Installations[p.Installation].UserToken != "", "has_access_token": m.AccessToken != "", "has_refresh_token": m.RefreshToken != "", "expires_at": m.ExpiresAt}
 		return json.NewEncoder(cmd.OutOrStdout()).Encode(out)
 	}}
 	configDirFlag(c, &dir)

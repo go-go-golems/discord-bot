@@ -23,6 +23,7 @@ import (
 
 // LocalOptions never enables external networking. Tokens are supplied explicitly by Go callers.
 type LocalOptions struct {
+	UserToken                                 string
 	APIURL, BotToken, AppToken, TeamID, AppID string
 	AllowedChannels                           []string
 	Logger                                    zerolog.Logger
@@ -32,6 +33,7 @@ type LocalOptions struct {
 // supplied explicitly by the caller; this package does not read environment
 // variables or credential files.
 type RemoteOptions struct {
+	UserToken                         string
 	BotToken, AppToken, TeamID, AppID string
 	AllowedChannels                   []string
 	Logger                            zerolog.Logger
@@ -107,7 +109,7 @@ func NewRemote(opts RemoteOptions) (*Client, error) {
 	return &Client{
 		api: api, socket: socketmode.New(api), http: httpClient,
 		responseHosts: map[string]struct{}{"hooks.slack.com": {}, "hooks.slack-gov.com": {}}, ackReplay: map[string]ackReplay{},
-		opts: LocalOptions{BotToken: opts.BotToken, AppToken: opts.AppToken, TeamID: opts.TeamID, AppID: opts.AppID, AllowedChannels: append([]string(nil), opts.AllowedChannels...), Logger: opts.Logger},
+		opts: LocalOptions{UserToken: opts.UserToken, BotToken: opts.BotToken, AppToken: opts.AppToken, TeamID: opts.TeamID, AppID: opts.AppID, AllowedChannels: append([]string(nil), opts.AllowedChannels...), Logger: opts.Logger},
 	}, nil
 }
 
@@ -237,6 +239,7 @@ func (r *responder) sendMessage(ctx context.Context, message slackbot.MessagePay
 	}
 	bodyValue := map[string]any{"response_type": "ephemeral", "text": message.Text}
 	if replace {
+		delete(bodyValue, "response_type")
 		bodyValue["replace_original"] = true
 	}
 	if message.Blocks != nil {

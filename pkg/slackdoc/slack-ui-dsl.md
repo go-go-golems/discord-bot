@@ -114,15 +114,14 @@ view("showcase.edit", async ctx => {
   if (!title || title.trim().length < 3) {
     return ctx.ack.errors({title: "Use at least three characters."});
   }
-  await ctx.ack.accept();
-  ctx.log.info(`Saved ${title.trim()}`);
+  await ctx.ack.update(ui.modal("showcase.saved", "Saved")
+    .block(ui.section(ui.plain(title.trim()))).build());
 });
 ```
 
-`ctx.openModal` uses the incoming action's trigger ID, kept in the Go-owned
-invocation. Call it promptly from the action handler. The current method cannot
-open a modal from a command or arbitrary background callback. It returns the
-view's ID and hash.
+`ctx.openModal` uses the incoming command, action or shortcut trigger ID, kept
+in the Go-owned invocation. Call it promptly. Arbitrary background callbacks
+have no trigger; the method returns the opened view's ID and hash.
 
 The modal's callback ID selects `view("showcase.edit", ...)`. Submitted state is
 indexed by input block ID and element action ID, hence
@@ -138,6 +137,7 @@ View submissions instead require exactly one explicit choice:
 | Method | Effect |
 | --- | --- |
 | `await ctx.ack.accept()` | Accept the submission and close the modal. |
+| `await ctx.ack.update(view)` | Replace the submitted modal with a result or next-step view. |
 | `await ctx.ack.errors({blockId: "Explanation"})` | Keep the modal open and attach validation errors to input blocks. |
 
 Error-map keys are block IDs, not element action IDs. Returning without choosing
@@ -154,7 +154,8 @@ and workspace, and loses them when the process restarts.
 A modal submission has no automatic channel or response URL. Do not return a
 message and expect it to appear in the original conversation. A follow-up
 requires application context and an explicit supported service operation.
-Message editing is not currently exposed.
+Use `ctx.slack.messages.update({channel, ts, text, blocks})` for stored message
+references, or `ctx.replaceOriginal(message)` from a message action with a response URL.
 
 ## Builder reference
 
@@ -168,24 +169,17 @@ also convert them internally; explicit `.build()` is clearest at send boundaries
 | `header(text)` | Header block with plain text. |
 | `divider()` | Divider block. |
 | `section(textObject)` | Section containing a text object. |
-| `button(actionId, label)` | Builder: `.value(text)`, `.style("primary" \| "danger")`, `.build()`. Default style is primary. |
-| `actions(blockId, ...buttons)` | Actions block; accepts 1–25 button builders or built button objects. |
+| `button(actionId, label)` | Builder: `.value(text)`, `.style("primary" \| "danger")`, `.build()`. Default style is neutral. |
+| `actions(blockId, ...buttons)` | Actions block; accepts 1–25 supported interactive elements. |
 | `message(fallbackText)` | Builder: `.block(block)`, `.build()`; at most 50 blocks. |
-| `textInput(actionId)` | Builder: `.initial(text)`, `.placeholder(text)`, `.required()`, `.optional()`, `.build()`. |
-| `input(blockId, label, input)` | Input block containing the supplied text input. |
+| `textInput(actionId)` | Builder: `.initial(text)`, `.placeholder(text)`, `.multiline()`, `.length(min, max)`, `.build()`. |
+| `input(blockId, label, input, options?)` | Input block; options include optional and hint. |
 | `modal(callbackId, title)` | Builder: `.metadata(text)`, `.input(blockId, label, input)` or `.input(block)`, `.submit(text)`, `.close(text)`, `.build()`; at most 100 blocks. |
 
-Known limitation: the current `textInput().optional()` builder emits
-`optional` on the element rather than its containing input block. Avoid it
-for live Slack views until corrected. For an optional field, create a normal
-input block with `ui.input(...)`, set `block.optional = true`, and pass that
-block to `modal.input(block)`.
-
-Static-select actions are decoded and routed, but there is no static-select
-builder yet, and `ui.actions` currently accepts buttons only. App Home,
-shortcuts, external option loading, message updates, view updates/pushes, and
-replacement-view ACK responses are not exposed by this API. The research
-guide discusses these as designs or follow-ups, not current methods.
+Optionality is correctly emitted on the input block. Native select builders,
+shortcuts, option loading, message updates and replacement-view ACKs are
+supported. App Home and the standalone views.update/views.push Web API methods
+remain outside this example-port scope.
 
 ## Offline interaction tests
 
@@ -204,7 +198,7 @@ go run ./cmd/slack-bot bots simulate ui-showcase \
 
 The command fixture records an `ephemeral_reply` with blocks. The action
 fixture supplies a synthetic trigger ID and records `open_view`. The view
-fixture supplies nested form state and records `ack` with `kind: "accept"`.
+fixture supplies nested form state and records `ack` with `kind: "update"`.
 Change its title to one character to exercise `kind: "errors"`.
 
 Each simulate invocation starts with empty in-memory state. A synthetic
@@ -217,8 +211,8 @@ used in the live Slack API.
 | --- | --- |
 | Slack rejects `/ui-showcase` as unknown | Correct workspace, installed app, and successful startup manifest sync. |
 | “No registered Slack handler” | The command/action/callback ID must match the selected script's registration. |
-| Modal never opens | Invoke its button and open promptly; the operation needs the incoming action's trigger. |
-| Save closes the modal without another message | Expected for the current showcase; acceptance only closes the dialog. |
+| Modal never opens | Open promptly from a command, button or shortcut carrying a trigger. |
+| Save closes the modal without another message | An accept ACK closes the dialog; use ack.update to render a visible result. |
 | Field errors do not appear | Use input block IDs and choose the ACK before the deadline. |
 | `ack_required`, `ack_already_sent`, or `ack_expired` | Choose exactly one ACK promptly in the view handler. |
 | Slack rejects a raw block | Check Slack's schema; local validation is not a full schema validator. |

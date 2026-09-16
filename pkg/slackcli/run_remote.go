@@ -60,11 +60,12 @@ func (c *command) runRemote(ctx context.Context, d slackbot.Descriptor, s settin
 
 	c.logger.Info().Int("pid", os.Getpid()).Str("profile", profileName).Str("bot", d.Name).Str("script", d.ScriptPath).Str("app_id", app.AppID).Str("team_id", installation.TeamID).Msg("Starting Slack bot with stored installation")
 	client, err := slacktransport.NewRemote(slacktransport.RemoteOptions{
-		BotToken: installationCred.BotToken,
-		AppToken: appToken,
-		TeamID:   installation.TeamID,
-		AppID:    app.AppID,
-		Logger:   c.logger,
+		BotToken:  installationCred.BotToken,
+		UserToken: installationCred.UserToken,
+		AppToken:  appToken,
+		TeamID:    installation.TeamID,
+		AppID:     app.AppID,
+		Logger:    c.logger,
 	})
 	if err != nil {
 		return err

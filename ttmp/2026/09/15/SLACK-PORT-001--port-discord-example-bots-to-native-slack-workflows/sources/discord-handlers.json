@@ -60,6 +60,12 @@
     "name": "kb-list"
   },
   {
+    "file": "examples/discord-bots/custom-kb/index.js",
+    "line": 78,
+    "kind": "autocomplete",
+    "name": "kb-search"
+  },
+  {
     "file": "examples/discord-bots/hater/index.js",
     "line": 38,
     "kind": "command",
@@ -256,6 +262,36 @@
     "line": 266,
     "kind": "command",
     "name": "kb-reject"
+  },
+  {
+    "file": "examples/discord-bots/knowledge-base/index.js",
+    "line": 427,
+    "kind": "autocomplete",
+    "name": "ask"
+  },
+  {
+    "file": "examples/discord-bots/knowledge-base/index.js",
+    "line": 432,
+    "kind": "autocomplete",
+    "name": "kb-search"
+  },
+  {
+    "file": "examples/discord-bots/knowledge-base/index.js",
+    "line": 437,
+    "kind": "autocomplete",
+    "name": "article"
+  },
+  {
+    "file": "examples/discord-bots/knowledge-base/index.js",
+    "line": 442,
+    "kind": "autocomplete",
+    "name": "kb-article"
+  },
+  {
+    "file": "examples/discord-bots/knowledge-base/index.js",
+    "line": 531,
+    "kind": "__verb__",
+    "name": "run"
   },
   {
     "file": "examples/discord-bots/knowledge-base/lib/reactions.js",
@@ -484,6 +520,12 @@
     "line": 198,
     "kind": "modal",
     "name": "feedback:submit"
+  },
+  {
+    "file": "examples/discord-bots/ping/index.js",
+    "line": 207,
+    "kind": "autocomplete",
+    "name": "search"
   },
   {
     "file": "examples/discord-bots/ping/index.js",
@@ -823,6 +865,18 @@
   },
   {
     "file": "examples/discord-bots/ui-showcase/index.js",
+    "line": 330,
+    "kind": "autocomplete",
+    "name": "demo-search"
+  },
+  {
+    "file": "examples/discord-bots/ui-showcase/index.js",
+    "line": 334,
+    "kind": "autocomplete",
+    "name": "find"
+  },
+  {
+    "file": "examples/discord-bots/ui-showcase/index.js",
     "line": 342,
     "kind": "command",
     "name": "demo-review"
@@ -934,5 +988,17 @@
     "line": 21,
     "kind": "event",
     "name": "ready"
+  },
+  {
+    "file": "examples/discord-bots/unified-demo/index.js",
+    "line": 37,
+    "kind": "__verb__",
+    "name": "status"
+  },
+  {
+    "file": "examples/discord-bots/unified-demo/index.js",
+    "line": 46,
+    "kind": "__verb__",
+    "name": "run"
   }
 ]

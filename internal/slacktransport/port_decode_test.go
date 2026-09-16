@@ -32,3 +32,19 @@ func TestDecodePortInteractions(t *testing.T) {
 		})
 	}
 }
+
+func TestDecodeMessageLifecycle(t *testing.T) {
+	c := &Client{}
+	for _, tc := range []struct{ event, want, user string }{
+		{`{"type":"message","subtype":"message_changed","channel":"C","message":{"user":"AUTHOR","edited":{"user":"EDITOR"},"text":"new"}}`, "message_changed", "EDITOR"},
+		{`{"type":"message","subtype":"message_deleted","channel":"C","deleted_ts":"1.000001"}`, "message_deleted", ""},
+		{`{"type":"user_change","user":{"id":"U","name":"new"}}`, "user_change", "U"},
+	} {
+		payload := `{"type":"event_callback","team_id":"T","api_app_id":"A","event":` + tc.event + `}`
+		envelope, err := c.decode(socketmode.Request{Type: socketmode.RequestTypeEventsAPI, Payload: json.RawMessage(payload)})
+		require.NoError(t, err)
+		require.Equal(t, tc.want, envelope.Invocation.Event)
+		require.Equal(t, tc.user, envelope.Invocation.UserID)
+		require.False(t, envelope.Bot)
+	}
+}

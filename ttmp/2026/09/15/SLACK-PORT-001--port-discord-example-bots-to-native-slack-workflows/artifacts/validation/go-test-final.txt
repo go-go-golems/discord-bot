@@ -1,0 +1,21 @@
+?   	github.com/go-go-golems/discord-bot	[no test files]
+ok  	github.com/go-go-golems/discord-bot/cmd/discord-bot	0.853s
+ok  	github.com/go-go-golems/discord-bot/cmd/slack-bot	0.983s
+?   	github.com/go-go-golems/discord-bot/examples/framework-combined	[no test files]
+?   	github.com/go-go-golems/discord-bot/examples/framework-custom-module	[no test files]
+?   	github.com/go-go-golems/discord-bot/examples/framework-single-bot	[no test files]
+?   	github.com/go-go-golems/discord-bot/internal/bot	[no test files]
+?   	github.com/go-go-golems/discord-bot/internal/config	[no test files]
+ok  	github.com/go-go-golems/discord-bot/internal/jsdiscord	0.953s
+ok  	github.com/go-go-golems/discord-bot/internal/jsslack	0.326s
+ok  	github.com/go-go-golems/discord-bot/internal/slackconfig	0.014s
+ok  	github.com/go-go-golems/discord-bot/internal/slackprobe	0.030s
+ok  	github.com/go-go-golems/discord-bot/internal/slacktransport	0.211s
+ok  	github.com/go-go-golems/discord-bot/pkg/botcli	1.176s
+?   	github.com/go-go-golems/discord-bot/pkg/doc	[no test files]
+ok  	github.com/go-go-golems/discord-bot/pkg/framework	0.044s
+ok  	github.com/go-go-golems/discord-bot/pkg/slackbot	0.014s
+ok  	github.com/go-go-golems/discord-bot/pkg/slackcli	2.697s
+?   	github.com/go-go-golems/discord-bot/pkg/slackdoc	[no test files]
+ok  	github.com/go-go-golems/discord-bot/pkg/slackhost	0.022s
+ok  	github.com/go-go-golems/discord-bot/pkg/xgoja/provider	0.038s

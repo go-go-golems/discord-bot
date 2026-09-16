@@ -12,8 +12,11 @@ var guide []byte
 //go:embed slack-ui-dsl.md
 var uiGuide []byte
 
+//go:embed slack-example-ports.md
+var portsGuide []byte
+
 func AddTo(h *help.HelpSystem) error {
-	for _, data := range [][]byte{guide, uiGuide} {
+	for _, data := range [][]byte{guide, uiGuide, portsGuide} {
 		s, err := help.LoadSectionFromMarkdown(data)
 		if err != nil {
 			return err

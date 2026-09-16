@@ -136,6 +136,14 @@ function register({ command, action, view, event, options }) {
         .message("Native Slack message")
         .block(ui.header("Message builders"))
         .block(
+          ui.actions(
+            "message-select",
+            ui.staticSelect("demo.message.select", {
+              options: [ui.option("One", "1"), ui.option("Two", "2")],
+            }),
+          ),
+        )
+        .block(
           ui.section(ui.mrkdwn("*Rich text*, context, controls and URLs.")),
         )
         .block(
@@ -161,6 +169,9 @@ function register({ command, action, view, event, options }) {
   for (const name of ["primary", "neutral", "danger"])
     action("demo." + name, async () => ({ text: "Clicked " + name }));
   action("demo.link", async () => {});
+  action("demo.message.select", async (ctx) => ({
+    text: "Selected: " + ctx.action.selectedOption.value,
+  }));
   command(
     "/demo-form",
     { description: "Open a native modal form" },
@@ -195,9 +206,43 @@ function register({ command, action, view, event, options }) {
     );
   });
   for (const name of ["demo-search", "find"])
-    command("/" + name, { description: "Search articles" }, async (ctx) =>
-      search(ctx, ctx.text.trim(), 0, ""),
+    command(
+      "/" + name,
+      { description: "Search articles; empty opens suggestions" },
+      async (ctx) => {
+        if (ctx.text.trim()) return search(ctx, ctx.text.trim(), 0, "");
+        await ctx.openModal(
+          ui
+            .modal("demo.search.open", "Find article")
+            .input(
+              "article",
+              "Article",
+              ui.externalSelect("demo.search.suggest", { min_query_length: 0 }),
+            )
+            .submit("Open")
+            .build(),
+        );
+      },
     );
+  options("demo.search.suggest", async (ctx) => {
+    await ctx.ack.options(
+      data
+        .articleSuggestions(ctx.query || "")
+        .map((a) => ui.option(a.name.slice(0, 75), a.value)),
+    );
+  });
+  view("demo.search.open", async (ctx) => {
+    const a = article(
+      ctx,
+      ctx.values.all.article["demo.search.suggest"].selected_option.value,
+    );
+    await ctx.ack.update(
+      ui
+        .modal("demo.search.result", "Article")
+        .block(ui.section(ui.plain(a.title + "\n" + a.summary)))
+        .build(),
+    );
+  });
   command(
     "/demo-review",
     { description: "Review articles [status]" },

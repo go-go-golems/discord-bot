@@ -1,0 +1,1088 @@
+[
+  {
+    "bot": "announcements",
+    "kind": "command",
+    "name": "/announce-preview",
+    "source": "examples/discord-bots/announcements.js:10"
+  },
+  {
+    "bot": "archive-helper",
+    "kind": "command",
+    "name": "/archive-channel",
+    "source": "examples/discord-bots/archive-helper/index.js:27"
+  },
+  {
+    "bot": "archive-helper",
+    "kind": "shortcut",
+    "name": "archive-thread",
+    "source": "examples/discord-bots/archive-helper/index.js:101"
+  },
+  {
+    "bot": "custom-kb",
+    "kind": "command",
+    "name": "/kb-add",
+    "source": "examples/discord-bots/custom-kb/index.js:28"
+  },
+  {
+    "bot": "custom-kb",
+    "kind": "command",
+    "name": "/kb-link",
+    "source": "examples/discord-bots/custom-kb/index.js:48"
+  },
+  {
+    "bot": "custom-kb",
+    "kind": "command",
+    "name": "/kb-search",
+    "source": "examples/discord-bots/custom-kb/index.js:62"
+  },
+  {
+    "bot": "custom-kb",
+    "kind": "command",
+    "name": "/kb-list",
+    "source": "examples/discord-bots/custom-kb/index.js:67"
+  },
+  {
+    "bot": "custom-kb",
+    "kind": "options",
+    "name": "kb.suggest",
+    "source": "examples/discord-bots/custom-kb/index.js:78"
+  },
+  {
+    "bot": "hater",
+    "kind": "command",
+    "name": "/hate",
+    "source": "examples/discord-bots/hater/index.js:38"
+  },
+  {
+    "bot": "hater",
+    "kind": "command",
+    "name": "/roast",
+    "source": "examples/discord-bots/hater/index.js:60"
+  },
+  {
+    "bot": "hater",
+    "kind": "command",
+    "name": "/compliment",
+    "source": "examples/discord-bots/hater/index.js:76"
+  },
+  {
+    "bot": "hater",
+    "kind": "action",
+    "name": "hater.roast",
+    "source": "examples/discord-bots/hater/index.js:90"
+  },
+  {
+    "bot": "hater",
+    "kind": "action",
+    "name": "hater.mercy",
+    "source": "examples/discord-bots/hater/index.js:97"
+  },
+  {
+    "bot": "hater",
+    "kind": "action",
+    "name": "hater.apology",
+    "source": "examples/discord-bots/hater/index.js:105"
+  },
+  {
+    "bot": "hater",
+    "kind": "view",
+    "name": "hater.apology.submit",
+    "source": "examples/discord-bots/hater/index.js:114"
+  },
+  {
+    "bot": "hater",
+    "kind": "event",
+    "name": "message",
+    "source": "examples/discord-bots/hater/index.js:138"
+  },
+  {
+    "bot": "interaction-types",
+    "kind": "command",
+    "name": "/hello",
+    "source": "examples/discord-bots/interaction-types/index.js:11"
+  },
+  {
+    "bot": "interaction-types",
+    "kind": "command",
+    "name": "/echo",
+    "source": "examples/discord-bots/interaction-types/index.js:18"
+  },
+  {
+    "bot": "interaction-types",
+    "kind": "command",
+    "name": "/fun",
+    "source": "examples/discord-bots/interaction-types/index.js:28"
+  },
+  {
+    "bot": "interaction-types",
+    "kind": "command",
+    "name": "/fun",
+    "source": "examples/discord-bots/interaction-types/index.js:48"
+  },
+  {
+    "bot": "interaction-types",
+    "kind": "command",
+    "name": "/fun",
+    "source": "examples/discord-bots/interaction-types/index.js:59"
+  },
+  {
+    "bot": "interaction-types",
+    "kind": "command",
+    "name": "/show-avatar",
+    "source": "examples/discord-bots/interaction-types/index.js:70"
+  },
+  {
+    "bot": "interaction-types",
+    "kind": "shortcut",
+    "name": "quote-message",
+    "source": "examples/discord-bots/interaction-types/index.js:85"
+  },
+  {
+    "bot": "knowledge-base",
+    "kind": "event",
+    "name": "message",
+    "source": "examples/discord-bots/knowledge-base/index.js:28"
+  },
+  {
+    "bot": "knowledge-base",
+    "kind": "command",
+    "name": "/remember",
+    "source": "examples/discord-bots/knowledge-base/index.js:40"
+  },
+  {
+    "bot": "knowledge-base",
+    "kind": "command",
+    "name": "/teach",
+    "source": "examples/discord-bots/knowledge-base/index.js:46"
+  },
+  {
+    "bot": "knowledge-base",
+    "kind": "view",
+    "name": "knowledge.submit",
+    "source": "examples/discord-bots/knowledge-base/index.js:52"
+  },
+  {
+    "bot": "knowledge-base",
+    "kind": "command",
+    "name": "/ask",
+    "source": "examples/discord-bots/knowledge-base/index.js:64"
+  },
+  {
+    "bot": "knowledge-base",
+    "kind": "command",
+    "name": "/kb-search",
+    "source": "examples/discord-bots/knowledge-base/index.js:83"
+  },
+  {
+    "bot": "knowledge-base",
+    "kind": "command",
+    "name": "/article",
+    "source": "examples/discord-bots/knowledge-base/index.js:102"
+  },
+  {
+    "bot": "knowledge-base",
+    "kind": "command",
+    "name": "/kb-article",
+    "source": "examples/discord-bots/knowledge-base/index.js:124"
+  },
+  {
+    "bot": "knowledge-base",
+    "kind": "command",
+    "name": "/review",
+    "source": "examples/discord-bots/knowledge-base/index.js:146"
+  },
+  {
+    "bot": "knowledge-base",
+    "kind": "command",
+    "name": "/kb-review",
+    "source": "examples/discord-bots/knowledge-base/index.js:169"
+  },
+  {
+    "bot": "knowledge-base",
+    "kind": "command",
+    "name": "/recent",
+    "source": "examples/discord-bots/knowledge-base/index.js:192"
+  },
+  {
+    "bot": "knowledge-base",
+    "kind": "command",
+    "name": "/kb-recent",
+    "source": "examples/discord-bots/knowledge-base/index.js:206"
+  },
+  {
+    "bot": "knowledge-base",
+    "kind": "command",
+    "name": "/kb-verify",
+    "source": "examples/discord-bots/knowledge-base/index.js:220"
+  },
+  {
+    "bot": "knowledge-base",
+    "kind": "command",
+    "name": "/kb-stale",
+    "source": "examples/discord-bots/knowledge-base/index.js:243"
+  },
+  {
+    "bot": "knowledge-base",
+    "kind": "command",
+    "name": "/kb-reject",
+    "source": "examples/discord-bots/knowledge-base/index.js:266"
+  },
+  {
+    "bot": "knowledge-base",
+    "kind": "options",
+    "name": "knowledge.suggest",
+    "source": "examples/discord-bots/knowledge-base/index.js:427"
+  },
+  {
+    "bot": "knowledge-base",
+    "kind": "options",
+    "name": "knowledge.suggest",
+    "source": "examples/discord-bots/knowledge-base/index.js:432"
+  },
+  {
+    "bot": "knowledge-base",
+    "kind": "options",
+    "name": "knowledge.suggest",
+    "source": "examples/discord-bots/knowledge-base/index.js:437"
+  },
+  {
+    "bot": "knowledge-base",
+    "kind": "options",
+    "name": "knowledge.suggest",
+    "source": "examples/discord-bots/knowledge-base/index.js:442"
+  },
+  {
+    "bot": "knowledge-base",
+    "kind": "event",
+    "name": "reaction_added",
+    "source": "examples/discord-bots/knowledge-base/lib/reactions.js:2"
+  },
+  {
+    "bot": "moderation",
+    "kind": "command",
+    "name": "/mod-fetch-channel",
+    "source": "examples/discord-bots/moderation/lib/register-channel-moderation-commands.js:2"
+  },
+  {
+    "bot": "moderation",
+    "kind": "command",
+    "name": "/mod-set-topic",
+    "source": "examples/discord-bots/moderation/lib/register-channel-moderation-commands.js:25"
+  },
+  {
+    "bot": "moderation",
+    "kind": "event",
+    "name": "message",
+    "source": "examples/discord-bots/moderation/lib/register-events.js:2"
+  },
+  {
+    "bot": "moderation",
+    "kind": "event",
+    "name": "message_changed",
+    "source": "examples/discord-bots/moderation/lib/register-events.js:9"
+  },
+  {
+    "bot": "moderation",
+    "kind": "event",
+    "name": "message_deleted",
+    "source": "examples/discord-bots/moderation/lib/register-events.js:24"
+  },
+  {
+    "bot": "moderation",
+    "kind": "event",
+    "name": "reaction_added",
+    "source": "examples/discord-bots/moderation/lib/register-events.js:33"
+  },
+  {
+    "bot": "moderation",
+    "kind": "event",
+    "name": "reaction_removed",
+    "source": "examples/discord-bots/moderation/lib/register-events.js:42"
+  },
+  {
+    "bot": "moderation",
+    "kind": "event",
+    "name": "team_join",
+    "source": "examples/discord-bots/moderation/lib/register-events.js:51"
+  },
+  {
+    "bot": "moderation",
+    "kind": "event",
+    "name": "user_change",
+    "source": "examples/discord-bots/moderation/lib/register-events.js:60"
+  },
+  {
+    "bot": "moderation",
+    "kind": "event",
+    "name": "user_change",
+    "source": "examples/discord-bots/moderation/lib/register-events.js:70"
+  },
+  {
+    "bot": "moderation",
+    "kind": "command",
+    "name": "/mod-fetch-workspace",
+    "source": "examples/discord-bots/moderation/lib/register-guild-role-lookup-commands.js:2"
+  },
+  {
+    "bot": "moderation",
+    "kind": "command",
+    "name": "/mod-list-groups",
+    "source": "examples/discord-bots/moderation/lib/register-guild-role-lookup-commands.js:26"
+  },
+  {
+    "bot": "moderation",
+    "kind": "command",
+    "name": "/mod-fetch-group",
+    "source": "examples/discord-bots/moderation/lib/register-guild-role-lookup-commands.js:51"
+  },
+  {
+    "bot": "moderation",
+    "kind": "command",
+    "name": "/mod-fetch-member",
+    "source": "examples/discord-bots/moderation/lib/register-member-moderation-commands.js:2"
+  },
+  {
+    "bot": "moderation",
+    "kind": "command",
+    "name": "/mod-list-members",
+    "source": "examples/discord-bots/moderation/lib/register-member-moderation-commands.js:29"
+  },
+  {
+    "bot": "moderation",
+    "kind": "command",
+    "name": "/mod-add-group-member",
+    "source": "examples/discord-bots/moderation/lib/register-member-moderation-commands.js:59"
+  },
+  {
+    "bot": "moderation",
+    "kind": "command",
+    "name": "/mod-remove-workspace-user",
+    "source": "examples/discord-bots/moderation/lib/register-member-moderation-commands.js:89"
+  },
+  {
+    "bot": "moderation",
+    "kind": "command",
+    "name": "/mod-list-messages",
+    "source": "examples/discord-bots/moderation/lib/register-message-moderation-commands.js:2"
+  },
+  {
+    "bot": "moderation",
+    "kind": "command",
+    "name": "/mod-fetch-message",
+    "source": "examples/discord-bots/moderation/lib/register-message-moderation-commands.js:31"
+  },
+  {
+    "bot": "moderation",
+    "kind": "command",
+    "name": "/mod-pin",
+    "source": "examples/discord-bots/moderation/lib/register-message-moderation-commands.js:53"
+  },
+  {
+    "bot": "moderation",
+    "kind": "command",
+    "name": "/mod-unpin",
+    "source": "examples/discord-bots/moderation/lib/register-message-moderation-commands.js:67"
+  },
+  {
+    "bot": "moderation",
+    "kind": "command",
+    "name": "/mod-list-pins",
+    "source": "examples/discord-bots/moderation/lib/register-message-moderation-commands.js:81"
+  },
+  {
+    "bot": "moderation",
+    "kind": "command",
+    "name": "/mod-bulk-delete",
+    "source": "examples/discord-bots/moderation/lib/register-message-moderation-commands.js:99"
+  },
+  {
+    "bot": "moderation",
+    "kind": "command",
+    "name": "/mod-summary",
+    "source": "examples/discord-bots/moderation/lib/register-overview-commands.js:2"
+  },
+  {
+    "bot": "moderation",
+    "kind": "command",
+    "name": "/mod-guidelines",
+    "source": "examples/discord-bots/moderation/lib/register-overview-commands.js:25"
+  },
+  {
+    "bot": "ping",
+    "kind": "command",
+    "name": "/golem-ping",
+    "source": "examples/discord-bots/ping/index.js:7"
+  },
+  {
+    "bot": "ping",
+    "kind": "command",
+    "name": "/golem-echo",
+    "source": "examples/discord-bots/ping/index.js:56"
+  },
+  {
+    "bot": "ping",
+    "kind": "command",
+    "name": "/golem-feedback",
+    "source": "examples/discord-bots/ping/index.js:83"
+  },
+  {
+    "bot": "ping",
+    "kind": "command",
+    "name": "/golem-search",
+    "source": "examples/discord-bots/ping/index.js:120"
+  },
+  {
+    "bot": "ping",
+    "kind": "command",
+    "name": "/golem-announce",
+    "source": "examples/discord-bots/ping/index.js:161"
+  },
+  {
+    "bot": "ping",
+    "kind": "action",
+    "name": "ping.panel",
+    "source": "examples/discord-bots/ping/index.js:183"
+  },
+  {
+    "bot": "ping",
+    "kind": "action",
+    "name": "ping.topic",
+    "source": "examples/discord-bots/ping/index.js:190"
+  },
+  {
+    "bot": "ping",
+    "kind": "view",
+    "name": "ping.feedback",
+    "source": "examples/discord-bots/ping/index.js:198"
+  },
+  {
+    "bot": "ping",
+    "kind": "options",
+    "name": "ping.search.query",
+    "source": "examples/discord-bots/ping/index.js:207"
+  },
+  {
+    "bot": "ping",
+    "kind": "event",
+    "name": "message",
+    "source": "examples/discord-bots/ping/index.js:231"
+  },
+  {
+    "bot": "poker",
+    "kind": "command",
+    "name": "/poker-help",
+    "source": "examples/discord-bots/poker/index.js:266"
+  },
+  {
+    "bot": "poker",
+    "kind": "command",
+    "name": "/poker-deal",
+    "source": "examples/discord-bots/poker/index.js:270"
+  },
+  {
+    "bot": "poker",
+    "kind": "command",
+    "name": "/poker-draw",
+    "source": "examples/discord-bots/poker/index.js:274"
+  },
+  {
+    "bot": "poker",
+    "kind": "command",
+    "name": "/poker-score",
+    "source": "examples/discord-bots/poker/index.js:301"
+  },
+  {
+    "bot": "poker",
+    "kind": "command",
+    "name": "/poker-reset",
+    "source": "examples/discord-bots/poker/index.js:305"
+  },
+  {
+    "bot": "poker",
+    "kind": "command",
+    "name": "/poker-rank",
+    "source": "examples/discord-bots/poker/index.js:309"
+  },
+  {
+    "bot": "poker",
+    "kind": "command",
+    "name": "/poker-action",
+    "source": "examples/discord-bots/poker/index.js:326"
+  },
+  {
+    "bot": "poker",
+    "kind": "action",
+    "name": "poker.deal",
+    "source": "examples/discord-bots/poker/index.js:360"
+  },
+  {
+    "bot": "poker",
+    "kind": "action",
+    "name": "poker.score",
+    "source": "examples/discord-bots/poker/index.js:362"
+  },
+  {
+    "bot": "poker",
+    "kind": "action",
+    "name": "poker.rank",
+    "source": "examples/discord-bots/poker/index.js:364"
+  },
+  {
+    "bot": "poker",
+    "kind": "action",
+    "name": "poker.action",
+    "source": "examples/discord-bots/poker/index.js:368"
+  },
+  {
+    "bot": "poker",
+    "kind": "action",
+    "name": "poker.reset",
+    "source": "examples/discord-bots/poker/index.js:372"
+  },
+  {
+    "bot": "poker",
+    "kind": "view",
+    "name": "poker.rank.submit",
+    "source": "examples/discord-bots/poker/index.js:374"
+  },
+  {
+    "bot": "poker",
+    "kind": "view",
+    "name": "poker.action.submit",
+    "source": "examples/discord-bots/poker/index.js:382"
+  },
+  {
+    "bot": "poker",
+    "kind": "event",
+    "name": "message",
+    "source": "examples/discord-bots/poker/index.js:397"
+  },
+  {
+    "bot": "show-space",
+    "kind": "command",
+    "name": "/upcoming",
+    "source": "examples/discord-bots/show-space/index.js:473"
+  },
+  {
+    "bot": "show-space",
+    "kind": "command",
+    "name": "/debug",
+    "source": "examples/discord-bots/show-space/index.js:483"
+  },
+  {
+    "bot": "show-space",
+    "kind": "command",
+    "name": "/debug-groups",
+    "source": "examples/discord-bots/show-space/index.js:498"
+  },
+  {
+    "bot": "show-space",
+    "kind": "command",
+    "name": "/debug-my-permissions",
+    "source": "examples/discord-bots/show-space/index.js:513"
+  },
+  {
+    "bot": "show-space",
+    "kind": "action",
+    "name": "show.debug.summary",
+    "source": "examples/discord-bots/show-space/index.js:528"
+  },
+  {
+    "bot": "show-space",
+    "kind": "action",
+    "name": "show.debug.member",
+    "source": "examples/discord-bots/show-space/index.js:541"
+  },
+  {
+    "bot": "show-space",
+    "kind": "action",
+    "name": "show.debug.workspace",
+    "source": "examples/discord-bots/show-space/index.js:554"
+  },
+  {
+    "bot": "show-space",
+    "kind": "action",
+    "name": "show.debug.config",
+    "source": "examples/discord-bots/show-space/index.js:567"
+  },
+  {
+    "bot": "show-space",
+    "kind": "action",
+    "name": "show.debug.checks",
+    "source": "examples/discord-bots/show-space/index.js:580"
+  },
+  {
+    "bot": "show-space",
+    "kind": "command",
+    "name": "/announce",
+    "source": "examples/discord-bots/show-space/index.js:593"
+  },
+  {
+    "bot": "show-space",
+    "kind": "command",
+    "name": "/add-show",
+    "source": "examples/discord-bots/show-space/index.js:624"
+  },
+  {
+    "bot": "show-space",
+    "kind": "command",
+    "name": "/show",
+    "source": "examples/discord-bots/show-space/index.js:662"
+  },
+  {
+    "bot": "show-space",
+    "kind": "command",
+    "name": "/cancel-show",
+    "source": "examples/discord-bots/show-space/index.js:678"
+  },
+  {
+    "bot": "show-space",
+    "kind": "command",
+    "name": "/archive-show",
+    "source": "examples/discord-bots/show-space/index.js:719"
+  },
+  {
+    "bot": "show-space",
+    "kind": "command",
+    "name": "/past-shows",
+    "source": "examples/discord-bots/show-space/index.js:752"
+  },
+  {
+    "bot": "show-space",
+    "kind": "command",
+    "name": "/unpin-old",
+    "source": "examples/discord-bots/show-space/index.js:762"
+  },
+  {
+    "bot": "show-space",
+    "kind": "command",
+    "name": "/archive-expired",
+    "source": "examples/discord-bots/show-space/index.js:797"
+  },
+  {
+    "bot": "support",
+    "kind": "command",
+    "name": "/support-ticket",
+    "source": "examples/discord-bots/support/index.js:10"
+  },
+  {
+    "bot": "support",
+    "kind": "command",
+    "name": "/support-status",
+    "source": "examples/discord-bots/support/index.js:41"
+  },
+  {
+    "bot": "support",
+    "kind": "command",
+    "name": "/support-fetch-thread",
+    "source": "examples/discord-bots/support/index.js:50"
+  },
+  {
+    "bot": "support",
+    "kind": "command",
+    "name": "/support-start-thread",
+    "source": "examples/discord-bots/support/index.js:105"
+  },
+  {
+    "bot": "support",
+    "kind": "event",
+    "name": "message",
+    "source": "examples/discord-bots/support/index.js:159"
+  },
+  {
+    "bot": "ui-showcase",
+    "kind": "event",
+    "name": "message",
+    "source": "examples/discord-bots/ui-showcase/index.js:55"
+  },
+  {
+    "bot": "ui-showcase",
+    "kind": "command",
+    "name": "/demo-message",
+    "source": "examples/discord-bots/ui-showcase/index.js:66"
+  },
+  {
+    "bot": "ui-showcase",
+    "kind": "action",
+    "name": "demo.primary",
+    "source": "examples/discord-bots/ui-showcase/index.js:96"
+  },
+  {
+    "bot": "ui-showcase",
+    "kind": "action",
+    "name": "demo.neutral",
+    "source": "examples/discord-bots/ui-showcase/index.js:97"
+  },
+  {
+    "bot": "ui-showcase",
+    "kind": "action",
+    "name": "demo.danger",
+    "source": "examples/discord-bots/ui-showcase/index.js:98"
+  },
+  {
+    "bot": "ui-showcase",
+    "kind": "action",
+    "name": "demo.message.select",
+    "source": "examples/discord-bots/ui-showcase/index.js:100"
+  },
+  {
+    "bot": "ui-showcase",
+    "kind": "command",
+    "name": "/demo-form",
+    "source": "examples/discord-bots/ui-showcase/index.js:115"
+  },
+  {
+    "bot": "ui-showcase",
+    "kind": "view",
+    "name": "demo.form",
+    "source": "examples/discord-bots/ui-showcase/index.js:128"
+  },
+  {
+    "bot": "ui-showcase",
+    "kind": "command",
+    "name": "/demo-search",
+    "source": "examples/discord-bots/ui-showcase/index.js:152"
+  },
+  {
+    "bot": "ui-showcase",
+    "kind": "command",
+    "name": "/find",
+    "source": "examples/discord-bots/ui-showcase/index.js:167"
+  },
+  {
+    "bot": "ui-showcase",
+    "kind": "options",
+    "name": "demo.search.suggest",
+    "source": "examples/discord-bots/ui-showcase/index.js:330"
+  },
+  {
+    "bot": "ui-showcase",
+    "kind": "options",
+    "name": "demo.search.suggest",
+    "source": "examples/discord-bots/ui-showcase/index.js:334"
+  },
+  {
+    "bot": "ui-showcase",
+    "kind": "command",
+    "name": "/demo-review",
+    "source": "examples/discord-bots/ui-showcase/index.js:342"
+  },
+  {
+    "bot": "ui-showcase",
+    "kind": "command",
+    "name": "/demo-confirm",
+    "source": "examples/discord-bots/ui-showcase/index.js:510"
+  },
+  {
+    "bot": "ui-showcase",
+    "kind": "action",
+    "name": "demo.confirm.yes",
+    "source": "examples/discord-bots/ui-showcase/index.js:530"
+  },
+  {
+    "bot": "ui-showcase",
+    "kind": "action",
+    "name": "demo.confirm.no",
+    "source": "examples/discord-bots/ui-showcase/index.js:542"
+  },
+  {
+    "bot": "ui-showcase",
+    "kind": "command",
+    "name": "/demo-pager",
+    "source": "examples/discord-bots/ui-showcase/index.js:550"
+  },
+  {
+    "bot": "ui-showcase",
+    "kind": "command",
+    "name": "/demo-cards",
+    "source": "examples/discord-bots/ui-showcase/index.js:602"
+  },
+  {
+    "bot": "ui-showcase",
+    "kind": "command",
+    "name": "/browse",
+    "source": "examples/discord-bots/ui-showcase/index.js:611"
+  },
+  {
+    "bot": "ui-showcase",
+    "kind": "action",
+    "name": "demo.card.buy",
+    "source": "examples/discord-bots/ui-showcase/index.js:675"
+  },
+  {
+    "bot": "ui-showcase",
+    "kind": "command",
+    "name": "/demo-selects",
+    "source": "examples/discord-bots/ui-showcase/index.js:728"
+  },
+  {
+    "bot": "ui-showcase",
+    "kind": "action",
+    "name": "demo.select.string",
+    "source": "examples/discord-bots/ui-showcase/index.js:758"
+  },
+  {
+    "bot": "ui-showcase",
+    "kind": "action",
+    "name": "demo.select.user",
+    "source": "examples/discord-bots/ui-showcase/index.js:763"
+  },
+  {
+    "bot": "ui-showcase",
+    "kind": "action",
+    "name": "demo.select.group",
+    "source": "examples/discord-bots/ui-showcase/index.js:768"
+  },
+  {
+    "bot": "ui-showcase",
+    "kind": "action",
+    "name": "demo.select.channel",
+    "source": "examples/discord-bots/ui-showcase/index.js:773"
+  },
+  {
+    "bot": "ui-showcase",
+    "kind": "action",
+    "name": "demo.select.users",
+    "source": "examples/discord-bots/ui-showcase/index.js:778"
+  },
+  {
+    "bot": "ui-showcase",
+    "kind": "command",
+    "name": "/demo-alias",
+    "source": "examples/discord-bots/ui-showcase/index.js:787"
+  },
+  {
+    "bot": "ui-showcase",
+    "kind": "command",
+    "name": "/demo-alias-alt",
+    "source": "examples/discord-bots/ui-showcase/index.js:803"
+  },
+  {
+    "bot": "unified-demo",
+    "kind": "command",
+    "name": "/unified-ping",
+    "source": "examples/discord-bots/unified-demo/index.js:10"
+  },
+  {
+    "bot": "unified-demo",
+    "kind": "verb",
+    "name": "status",
+    "source": "examples/discord-bots/unified-demo/index.js:37"
+  },
+  {
+    "bot": "custom-kb",
+    "kind": "action",
+    "name": "kb.select",
+    "source": "Computed source registration; manual supplement"
+  },
+  {
+    "bot": "custom-kb",
+    "kind": "action",
+    "name": "kb.refresh",
+    "source": "Computed source registration; manual supplement"
+  },
+  {
+    "bot": "custom-kb",
+    "kind": "view",
+    "name": "kb.add",
+    "source": "Computed source registration; manual supplement"
+  },
+  {
+    "bot": "custom-kb",
+    "kind": "view",
+    "name": "kb.search",
+    "source": "Computed source registration; manual supplement"
+  },
+  {
+    "bot": "custom-kb",
+    "kind": "options",
+    "name": "kb.suggest",
+    "source": "Computed source registration; manual supplement"
+  },
+  {
+    "bot": "knowledge-base",
+    "kind": "action",
+    "name": "knowledge.select",
+    "source": "Computed source registration; manual supplement"
+  },
+  {
+    "bot": "knowledge-base",
+    "kind": "action",
+    "name": "knowledge.verify",
+    "source": "Computed source registration; manual supplement"
+  },
+  {
+    "bot": "knowledge-base",
+    "kind": "action",
+    "name": "knowledge.stale",
+    "source": "Computed source registration; manual supplement"
+  },
+  {
+    "bot": "knowledge-base",
+    "kind": "action",
+    "name": "knowledge.reject",
+    "source": "Computed source registration; manual supplement"
+  },
+  {
+    "bot": "knowledge-base",
+    "kind": "action",
+    "name": "knowledge.source",
+    "source": "Computed source registration; manual supplement"
+  },
+  {
+    "bot": "knowledge-base",
+    "kind": "action",
+    "name": "knowledge.edit",
+    "source": "Computed source registration; manual supplement"
+  },
+  {
+    "bot": "knowledge-base",
+    "kind": "action",
+    "name": "knowledge.export",
+    "source": "Computed source registration; manual supplement"
+  },
+  {
+    "bot": "knowledge-base",
+    "kind": "action",
+    "name": "knowledge.previous",
+    "source": "Computed source registration; manual supplement"
+  },
+  {
+    "bot": "knowledge-base",
+    "kind": "action",
+    "name": "knowledge.next",
+    "source": "Computed source registration; manual supplement"
+  },
+  {
+    "bot": "knowledge-base",
+    "kind": "view",
+    "name": "knowledge.submit",
+    "source": "Computed source registration; manual supplement"
+  },
+  {
+    "bot": "knowledge-base",
+    "kind": "view",
+    "name": "knowledge.open",
+    "source": "Computed source registration; manual supplement"
+  },
+  {
+    "bot": "knowledge-base",
+    "kind": "options",
+    "name": "knowledge.suggest",
+    "source": "Computed source registration; manual supplement"
+  },
+  {
+    "bot": "ui-showcase",
+    "kind": "action",
+    "name": "demo.article.select",
+    "source": "Computed source registration; manual supplement"
+  },
+  {
+    "bot": "ui-showcase",
+    "kind": "action",
+    "name": "demo.article.verify",
+    "source": "Computed source registration; manual supplement"
+  },
+  {
+    "bot": "ui-showcase",
+    "kind": "action",
+    "name": "demo.article.stale",
+    "source": "Computed source registration; manual supplement"
+  },
+  {
+    "bot": "ui-showcase",
+    "kind": "action",
+    "name": "demo.article.reject",
+    "source": "Computed source registration; manual supplement"
+  },
+  {
+    "bot": "ui-showcase",
+    "kind": "action",
+    "name": "demo.article.edit",
+    "source": "Computed source registration; manual supplement"
+  },
+  {
+    "bot": "ui-showcase",
+    "kind": "action",
+    "name": "demo.article.source",
+    "source": "Computed source registration; manual supplement"
+  },
+  {
+    "bot": "ui-showcase",
+    "kind": "action",
+    "name": "demo.article.export",
+    "source": "Computed source registration; manual supplement"
+  },
+  {
+    "bot": "ui-showcase",
+    "kind": "action",
+    "name": "demo.article.details",
+    "source": "Computed source registration; manual supplement"
+  },
+  {
+    "bot": "ui-showcase",
+    "kind": "action",
+    "name": "demo.search.previous",
+    "source": "Computed source registration; manual supplement"
+  },
+  {
+    "bot": "ui-showcase",
+    "kind": "action",
+    "name": "demo.search.next",
+    "source": "Computed source registration; manual supplement"
+  },
+  {
+    "bot": "ui-showcase",
+    "kind": "action",
+    "name": "demo.pager.previous",
+    "source": "Computed source registration; manual supplement"
+  },
+  {
+    "bot": "ui-showcase",
+    "kind": "action",
+    "name": "demo.pager.next",
+    "source": "Computed source registration; manual supplement"
+  },
+  {
+    "bot": "ui-showcase",
+    "kind": "action",
+    "name": "demo.card.select",
+    "source": "Computed source registration; manual supplement"
+  },
+  {
+    "bot": "ui-showcase",
+    "kind": "action",
+    "name": "demo.card.buy",
+    "source": "Computed source registration; manual supplement"
+  },
+  {
+    "bot": "ui-showcase",
+    "kind": "action",
+    "name": "demo.card.info",
+    "source": "Computed source registration; manual supplement"
+  },
+  {
+    "bot": "ui-showcase",
+    "kind": "action",
+    "name": "demo.card.share",
+    "source": "Computed source registration; manual supplement"
+  },
+  {
+    "bot": "ui-showcase",
+    "kind": "view",
+    "name": "demo.article.save",
+    "source": "Computed source registration; manual supplement"
+  },
+  {
+    "bot": "ui-showcase",
+    "kind": "view",
+    "name": "demo.search.open",
+    "source": "Computed source registration; manual supplement"
+  },
+  {
+    "bot": "ui-showcase",
+    "kind": "options",
+    "name": "demo.search.suggest",
+    "source": "Computed source registration; manual supplement"
+  }
+]

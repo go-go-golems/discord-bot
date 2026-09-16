@@ -199,12 +199,30 @@ func (c *Client) decode(r socketmode.Request) (slackbot.Envelope, error) {
 		}
 		str := func(key string) string { v, _ := p.Event[key].(string); return v }
 		event := str("type")
+		if event == "message" && (str("subtype") == "message_changed" || str("subtype") == "message_deleted") {
+			event = str("subtype")
+		}
 		if p.Type != "event_callback" || !slackbot.SupportedEvent(event) {
 			return e, errors.New("unsupported event")
 		}
 		user := str("user")
 		if u, ok := p.Event["user"].(map[string]any); ok {
 			user, _ = u["id"].(string)
+		}
+		if user == "" {
+			for _, field := range []string{"message", "previous_message"} {
+				if message, ok := p.Event[field].(map[string]any); ok {
+					user, _ = message["user"].(string)
+					if edited, ok := message["edited"].(map[string]any); ok {
+						if editor, ok := edited["user"].(string); ok {
+							user = editor
+						}
+					}
+					if user != "" {
+						break
+					}
+				}
+			}
 		}
 		channel := str("channel")
 		if item, ok := p.Event["item"].(map[string]any); ok {

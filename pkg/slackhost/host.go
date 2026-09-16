@@ -32,3 +32,7 @@ func (h *Host) Close(ctx context.Context) error { return h.host.Close(ctx) }
 func Inspect(ctx context.Context, script string, timeout time.Duration) (slackbot.Descriptor, error) {
 	return jsslack.Inspect(ctx, script, timeout)
 }
+
+func (h *Host) InvokeVerb(ctx context.Context, name string) (any, error) {
+	return h.host.InvokeVerb(ctx, name)
+}

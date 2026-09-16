@@ -343,7 +343,7 @@ go run ./cmd/slack-bot help slack-bot-guide
 ```
 
 See [the bot development guide](pkg/slackdoc/slack-bot-guide.md), the
-[text bot](examples/slack-bots/ping/index.js), and the
+[Ping bot](examples/slack-bots/ping/index.js), and the
 [Block Kit showcase](examples/slack-bots/ui-showcase/index.js). External Slack
 connections are supported through `bots run`. Read the
 [UI DSL tutorial and reference](pkg/slackdoc/slack-ui-dsl.md) for builders and modal handlers.
@@ -365,3 +365,21 @@ without a management token. If a management token has expired, run
 If Slack returns `permissions_updated: true`, startup stops with an install
 command. Run it to grant the changed scopes, then start the bot again. Command-only
 changes normally do not require reinstalling. There is no automatic rate-limit retry.
+
+
+## Native Slack example collection
+
+All thirteen Discord example names have native Slack entries. The collection
+includes persistent knowledge/link stores, show management, Poker, archive
+export, moderation, and the full set of UI demonstration workflows. See the
+[example setup and platform differences guide](pkg/slackdoc/slack-example-ports.md)
+or `go run ./cmd/slack-bot help slack-example-ports` for commands, configuration,
+permission requirements and local test coverage.
+
+The ports use native Slack surfaces and explicitly document unsupported Discord
+semantics. The new workflows are locally tested; live workspace qualification is
+separate. Unified Demo also exposes local JSON verbs:
+
+```sh
+go run ./cmd/slack-bot bots invoke unified-demo status
+```

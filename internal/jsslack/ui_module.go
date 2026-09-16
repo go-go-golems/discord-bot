@@ -131,11 +131,11 @@ func newSlackTextInputBuilder(vm *goja.Runtime, actionID string) goja.Value {
 	must(vm, obj.Set("placeholder", func(call goja.FunctionCall) goja.Value { b.placeholder = argString(call, 0); return obj }))
 	must(vm, obj.Set("multiline", func(goja.FunctionCall) goja.Value { b.multiline = true; return obj }))
 	must(vm, obj.Set("length", func(call goja.FunctionCall) goja.Value {
-		min, max := int(call.Argument(0).ToInteger()), int(call.Argument(1).ToInteger())
-		if min < 0 || max < 1 || max > 3000 || min > max {
+		minimum, maximum := int(call.Argument(0).ToInteger()), int(call.Argument(1).ToInteger())
+		if minimum < 0 || maximum < 1 || maximum > 3000 || minimum > maximum {
 			panic(vm.NewTypeError("slack/ui.textInput.length: require 0 <= min <= max <= 3000"))
 		}
-		b.minLength, b.maxLength = min, max
+		b.minLength, b.maxLength = minimum, maximum
 		return obj
 	}))
 	must(vm, obj.Set("build", func(goja.FunctionCall) goja.Value {

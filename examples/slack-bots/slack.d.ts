@@ -8,7 +8,7 @@ declare module "slack" {
   export interface Context {
     id: string; teamId: string; channelId: string; userId: string;
     command: string; text: string;
-    event: {type: string; text: string; ts: string; threadTs: string; channelId: string; userId: string};
+    event: {data?: Record<string, JSONValue>; type: string; text: string; ts: string; threadTs: string; channelId: string; userId: string};
     action?: {type: string; actionId: string; blockId?: string; value?: string; selectedOption?: Record<string, JSONValue>; selectedOptions?: JSONValue[]; selection?: Record<string, JSONValue>; messageTs?: string; threadTs?: string};
     view?: {type: string; callbackId: string; privateMetadata?: string; id?: string; hash?: string};
     values?: {all: Record<string, Record<string, JSONValue>>; text(blockId: string, actionId: string): string | undefined};
@@ -18,12 +18,13 @@ declare module "slack" {
     config: Record<string, string | boolean | number>;
     reply(message: MessagePayload): Promise<MessageRef | {delivered: true; via: "response_url"}>;
     slack: {
-      messages: {post(message: PostMessage): Promise<MessageRef>; update(params: Record<string, JSONValue>): Promise<Record<string, JSONValue>>; delete(params: Record<string, JSONValue>): Promise<Record<string, JSONValue>>; ephemeral(params: Record<string, JSONValue>): Promise<Record<string, JSONValue>>; permalink(params: Record<string, JSONValue>): Promise<Record<string, JSONValue>>};
+      messages: {post(message: PostMessage): Promise<MessageRef>; update(params: Record<string, JSONValue>): Promise<Record<string, JSONValue>>; deleteAsUser(params: Record<string, JSONValue>): Promise<Record<string, JSONValue>>; delete(params: Record<string, JSONValue>): Promise<Record<string, JSONValue>>; ephemeral(params: Record<string, JSONValue>): Promise<Record<string, JSONValue>>; permalink(params: Record<string, JSONValue>): Promise<Record<string, JSONValue>>};
       conversations: Record<"history" | "replies" | "info" | "list" | "members" | "join" | "leave" | "setTopic" | "kick" | "archive", (params: Record<string, JSONValue>) => Promise<Record<string, JSONValue>>>;
       users: Record<"info" | "list", (params: Record<string, JSONValue>) => Promise<Record<string, JSONValue>>>;
       pins: Record<"add" | "remove" | "list", (params: Record<string, JSONValue>) => Promise<Record<string, JSONValue>>>;
       reactions: Record<"add" | "remove" | "get", (params: Record<string, JSONValue>) => Promise<Record<string, JSONValue>>>;
-      usergroups: Record<"list" | "members" | "setMembers", (params: Record<string, JSONValue>) => Promise<Record<string, JSONValue>>>;
+      usergroups: Record<"list" | "members" | "setMembers" | "setMembersAsUser", (params: Record<string, JSONValue>) => Promise<Record<string, JSONValue>>>;
+      admin: {removeUser(params: {team_id: string; user_id: string}): Promise<Record<string, JSONValue>>};
       workspace: {info(params: Record<string, JSONValue>): Promise<Record<string, JSONValue>>};
       files: {upload(params: {channel_id: string; filename: string; content: string; thread_ts?: string}): Promise<Record<string, JSONValue>>};
     };
@@ -34,10 +35,11 @@ declare module "slack" {
   }
   export interface Registration {
     configure(spec: {name: string; description?: string; scopes?: string[]; run?: {fields: Record<string, {type: "string" | "bool" | "number"; default?: string | boolean | number; required?: boolean; help?: string}>}}): void;
+    verb(name: string, spec: {description: string}, handler: (ctx: {config: Context["config"]}) => JSONValue): void;
     command(name: string, spec: {description: string}, handler: (ctx: Context) => MessagePayload | void | Promise<MessagePayload | void>): void;
     shortcut(spec: {callbackId: string; name: string; description: string; type: "message" | "global"}, handler: (ctx: Context) => void | Promise<void>): void;
     options(actionId: string, handler: (ctx: Context) => void | Promise<void>): void;
-    event(name: "app_mention" | "message" | "reaction_added" | "reaction_removed" | "member_joined_channel" | "member_left_channel" | "team_join", handler: (ctx: Context) => MessagePayload | void | Promise<MessagePayload | void>): void;
+    event(name: "app_mention" | "message" | "message_changed" | "message_deleted" | "user_change" | "reaction_added" | "reaction_removed" | "member_joined_channel" | "member_left_channel" | "team_join", handler: (ctx: Context) => MessagePayload | void | Promise<MessagePayload | void>): void;
     view(callbackId: string, handler: (ctx: Context) => void | Promise<void>): void;
     action(actionId: string, handler: (ctx: Context) => MessagePayload | void | Promise<MessagePayload | void>): void;
   }

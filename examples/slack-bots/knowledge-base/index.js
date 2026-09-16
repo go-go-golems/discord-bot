@@ -26,12 +26,30 @@ function ensure(ctx) {
 }
 function get(ctx, id) {
   ensure(ctx);
-  return store.query(
+  const exact = store.query(
     "SELECT * FROM knowledge WHERE team=? AND id=?",
     ctx.teamId,
     id,
   )[0];
+  if (exact) return exact;
+  const name = String(id || "")
+    .trim()
+    .toLowerCase();
+  return store.query("SELECT * FROM knowledge WHERE team=?", ctx.teamId).find(
+    (entry) =>
+      entry.title.toLowerCase() === name ||
+      entry.title
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/^-|-$/g, "") === name ||
+      String(entry.aliases || "")
+        .toLowerCase()
+        .split(",")
+        .map((s) => s.trim())
+        .includes(name),
+  );
 }
+
 function save(ctx, entry) {
   store.ensure(ctx);
   const id =
@@ -308,8 +326,23 @@ module.exports = defineBot(
       );
     });
     for (const name of ["article", "kb-article"])
-      command("/" + name, { description: "Read an entry by ID" }, async (ctx) =>
-        detail(get(ctx, ctx.text.trim())),
+      command(
+        "/" + name,
+        { description: "Read an entry by ID or slug; empty opens suggestions" },
+        async (ctx) => {
+          if (ctx.text.trim()) return detail(get(ctx, ctx.text.trim()));
+          await ctx.openModal(
+            ui
+              .modal("knowledge.open", "Find knowledge")
+              .input(
+                "entry",
+                "Entry",
+                ui.externalSelect("knowledge.suggest", { min_query_length: 0 }),
+              )
+              .submit("Open")
+              .build(),
+          );
+        },
       );
     for (const name of ["review", "kb-review"])
       command(

@@ -219,7 +219,7 @@ type ViewService interface {
 }
 
 func (i Invocation) Validate() error {
-	if i.TeamID == "" || i.UserID == "" {
+	if i.TeamID == "" || (i.UserID == "" && i.Event != "message_deleted") {
 		return Fail("invalid_argument", "dispatch", "teamId and userId are required")
 	}
 	kinds := 0
@@ -230,6 +230,9 @@ func (i Invocation) Validate() error {
 		kinds++
 	}
 	if i.Shortcut != nil {
+		if i.Shortcut.CallbackID == "" || (i.Shortcut.Type != "shortcut" && i.Shortcut.Type != "message_action") {
+			return Fail("invalid_argument", "dispatch", "shortcut requires a type and callbackId")
+		}
 		kinds++
 	}
 	if i.Action != nil {
@@ -280,6 +283,7 @@ type ShortcutDefinition struct {
 }
 
 type Descriptor struct {
+	Verbs       []Command            `json:"verbs,omitempty"`
 	Shortcuts   []ShortcutDefinition `json:"shortcuts,omitempty"`
 	Options     []string             `json:"options,omitempty"`
 	Scopes      []string             `json:"scopes,omitempty"`
@@ -375,7 +379,7 @@ func (r InteractionResponse) Validate() error {
 
 func SupportedEvent(name string) bool {
 	switch name {
-	case "app_mention", "message", "reaction_added", "reaction_removed", "member_joined_channel", "member_left_channel", "team_join":
+	case "app_mention", "message", "message_changed", "message_deleted", "user_change", "reaction_added", "reaction_removed", "member_joined_channel", "member_left_channel", "team_join":
 		return true
 	}
 	return false

@@ -22,7 +22,11 @@ func TestInitialNativeSlackPorts(t *testing.T) {
 			recorder := &slackbot.Recorder{}
 			host, err := slackhost.Load(context.Background(), d.ScriptPath, slackhost.Options{Messages: recorder, Views: recorder})
 			require.NoError(t, err)
-			defer host.Close(context.Background())
+			defer func() {
+				if err := host.Close(context.Background()); err != nil {
+					t.Error(err)
+				}
+			}()
 			require.NoError(t, host.Dispatch(context.Background(), slackbot.Invocation{TeamID: "T", ChannelID: "C", UserID: "U", Command: tc.command, Text: tc.text}, recorder))
 			ops := recorder.Operations()
 			require.Len(t, ops, 1)
@@ -38,7 +42,11 @@ func TestPokerRoundAndIsolation(t *testing.T) {
 	rec := &slackbot.Recorder{}
 	h, err := slackhost.Load(context.Background(), d.ScriptPath, slackhost.Options{Messages: rec, Views: rec, Operations: rec})
 	require.NoError(t, err)
-	defer h.Close(context.Background())
+	defer func() {
+		if err := h.Close(context.Background()); err != nil {
+			t.Error(err)
+		}
+	}()
 	dispatch := func(user, cmd, text string) string {
 		require.NoError(t, h.Dispatch(context.Background(), slackbot.Invocation{TeamID: "T", ChannelID: "C", UserID: user, Command: cmd, Text: text}, rec))
 		ops := rec.Operations()
@@ -60,7 +68,11 @@ func TestSupportDraftAndThreadWorkflows(t *testing.T) {
 	rec := &slackbot.Recorder{}
 	h, err := slackhost.Load(context.Background(), d.ScriptPath, slackhost.Options{Messages: rec, Views: rec, Operations: rec})
 	require.NoError(t, err)
-	defer h.Close(context.Background())
+	defer func() {
+		if err := h.Close(context.Background()); err != nil {
+			t.Error(err)
+		}
+	}()
 	i := slackbot.Invocation{TeamID: "T", ChannelID: "C", UserID: "U", Command: "/support-ticket", Text: "Printer"}
 	require.NoError(t, h.Dispatch(context.Background(), i, rec))
 	require.Equal(t, "ephemeral_reply", rec.Operations()[0].Kind)

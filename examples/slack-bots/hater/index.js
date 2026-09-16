@@ -53,7 +53,9 @@ module.exports = defineBot(({ configure, command, action, view, event }) => {
     { description: "Ask the bot to roast you" },
     async (ctx) => ({
       text:
-        (ctx.text.match(/<@[A-Z0-9]+>/) || ["<@" + ctx.userId + ">"])[0] +
+        (ctx.text.match(/<@[A-Z0-9]+(?:\|[^>]+)?>/) || [
+          "<@" + ctx.userId + ">",
+        ])[0] +
         " " +
         pick(ROASTS),
     }),

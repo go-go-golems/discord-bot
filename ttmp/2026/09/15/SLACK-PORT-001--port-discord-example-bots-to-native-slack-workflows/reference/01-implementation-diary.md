@@ -337,3 +337,113 @@ See Step 2 and the full-feature clarification in Step 1. **Assistant interpretat
 ### Technical details
 - New defaults use separate local SQLite filenames; manifest inspection never opens them.
 - No live workspace mutations or bot restarts were performed for these ports.
+
+## Step 7: Qualify native ports, finish operational contracts and publish the handoff
+
+Completed the source-to-Slack registration mapping and the remaining native host
+contracts. The collection now includes all 13 example names, explicit permission
+and token boundaries, persistent domain workflows, and CLI documentation. Local
+qualification is complete; live Slack acceptance remains a separate operational
+step requiring the desired installation and permissions.
+
+### Prompt Context
+See Step 2 for the authored request and Step 1 for the full-feature clarification.
+**Assistant interpretation:** Finish each native equivalent, preserve evidence,
+and deliver a usable intern guide and operations reference.
+**Inferred user intent:** Reviewable examples that can be developed locally and
+then installed without hidden platform or credential assumptions.
+**Commit (preceding code):** ac5a7c3 — feat(slack): port example workflows and verify persistence and state.
+
+### What I did
+- Added synchronous local verbs and `bots invoke`, with declared configuration,
+  host lifetime ownership and rejection of asynchronous verb results.
+- Completed message edit/delete and user-change decoding, native event scopes,
+  and explicit user-token operations. Added optional private user-token storage,
+  Glazed import-runtime fields and presence-only status output.
+- Preserved original message visibility during response-URL replacement by
+  omitting response_type; verified this wire behavior in a regression test.
+- Finished source capture, date parsing, card/review actions, archive metadata and
+  Show Space cancellation/reference retention. Added workflow regression tests.
+- Generated 167 literal source-handler mappings and 181 native registration
+  expectations. Archived 41 official pages with Defuddle and indexed their hashes.
+- Updated embedded CLI help, repository documentation and TypeScript declarations.
+- Uploaded the original intern guide and current operations handoff to
+  `/ai/2026/09/15/SLACK-PORT-001`; exact receipts are in artifacts.
+- Finished the earlier Obsidian project report and pushed vault commit f5d7b60.
+
+### Why
+- User-token operations must be deliberately selected, never silently substituted
+  for bot-token calls. Enterprise workspace removal remains separately gated.
+- Handler registration coverage needs a source-derived inventory, while workflow
+  correctness requires state, persistence, authorization and transport tests.
+- Native platform differences belong in the guide rather than compatibility code.
+
+### What worked
+- `GOCACHE=/tmp/go-build-cache-slack-ui GOWORK=off go test -buildvcs=false ./... -count=1` passed.
+- `go build -buildvcs=false ./...` and `go vet -buildvcs=false ./...` passed with the same cache/workspace settings.
+- Affected-package tests passed again after lint cleanup: internal/jsslack,
+  internal/slacktransport and pkg/slackcli.
+- Embedded `help slack-example-ports`, docmgr doctor and git diff checks passed.
+- Upload receipts report `OK: uploaded` for both documents. The current operations
+  handoff rendered as four Letter pages; the original design rendered as ten.
+
+### What didn't work
+- `golangci-lint run -v --timeout=5m ./cmd/... ./pkg/... ./internal/...` initially
+  reported 19 issues. Fixed task-introduced shadowing, unchecked test cleanup and
+  response writes, and URL predicates. Existing credentials-store cleanup,
+  showcase test cleanup, named dispatch returns and a redundant embedded-field
+  selector remain (nine findings); the final artifact enumerates them.
+- The first cleanup lint rerun could not persist facts under the read-only
+  `~/.cache/golangci-lint`. Reran with `GOLANGCI_LINT_CACHE=/tmp/golangci-slack-port`;
+  that exposed `error obtaining VCS status: exit status 128`. The final run also
+  set `GOFLAGS=-buildvcs=false` and produced the nine remaining lint findings.
+- glazed-lint still flags seven preexisting raw Cobra flag declarations in other
+  credential commands. The changed import-runtime command uses Glazed fields.
+- govulncheck reports eight reachable vulnerabilities involving two modules and
+  the Go standard library. Dependency/toolchain upgrades are outside this port;
+  the complete diagnostic is retained in artifacts/validation/govulncheck.txt.
+- `docmgr doc relate --doc-type ...` failed with an unknown flag. Used the actual
+  `--doc` path API successfully.
+- Worktree VCS stamping needs `-buildvcs=false` in this environment. Local HTTP
+  fixture tests require execution with loopback access; the successful runs used it.
+
+### What I learned
+- Defuddle may omit Slack method facts or Enterprise banners; saved prose alone
+  is insufficient to establish token-type and plan restrictions.
+- Slash-option autocomplete, Discord thread membership, role permissions and
+  moderation timeouts do not have identical native Slack operations. The matrix
+  records the available native workflow or absence of a platform equivalent.
+
+### What was tricky to build
+- Maintaining a public message's visibility during action replacement without
+  attaching an ephemeral response type inherited from ordinary replies.
+- Retaining a posted show reference before pinning, so partial API failure does
+  not lose the identity needed for cancellation or later updates.
+- Keeping independently imported user tokens across developer reinstall while
+  exposing only a presence boolean in status and rejecting absent-token calls.
+
+### What warrants a second pair of eyes
+- The acceptance matrix distinguishes registration assertions from behavior
+  evidence. It must not be interpreted as exhaustive live platform certification.
+- Modal API lookups still need to complete within Slack's receipt deadline.
+- Administrative operations depend on actual plan, token scopes and actor rights;
+  mocked successful requests cannot establish those rights in a real workspace.
+
+### What should be done in the future
+- Exercise the selected bots live after manifest synchronization/reinstallation.
+- Address the separately recorded existing lint and dependency/toolchain findings.
+
+### Code review instructions
+- Start with reference/02-source-handler-acceptance-matrix.md and the operations
+  handoff, then follow their source/test references.
+- Review internal/slacktransport/operations.go for explicit identity selection,
+  internal/jsslack/verbs.go for local execution and pkg/slackcli/port_workflows_test.go
+  for stateful behavior. Inspect artifacts/validation for raw check results.
+
+### Technical details
+- Framework and example checkpoint commits: 591dbff, 53c734a, a233250, b1d5142,
+  ac5a7c3. This entry accompanies the final qualification commit.
+- The handoff receipt is artifacts/handoff/upload-receipt-escalated.txt.
+- No live bot restart, workspace moderation or credential import was performed
+  during this final qualification step. Existing unrelated generated artifacts
+  are excluded from staging.

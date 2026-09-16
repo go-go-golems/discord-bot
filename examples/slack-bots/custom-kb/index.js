@@ -27,9 +27,10 @@ function search(ctx, q) {
 }
 function save(ctx, values) {
   store.ensure(ctx);
-  const [url, title, summary, tags] = values.map((v) => String(v || "").trim());
-  if (!/^https:\/\//.test(url) || title.length < 2)
-    throw Error("Use an HTTPS URL and a title of at least two characters.");
+  let [url, title, summary, tags] = values.map((v) => String(v || "").trim());
+  if (url && !/^https?:\/\//i.test(url)) url = "https://" + url;
+  if (!/^https?:\/\//i.test(url) || title.length < 2)
+    throw Error("Use a URL and a title of at least two characters.");
   const existing = store.query(
     "SELECT id FROM links WHERE team=? AND url=?",
     ctx.teamId,
@@ -113,7 +114,7 @@ module.exports = defineBot(({ configure, command, action, view, options }) => {
     await ctx.openModal(
       ui
         .modal("kb.add", "Add KB link")
-        .input("url", "HTTPS URL", ui.textInput("value"))
+        .input("url", "URL", ui.textInput("value"))
         .input("title", "Title", ui.textInput("value").length(2, 120))
         .input("summary", "Summary", ui.textInput("value").multiline(), {
           optional: true,

@@ -125,3 +125,16 @@ func TestAcceptedThenLostResponseIsNotRetried(t *testing.T) {
 	require.Equal(t, "delivery_unknown", domain.Code)
 	require.EqualValues(t, 1, count.Load())
 }
+
+func TestReplaceOriginalRetainsOriginalVisibility(t *testing.T) {
+	client := localClient(t, func(w http.ResponseWriter, r *http.Request) {
+		var body map[string]any
+		require.NoError(t, json.NewDecoder(r.Body).Decode(&body))
+		require.Equal(t, true, body["replace_original"])
+		require.NotContains(t, body, "response_type")
+		w.WriteHeader(http.StatusOK)
+	})
+	capability, err := client.responseCapability(client.origin.String() + "response")
+	require.NoError(t, err)
+	require.NoError(t, capability.(slackbot.UpdatingResponder).Replace(context.Background(), slackbot.MessagePayload{Text: "Page 2"}))
+}

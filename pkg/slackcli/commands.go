@@ -24,6 +24,7 @@ import (
 )
 
 type settings struct {
+	Verb                string `glazed:"verb"`
 	SkipManifestUpdate  bool   `glazed:"skip-manifest-update"`
 	ConfigTokenFile     string `glazed:"config-token-file"`
 	CredentialsFile     string `glazed:"credentials-file"`
@@ -55,7 +56,7 @@ func NewBotsCommand(logger zerolog.Logger) (*cobra.Command, error) {
 
 func newBotsCommand(logger zerolog.Logger, appClient *http.Client) (*cobra.Command, error) {
 	root := &cobra.Command{Use: "bots", Short: "Inspect, create, install and run Slack bots"}
-	for _, op := range []string{"list", "inspect", "manifest", "create-app", "install", "simulate", "run", "run-local"} {
+	for _, op := range []string{"list", "inspect", "invoke", "manifest", "create-app", "install", "simulate", "run", "run-local"} {
 		short := op + " a Slack bot (offline)"
 		if op == "create-app" {
 			short = "Create a Slack app from the bot's manifest using the Slack API"
@@ -73,6 +74,10 @@ func newBotsCommand(logger zerolog.Logger, appClient *http.Client) (*cobra.Comma
 		))
 		if op != "list" {
 			cmds.WithArguments(fields.New("name", fields.TypeString, fields.WithIsArgument(true), fields.WithRequired(true), fields.WithHelp("Bot name")))(desc)
+		}
+		if op == "invoke" {
+			cmds.WithArguments(fields.New("verb", fields.TypeString, fields.WithIsArgument(true), fields.WithRequired(true), fields.WithHelp("Local synchronous verb name")))(desc)
+			cmds.WithFlags(fields.New("bot-config-file", fields.TypeString, fields.WithHelp("Declared bot configuration JSON")))(desc)
 		}
 		if op == "run-local" {
 			cmds.WithFlags(fields.New("local-connection-file", fields.TypeString, fields.WithRequired(true), fields.WithHelp("JSON local mock connection file; never exposed to JavaScript")), fields.New("bot-config-file", fields.TypeString, fields.WithHelp("Optional declared bot configuration JSON")))(desc)
@@ -188,6 +193,23 @@ func (c *command) RunIntoWriter(ctx context.Context, vals *values.Values, w io.W
 		}
 		defer func() { _ = host.Close(context.Background()) }()
 		return client.Run(ctx, host)
+	case "invoke":
+		config := map[string]any{}
+		if s.ConfigFile != "" {
+			if err := readJSON(s.ConfigFile, &config); err != nil {
+				return err
+			}
+		}
+		h, err := slackhost.Load(ctx, d.ScriptPath, slackhost.Options{Config: config, Timeout: timeout, Logger: c.logger.Level(level)})
+		if err != nil {
+			return err
+		}
+		defer func() { _ = h.Close(context.Background()) }()
+		result, err := h.InvokeVerb(ctx, s.Verb)
+		if err != nil {
+			return err
+		}
+		return enc.Encode(result)
 	case "inspect":
 		return enc.Encode(d)
 	case "manifest":
@@ -259,15 +281,15 @@ func Manifest(d slackbot.Descriptor) map[string]any {
 		switch event {
 		case "app_mention":
 			scopes = append(scopes, "app_mentions:read")
-		case "message":
-			events = append(events, "message.channels")
-			scopes = append(scopes, "channels:history")
+		case "message", "message_changed", "message_deleted":
+			events = append(events, "message.channels", "message.groups", "message.im", "message.mpim")
+			scopes = append(scopes, "channels:history", "groups:history", "im:history", "mpim:history")
 			continue
 		case "reaction_added", "reaction_removed":
 			scopes = append(scopes, "reactions:read")
 		case "member_joined_channel", "member_left_channel":
 			scopes = append(scopes, "channels:read")
-		case "team_join":
+		case "team_join", "user_change":
 			scopes = append(scopes, "users:read")
 		}
 		events = append(events, event)
@@ -284,6 +306,15 @@ func Manifest(d slackbot.Descriptor) map[string]any {
 			scopes = append(scopes, scope)
 		}
 	}
+	eventSet := map[string]bool{}
+	uniqueEvents := []string{}
+	for _, event := range events {
+		if !eventSet[event] {
+			eventSet[event] = true
+			uniqueEvents = append(uniqueEvents, event)
+		}
+	}
+	events = uniqueEvents
 	dedup := []string{}
 	seen := map[string]bool{}
 	for _, scope := range scopes {

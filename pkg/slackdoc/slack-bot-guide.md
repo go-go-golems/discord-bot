@@ -332,7 +332,38 @@ cannot create database files. Use a separate database path for each bot; scripts
 must scope their records by workspace where one file serves multiple workspaces.
 The in-memory ctx.store remains suitable for transient per-workspace UI state.
 
-Message event subscriptions currently cover public channels. Register
-`event("message", handler)` for text triggers; bot-authored and subtype messages
-are filtered by ingress. Reaction and member lifecycle events are also available
-through their Slack names. `ctx.event.data` retains event-specific fields.
+
+
+## Local verbs and conditional administrative credentials
+
+Unified Demo exposes synchronous local verbs as well as Slack handlers:
+
+```sh
+go run ./cmd/slack-bot bots invoke unified-demo status
+go run ./cmd/slack-bot bots invoke unified-demo run
+```
+
+Register these with `verb(name, {description}, handler)`. The handler receives
+only declared configuration and returns JSON. Local verbs receive no transport
+services and must be synchronous. The `run` metadata verb returns
+`host-managed`; connect the bot with the regular `bots run` command.
+
+Enterprise workspace removal is available through `ctx.slack.admin.removeUser`.
+It uses a separately authorized user token with `admin.users:write`, never the
+bot token. The Moderation example additionally requires an authorized actor and
+`enableWorkspaceRemoval: true`. This removes a workspace membership; it is not
+an implementation of Discord ban/unban or timeout.
+
+`credentials import-runtime` accepts an optional `--user-token-file`. The token
+is stored privately with the selected installation, retained during subsequent
+developer installations, and represented only by `has_user_token` in status.
+The developerInstall flow does not issue this Enterprise administrative token;
+obtain it through the separately authorized Slack Admin API installation.
+Normal bot startup does not require it or request admin scopes in its manifest.
+
+Message handlers subscribe to public/private channels, direct messages and group
+DMs where the installed app has access. The manifest includes their corresponding
+history scopes. `message_changed`, `message_deleted` and `user_change` handlers
+are also supported. A deletion may have no actor ID; use `ctx.event.data` for
+its deleted timestamp. Registering these handlers does not confer access to
+conversations outside the app's membership and authorization.
