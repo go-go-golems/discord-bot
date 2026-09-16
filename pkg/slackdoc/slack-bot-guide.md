@@ -284,3 +284,55 @@ changes normally do not require reinstalling. There is no automatic rate-limit r
 - `slack-bot help slack-ui-dsl` — interactive UI tutorial and API reference.
 - `slack-bot bots run --help` — live startup flags.
 - `examples/slack-bots/slack.d.ts` — JavaScript-facing declarations.
+
+
+## Bot services and local SQLite
+
+`ctx.slack` exposes named message, conversation, user, user-group, pin, reaction,
+workspace and file operations. The authoritative method list is
+`pkg/slackbot/operations.go`. Except for the existing `messages.post` API, these
+methods accept Slack wire keys and return detached Slack JSON results. Example:
+
+```javascript
+const page = await ctx.slack.conversations.history({channel: ctx.channelId, limit: 100});
+const cursor = page.response_metadata.next_cursor;
+await ctx.slack.messages.update({channel: ctx.channelId, ts, text: "Updated", blocks: []});
+```
+
+Pagination is explicit: callers must continue with `cursor` until it is empty.
+Rate limits reject with `rate_limited`; the local framework does not retry or
+silently return partial history. Additional API scopes belong in configure's
+`scopes` array and require reinstallation. Administrative capabilities still
+depend on Slack's token and plan requirements; having a named method does not
+grant permission. `usergroups.setMembers` replaces the whole membership list.
+
+`files.upload({channel_id, filename, content, thread_ts?})` uploads a generated
+UTF-8 file through getUploadURLExternal, a token-free content transfer, and
+completeUploadExternal. Files are limited to 8 MiB. This method requires
+files:write and channel access. The older files.upload Web API is not used.
+
+`require("database")` exposes the existing go-go-goja SQLite module. Configure
+it lazily inside the first handler with a declared dbPath setting:
+
+```javascript
+const db = require("database");
+let ready = false;
+function ensure(ctx) {
+  if (ready) return;
+  db.configure("sqlite3", ctx.config.dbPath);
+  const result = db.exec("CREATE TABLE IF NOT EXISTS notes (id TEXT PRIMARY KEY, body TEXT)");
+  if (!result.success) throw new Error(result.error);
+  ready = true;
+}
+```
+
+The host owns this module and closes its connection after the runtime shuts down.
+Inspection rejects configure calls during registration, so list/manifest commands
+cannot create database files. Use a separate database path for each bot; scripts
+must scope their records by workspace where one file serves multiple workspaces.
+The in-memory ctx.store remains suitable for transient per-workspace UI state.
+
+Message event subscriptions currently cover public channels. Register
+`event("message", handler)` for text triggers; bot-authored and subtype messages
+are filtered by ingress. Reaction and member lifecycle events are also available
+through their Slack names. `ctx.event.data` retains event-specific fields.

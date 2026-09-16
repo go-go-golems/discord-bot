@@ -123,19 +123,20 @@ type Shortcut struct {
 }
 
 type Invocation struct {
-	TriggerID   string       `json:"triggerId,omitempty"`
-	Shortcut    *Shortcut    `json:"shortcut,omitempty"`
-	ID          string       `json:"id"`
-	TeamID      string       `json:"teamId"`
-	ChannelID   string       `json:"channelId"`
-	UserID      string       `json:"userId"`
-	Command     string       `json:"command,omitempty"`
-	Event       string       `json:"event,omitempty"`
-	Text        string       `json:"text"`
-	TS          string       `json:"ts,omitempty"`
-	ThreadTS    string       `json:"threadTs,omitempty"`
-	Action      *Action      `json:"action,omitempty"`
-	Interaction *Interaction `json:"interaction,omitempty"`
+	EventData   map[string]any `json:"eventData,omitempty"`
+	TriggerID   string         `json:"triggerId,omitempty"`
+	Shortcut    *Shortcut      `json:"shortcut,omitempty"`
+	ID          string         `json:"id"`
+	TeamID      string         `json:"teamId"`
+	ChannelID   string         `json:"channelId"`
+	UserID      string         `json:"userId"`
+	Command     string         `json:"command,omitempty"`
+	Event       string         `json:"event,omitempty"`
+	Text        string         `json:"text"`
+	TS          string         `json:"ts,omitempty"`
+	ThreadTS    string         `json:"threadTs,omitempty"`
+	Action      *Action        `json:"action,omitempty"`
+	Interaction *Interaction   `json:"interaction,omitempty"`
 }
 
 // Action is the normalized subset of a Slack block action needed by a local
@@ -243,8 +244,11 @@ func (i Invocation) Validate() error {
 	if i.Command != "" && i.ChannelID == "" {
 		return Fail("invalid_argument", "dispatch", "channelId is required for commands")
 	}
-	if i.Event != "" && (i.Event != "app_mention" || i.TS == "") {
-		return Fail("invalid_argument", "dispatch", "only app_mention with a string ts is supported")
+	if i.Event != "" && !SupportedEvent(i.Event) {
+		return Fail("invalid_argument", "dispatch", "unsupported event")
+	}
+	if (i.Event == "message" || i.Event == "app_mention") && i.TS == "" {
+		return Fail("invalid_argument", "dispatch", "message events require ts")
 	}
 	if i.Action != nil && i.Action.ID() == "" {
 		return Fail("invalid_argument", "dispatch", "action id is required")
@@ -367,4 +371,12 @@ func (r InteractionResponse) Validate() error {
 		}
 	}
 	return Fail("invalid_argument", "ack", "invalid acknowledgment payload")
+}
+
+func SupportedEvent(name string) bool {
+	switch name {
+	case "app_mention", "message", "reaction_added", "reaction_removed", "member_joined_channel", "member_left_channel", "team_join":
+		return true
+	}
+	return false
 }

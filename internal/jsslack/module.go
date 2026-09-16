@@ -78,8 +78,8 @@ func (h *Host) loader(vm *goja.Runtime, module *goja.Object) {
 		}))
 		must(vm, api.Set("event", func(c goja.FunctionCall) goja.Value {
 			name, ok := c.Argument(0).Export().(string)
-			if !ok || name != "app_mention" {
-				panic(vm.NewTypeError("only app_mention is supported"))
+			if !ok || !slackbot.SupportedEvent(name) {
+				panic(vm.NewTypeError("unsupported event"))
 			}
 			h.register(vm, "event:"+name, c.Argument(1))
 			h.descriptor.Events = append(h.descriptor.Events, name)

@@ -273,7 +273,7 @@ func (h *Host) buildContext(vm *goja.Runtime, s *invocationState) *goja.Object {
 		_ = json.Unmarshal(b, &detached)
 		must(vm, c.Set(key, detached))
 	}
-	must(vm, c.Set("event", map[string]any{"type": s.input.Event, "text": s.input.Text, "ts": s.input.TS, "threadTs": s.input.ThreadTS, "channelId": s.input.ChannelID, "userId": s.input.UserID}))
+	must(vm, c.Set("event", map[string]any{"data": s.input.EventData, "type": s.input.Event, "text": s.input.Text, "ts": s.input.TS, "threadTs": s.input.ThreadTS, "channelId": s.input.ChannelID, "userId": s.input.UserID}))
 	if s.input.Action != nil {
 		action := map[string]any{
 			"type": s.input.Action.Type, "actionId": s.input.Action.ActionID,
@@ -437,6 +437,7 @@ func (h *Host) buildContext(vm *goja.Runtime, s *invocationState) *goja.Object {
 	}))
 	slack := vm.NewObject()
 	must(vm, slack.Set("messages", messages))
+	h.addOperations(vm, s, slack, messages)
 	must(vm, c.Set("slack", slack))
 	logger := vm.NewObject()
 	for _, level := range []string{"debug", "info", "warn", "error"} {

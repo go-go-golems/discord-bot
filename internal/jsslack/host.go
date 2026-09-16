@@ -11,19 +11,23 @@ import (
 	"github.com/dop251/goja"
 	"github.com/dop251/goja_nodejs/require"
 	"github.com/go-go-golems/discord-bot/pkg/slackbot"
+	databasemod "github.com/go-go-golems/go-go-goja/modules/database"
 	"github.com/go-go-golems/go-go-goja/pkg/engine"
 	"github.com/pkg/errors"
 	"github.com/rs/zerolog"
 )
 
 type Options struct {
-	Messages slackbot.MessageService
-	Views    slackbot.ViewService
-	Config   map[string]any
-	Timeout  time.Duration
-	Logger   zerolog.Logger
+	Operations slackbot.OperationService
+	Messages   slackbot.MessageService
+	Views      slackbot.ViewService
+	Config     map[string]any
+	Timeout    time.Duration
+	Logger     zerolog.Logger
 }
 type Host struct {
+	operations slackbot.OperationService
+	database   *databasemod.DBModule
 	store      map[string]map[string]json.RawMessage // owner-only, indexed by workspace
 	runtime    *engine.Runtime
 	cancel     context.CancelFunc
@@ -70,8 +74,9 @@ func load(ctx context.Context, path string, opts Options, inspect bool) (*Host, 
 		return nil, errors.Wrap(err, "script path")
 	}
 	lifetime, cancel := context.WithCancel(ctx)
-	h := &Host{cancel: cancel, lifetime: lifetime, gate: make(chan struct{}, 1), timeout: opts.Timeout, messages: opts.Messages, views: opts.Views, logger: opts.Logger, handlers: map[string]goja.Callable{}, loading: true}
+	h := &Host{cancel: cancel, lifetime: lifetime, gate: make(chan struct{}, 1), timeout: opts.Timeout, messages: opts.Messages, operations: opts.Operations, views: opts.Views, logger: opts.Logger, handlers: map[string]goja.Callable{}, loading: true}
 	h.store = map[string]map[string]json.RawMessage{}
+	h.database = databasemod.New()
 	h.descriptor.ScriptPath = abs
 	factory, err := engine.NewRuntimeFactoryBuilder(engine.WithImplicitDefaultRegistryModules(false), engine.WithDataOnlyDefaultRegistryModules(false)).WithModules(&registrar{h}).Build()
 	if err != nil {
@@ -125,7 +130,12 @@ func (h *Host) Close(ctx context.Context) error {
 	case <-ctx.Done():
 		return ctx.Err()
 	}
-	h.closeOnce.Do(func() { h.closeErr = h.runtime.Close(ctx) })
+	h.closeOnce.Do(func() {
+		h.closeErr = h.runtime.Close(ctx)
+		if err := h.database.Close(); h.closeErr == nil {
+			h.closeErr = err
+		}
+	})
 	return h.closeErr
 }
 
@@ -151,6 +161,19 @@ var _ engine.RuntimeModuleRegistrar = (*registrar)(nil)
 func (*registrar) ID() string { return "slack" }
 func (r *registrar) RegisterRuntimeModule(_ *engine.RuntimeModuleRegistrationContext, reg *require.Registry) error {
 	reg.RegisterNativeModule("slack", r.host.loader)
+	reg.RegisterNativeModule("database", func(vm *goja.Runtime, module *goja.Object) {
+		r.host.database.Loader(vm, module)
+		exports := module.Get("exports").(*goja.Object)
+		must(vm, exports.Set("configure", func(driver, dsn string) error {
+			if r.host.loading {
+				return errors.New("database.configure is only available inside handlers; inspection must not open a database")
+			}
+			if driver != "sqlite3" {
+				return errors.New("Slack bots support sqlite3 databases")
+			}
+			return r.host.database.Configure(driver, dsn)
+		}))
+	})
 	registerUILoader(reg)
 	return nil
 }

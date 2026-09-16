@@ -14,7 +14,7 @@ reference/02-source-handler-acceptance-matrix.md.
 - [x] T2: Fix optional inputs and add native UI controls needed by the ports.
 - [x] T3: Complete shortcuts, options, modal-result and reply-update interactions.
 - [ ] T4: Implement operational Slack services and explicit capability scopes.
-- [ ] T5: Add lifecycle-owned persistent database capability and reopen tests.
+- [x] T5: Add lifecycle-owned persistent database capability and reopen tests.
 - [ ] T6: Finish announcements, ping, hater, interaction-types, unified-demo and poker.
 - [ ] T7: Port custom-kb and knowledge-base with persistence and review/search/export.
 - [ ] T8: Port support, show-space, archive-helper and moderation with authorization.

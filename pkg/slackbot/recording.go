@@ -8,6 +8,7 @@ import (
 
 // RecordedOperation is an offline side effect. It contains no tokens or response URLs.
 type RecordedOperation struct {
+	Params  map[string]any       `json:"params,omitempty"`
 	Kind    string               `json:"kind"`
 	Message *PostMessage         `json:"message,omitempty"`
 	Reply   *MessagePayload      `json:"reply,omitempty"`
@@ -144,4 +145,21 @@ func (r *Recorder) Replace(ctx context.Context, m MessagePayload) error {
 	defer r.mu.Unlock()
 	r.operations = append(r.operations, RecordedOperation{Kind: "replace_original", Reply: &m})
 	return nil
+}
+
+var _ OperationService = (*Recorder)(nil)
+
+// Call records attempted offline operations. Empty read results make simulation
+// deterministic; workflow tests should inject fixtures for non-empty responses.
+func (r *Recorder) Call(ctx context.Context, operation string, params map[string]any) (map[string]any, error) {
+	if err := ctx.Err(); err != nil {
+		return nil, err
+	}
+	if _, ok := OperationMethods()[operation]; !ok {
+		return nil, Fail("invalid_argument", operation, "unknown Slack operation")
+	}
+	r.mu.Lock()
+	defer r.mu.Unlock()
+	r.operations = append(r.operations, RecordedOperation{Kind: operation, Params: params})
+	return map[string]any{"ok": true, "messages": []any{}, "members": []any{}, "items": []any{}, "channels": []any{}, "usergroups": []any{}, "response_metadata": map[string]any{"next_cursor": ""}}, nil
 }

@@ -182,7 +182,7 @@ func (c *command) RunIntoWriter(ctx context.Context, vals *values.Values, w io.W
 				return err
 			}
 		}
-		host, err := slackhost.Load(ctx, d.ScriptPath, slackhost.Options{Messages: client, Views: client, Config: config, Timeout: timeout, Logger: c.logger.Level(level)})
+		host, err := slackhost.Load(ctx, d.ScriptPath, slackhost.Options{Messages: client, Operations: client, Views: client, Config: config, Timeout: timeout, Logger: c.logger.Level(level)})
 		if err != nil {
 			return err
 		}
@@ -207,7 +207,7 @@ func (c *command) RunIntoWriter(ctx context.Context, vals *values.Values, w io.W
 		if invocation.Interaction != nil {
 			invocation.Interaction.Ack = recorder
 		}
-		h, err := slackhost.Load(ctx, d.ScriptPath, slackhost.Options{Messages: recorder, Views: recorder, Config: config, Timeout: timeout, Logger: c.logger.Level(level)})
+		h, err := slackhost.Load(ctx, d.ScriptPath, slackhost.Options{Messages: recorder, Operations: recorder, Views: recorder, Config: config, Timeout: timeout, Logger: c.logger.Level(level)})
 		if err != nil {
 			return err
 		}
@@ -254,8 +254,23 @@ func Manifest(d slackbot.Descriptor) map[string]any {
 	if len(commands) > 0 || len(d.Shortcuts) > 0 {
 		scopes = append(scopes, "commands")
 	}
-	if len(d.Events) > 0 {
-		scopes = append(scopes, "app_mentions:read")
+	events := []string{}
+	for _, event := range d.Events {
+		switch event {
+		case "app_mention":
+			scopes = append(scopes, "app_mentions:read")
+		case "message":
+			events = append(events, "message.channels")
+			scopes = append(scopes, "channels:history")
+			continue
+		case "reaction_added", "reaction_removed":
+			scopes = append(scopes, "reactions:read")
+		case "member_joined_channel", "member_left_channel":
+			scopes = append(scopes, "channels:read")
+		case "team_join":
+			scopes = append(scopes, "users:read")
+		}
+		events = append(events, event)
 	}
 	for _, scope := range d.Scopes {
 		found := false
@@ -269,6 +284,15 @@ func Manifest(d slackbot.Descriptor) map[string]any {
 			scopes = append(scopes, scope)
 		}
 	}
+	dedup := []string{}
+	seen := map[string]bool{}
+	for _, scope := range scopes {
+		if !seen[scope] {
+			dedup = append(dedup, scope)
+			seen[scope] = true
+		}
+	}
+	scopes = dedup
 	features := map[string]any{"bot_user": map[string]any{"display_name": d.Name, "always_online": false}}
 	if len(commands) > 0 {
 		features["slash_commands"] = commands
@@ -282,7 +306,7 @@ func Manifest(d slackbot.Descriptor) map[string]any {
 	}
 	settings := map[string]any{"socket_mode_enabled": true, "interactivity": map[string]any{"is_enabled": true}}
 	if len(d.Events) > 0 {
-		settings["event_subscriptions"] = map[string]any{"bot_events": d.Events}
+		settings["event_subscriptions"] = map[string]any{"bot_events": events}
 	}
 	return map[string]any{"display_information": map[string]any{"name": d.Name}, "features": features, "oauth_config": map[string]any{"scopes": map[string]any{"bot": scopes}}, "settings": settings}
 }

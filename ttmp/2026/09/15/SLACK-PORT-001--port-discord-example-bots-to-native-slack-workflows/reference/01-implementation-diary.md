@@ -230,3 +230,53 @@ See Step 2. **Assistant interpretation:** Implement T3 before porting handlers t
 - Response payloads are retained by the existing ACK replay cache.
 - Native options use up to100 option objects; ack.update contains a validated modal view.
 - No new scheduler, reservation mechanism or compatibility API was introduced.
+
+## Step 5: Own SQLite lifetime and expose bounded operational services
+
+Added the existing go-go-goja database module to the Slack runtime and a finite named Web API surface for the remaining bot workflows. The host opens no database during inspection and closes owned connections after runtime shutdown. Pagination remains explicit so archive code cannot silently mistake one page for complete history.
+
+### Prompt Context
+See Step 2. **Assistant interpretation:** Implement persistence and operational foundations, then exercise them in the native examples. **Inferred user intent:** Complete useful bots with a small local runtime.
+
+### What I did
+- Registered one database module instance per host; restricted configure to sqlite3 and handler time.
+- Added a reopen test and inspection-side-effect test.
+- Added named message, conversation, user, user-group, pin, reaction and workspace operations with host-owned credentials.
+- Added the external file upload sequence with a token-free, destination-checked content transfer.
+- Added message/reaction/member event decoding and explicit scope merging.
+
+### Why
+- Reusing the database module avoids a second SQLite abstraction.
+- An allowlisted method map gives scripts useful operations without arbitrary token-bearing HTTP access.
+- Rate limiting is reported to the caller; no retry queue or service scheduler is added.
+
+### What worked
+- jsslack, slacktransport, slackcli and slackbot targeted tests passed for the database/service foundation.
+- The database counter persisted across independent host instances and inspection left the database path absent.
+- History tests preserved next_cursor and stable API permission errors, and rejected script-supplied token parameters.
+
+### What didn't work
+- No implementation failures observed at this checkpoint. New generated-file transfer coverage is recorded in the next validation checkpoint.
+
+### What I learned
+- The database module already uses the current owner context for queries and transactions; its existing ownership can be reused directly.
+
+### What was tricky to build
+- Preserving response_metadata is necessary for correct pagination; stripping all metadata would lose the next cursor.
+- External upload content must not carry the bot Authorization header.
+
+### What warrants a second pair of eyes
+- Bot tokens cannot perform all administrative methods; Enterprise/user-token operations remain outside this checkpoint.
+- Current message subscriptions cover public-channel messages; subtype edit/delete events are not yet implemented.
+
+### What should be done in the future
+- Complete operational scope/token coverage and the source-handler acceptance mapping.
+- Qualify every port with workflow tests rather than only discovery.
+
+### Code review instructions
+- Start at pkg/slackbot/operations.go, internal/slacktransport/operations.go, internal/jsslack/host.go and database_test.go.
+
+### Technical details
+- Generated files are UTF-8 content, maximum8 MiB.
+- Bot scopes are merged without duplicates. Native API parameters use Slack wire keys.
+- T5 persistence is complete; T4 still has conditional administrative and broader event coverage gaps.

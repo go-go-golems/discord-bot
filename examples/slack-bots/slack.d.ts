@@ -17,7 +17,16 @@ declare module "slack" {
     replaceOriginal(message: MessagePayload): Promise<void>;
     config: Record<string, string | boolean | number>;
     reply(message: MessagePayload): Promise<MessageRef | {delivered: true; via: "response_url"}>;
-    slack: {messages: {post(message: PostMessage): Promise<MessageRef>}};
+    slack: {
+      messages: {post(message: PostMessage): Promise<MessageRef>; update(params: Record<string, JSONValue>): Promise<Record<string, JSONValue>>; delete(params: Record<string, JSONValue>): Promise<Record<string, JSONValue>>; ephemeral(params: Record<string, JSONValue>): Promise<Record<string, JSONValue>>; permalink(params: Record<string, JSONValue>): Promise<Record<string, JSONValue>>};
+      conversations: Record<"history" | "replies" | "info" | "list" | "members" | "join" | "leave" | "setTopic" | "kick" | "archive", (params: Record<string, JSONValue>) => Promise<Record<string, JSONValue>>>;
+      users: Record<"info" | "list", (params: Record<string, JSONValue>) => Promise<Record<string, JSONValue>>>;
+      pins: Record<"add" | "remove" | "list", (params: Record<string, JSONValue>) => Promise<Record<string, JSONValue>>>;
+      reactions: Record<"add" | "remove" | "get", (params: Record<string, JSONValue>) => Promise<Record<string, JSONValue>>>;
+      usergroups: Record<"list" | "members" | "setMembers", (params: Record<string, JSONValue>) => Promise<Record<string, JSONValue>>>;
+      workspace: {info(params: Record<string, JSONValue>): Promise<Record<string, JSONValue>>};
+      files: {upload(params: {channel_id: string; filename: string; content: string; thread_ts?: string}): Promise<Record<string, JSONValue>>};
+    };
     store: {get(key: string): JSONValue | undefined; set(key: string, value: JSONValue): void; delete(key: string): boolean; keys(): string[]};
     log: {debug(message: string): void; info(message: string): void; warn(message: string): void; error(message: string): void};
     ack?: {accept(): Promise<void>; errors(errors: Record<string, string>): Promise<void>; update(view: Block): Promise<void>; options(options: Block[]): Promise<void>};
@@ -28,7 +37,7 @@ declare module "slack" {
     command(name: string, spec: {description: string}, handler: (ctx: Context) => MessagePayload | void | Promise<MessagePayload | void>): void;
     shortcut(spec: {callbackId: string; name: string; description: string; type: "message" | "global"}, handler: (ctx: Context) => void | Promise<void>): void;
     options(actionId: string, handler: (ctx: Context) => void | Promise<void>): void;
-    event(name: "app_mention", handler: (ctx: Context) => MessagePayload | void | Promise<MessagePayload | void>): void;
+    event(name: "app_mention" | "message" | "reaction_added" | "reaction_removed" | "member_joined_channel" | "member_left_channel" | "team_join", handler: (ctx: Context) => MessagePayload | void | Promise<MessagePayload | void>): void;
     view(callbackId: string, handler: (ctx: Context) => void | Promise<void>): void;
     action(actionId: string, handler: (ctx: Context) => MessagePayload | void | Promise<MessagePayload | void>): void;
   }

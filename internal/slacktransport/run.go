@@ -188,27 +188,31 @@ func (c *Client) decode(r socketmode.Request) (slackbot.Envelope, error) {
 	switch r.Type {
 	case socketmode.RequestTypeEventsAPI:
 		var p struct {
-			Type    string `json:"type"`
-			TeamID  string `json:"team_id"`
-			AppID   string `json:"api_app_id"`
-			EventID string `json:"event_id"`
-			Event   struct {
-				Type, Channel, User, Text, TS string
-				ThreadTS                      string `json:"thread_ts"`
-				BotID                         string `json:"bot_id"`
-				Subtype                       string `json:"subtype"`
-			}
+			Type    string         `json:"type"`
+			TeamID  string         `json:"team_id"`
+			AppID   string         `json:"api_app_id"`
+			EventID string         `json:"event_id"`
+			Event   map[string]any `json:"event"`
 		}
 		if err := json.Unmarshal(r.Payload, &p); err != nil {
 			return e, errors.New("invalid event payload")
 		}
-		if p.Type != "event_callback" || p.Event.Type != "app_mention" {
+		str := func(key string) string { v, _ := p.Event[key].(string); return v }
+		event := str("type")
+		if p.Type != "event_callback" || !slackbot.SupportedEvent(event) {
 			return e, errors.New("unsupported event")
 		}
-		e.AppID = p.AppID
-		e.EventID = p.EventID
-		e.Bot = p.Event.BotID != "" || p.Event.Subtype != ""
-		e.Invocation = slackbot.Invocation{ID: r.EnvelopeID, TeamID: p.TeamID, ChannelID: p.Event.Channel, UserID: p.Event.User, Event: p.Event.Type, Text: p.Event.Text, TS: p.Event.TS, ThreadTS: p.Event.ThreadTS}
+		user := str("user")
+		if u, ok := p.Event["user"].(map[string]any); ok {
+			user, _ = u["id"].(string)
+		}
+		channel := str("channel")
+		if item, ok := p.Event["item"].(map[string]any); ok {
+			channel, _ = item["channel"].(string)
+		}
+		e.AppID, e.EventID = p.AppID, p.EventID
+		e.Bot = str("bot_id") != "" || (event == "message" && str("subtype") != "")
+		e.Invocation = slackbot.Invocation{ID: r.EnvelopeID, TeamID: p.TeamID, ChannelID: channel, UserID: user, Event: event, Text: str("text"), TS: str("ts"), ThreadTS: str("thread_ts"), EventData: p.Event}
 	case socketmode.RequestTypeSlashCommands:
 		var p struct {
 			TeamID        string `json:"team_id"`
