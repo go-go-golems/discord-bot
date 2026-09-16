@@ -462,3 +462,71 @@ that artifact; implementation and test results are unchanged.
   acceptance mapping, operations help and upload receipts.
 - Remaining: live installation acceptance and separately recorded lint/toolchain
   debt. Unrelated generated files remain unstaged.
+
+## Step 9: Reject archive pagination cycles before publishing
+
+Resumed acceptance review after the completed port checkpoint. Archive Helper
+rejected consecutive duplicate cursors but could revisit an older cursor in a
+multi-page cycle. Because duplicate messages are excluded, that cycle could keep
+fetching until the invocation timeout. Track all returned cursors for the current
+export and reject any repeated cursor before another page request.
+
+### Prompt Context
+**User prompt (verbatim):** "continue"
+**Assistant interpretation:** Continue the outstanding acceptance work and fix
+concrete gaps without changing the running workspace installation unnecessarily.
+**Inferred user intent:** Advance the bot ports toward reliable everyday use.
+**Preceding commit:** 3b521db — documentation checkpoint after implementation 8fd3090.
+
+### What I did
+- Added an invocation-local cursor Set to archive-helper/index.js.
+- Added table-driven tests for consecutive repetition, A/B/A cycles and a second
+  page rate-limit error. Each asserts the bounded page count and no file upload
+  or success reply after failure.
+- Updated embedded example help with the partial-archive failure contract.
+- Inspected tmux session metadata; slack-ui-showcase still runs a Go process.
+
+### Why
+- Comparing only with the immediately preceding cursor misses longer cycles.
+- An export should not publish incomplete history after failed retrieval.
+- A Set is sufficient for this bounded local workflow; no retry manager or new
+  execution infrastructure is needed.
+
+### What worked
+- `GOCACHE=/tmp/go-build-cache-slack-ui GOWORK=off go test -buildvcs=false ./pkg/slackcli -run TestArchive -count=1` passed.
+- Existing successful pagination/attachment coverage passed alongside the three
+  new failure cases.
+- Process metadata was readable with the tool's approved elevated execution.
+
+### What didn't work
+- Sandboxed `tmux list-sessions` returned `error connecting to /tmp/tmux-1000/default (Operation not permitted)`.
+  Retried read-only inspection with elevated execution; no process was modified.
+- An exploratory read of pkg/slackbot/recorder.go failed because that filename
+  does not exist; no implementation depended on that read.
+
+### What I learned
+- Message deduplication does not establish pagination progress. Cursor progress
+  needs its own check even when the requested message count is bounded.
+
+### What was tricky to build
+- The cycle fixture returns duplicate messages deliberately so the message limit
+  cannot accidentally hide the cycle. An unexpected extra request fails the test
+  immediately instead of waiting for a timeout.
+
+### What warrants a second pair of eyes
+- This verifies local retrieval failure semantics, not live Slack rate limits or
+  whether the installed app can read a particular channel/thread.
+
+### What should be done in the future
+- Exercise selected installations live with the needed scopes and actor rights.
+  The existing showcase was left running and was not switched to another bot.
+
+### Code review instructions
+- Review the cursor loop in examples/slack-bots/archive-helper/index.js and
+  TestArchiveAbortsWithoutPartialUpload in pkg/slackcli/port_workflows_test.go.
+
+### Technical details
+- Cursor tracking is per archive call and stores only cursor strings.
+- Failure occurs before permalink generation or files.upload.
+- No API credentials were read, no external messages sent, and no live workspace
+  mutation performed in this continuation.

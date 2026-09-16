@@ -3,7 +3,8 @@ const { defineBot } = require("slack"),
 async function archive(ctx, channel, thread, limit, before) {
   const info = await ctx.slack.conversations.info({ channel });
   const messages = [],
-    seen = new Set();
+    seen = new Set(),
+    cursors = new Set();
   let cursor = "";
   do {
     const params = { channel, limit: Math.min(100, limit - messages.length) };
@@ -21,10 +22,11 @@ async function archive(ctx, channel, thread, limit, before) {
       }
     }
     const next = (page.response_metadata || {}).next_cursor || "";
-    if (next && next === cursor)
+    if (next && cursors.has(next))
       throw Error(
         "Slack returned a repeated pagination cursor; archive aborted.",
       );
+    if (next) cursors.add(next);
     cursor = next;
   } while (cursor && messages.length < limit);
   if (!messages.length) return "No messages found.";

@@ -192,3 +192,53 @@ func TestInteractionAvatarAndQuote(t *testing.T) {
 	require.Equal(t, "update", rec.Operations()[1].Ack.Kind)
 	require.Equal(t, "https://example.test/avatar.png", rec.Operations()[1].Ack.View.Blocks[0]["accessory"].(map[string]any)["image_url"])
 }
+
+func TestArchiveAbortsWithoutPartialUpload(t *testing.T) {
+	for _, tc := range []struct {
+		name      string
+		cursors   []string
+		failPage  int
+		wantPages int
+		wantError string
+	}{
+		{name: "repeated cursor", cursors: []string{"A", "A"}, wantPages: 2, wantError: "repeated pagination cursor"},
+		{name: "cursor cycle", cursors: []string{"A", "B", "A"}, wantPages: 3, wantError: "repeated pagination cursor"},
+		{name: "page failure", cursors: []string{"A"}, failPage: 2, wantPages: 2, wantError: "rate_limited"},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			rec := &slackbot.Recorder{}
+			pages := 0
+			services := operationFixture(func(ctx context.Context, op string, params map[string]any) (map[string]any, error) {
+				_, err := rec.Call(ctx, op, params)
+				if err != nil {
+					return nil, err
+				}
+				if op == "conversations.info" {
+					return map[string]any{"channel": map[string]any{"name": "test"}}, nil
+				}
+				if op != "conversations.history" {
+					return map[string]any{"ok": true}, nil
+				}
+				pages++
+				if pages == tc.failPage {
+					return nil, slackbot.Fail("rate_limited", op, "retry later")
+				}
+				if pages > len(tc.cursors) {
+					return nil, slackbot.Fail("unexpected_page", op, "cursor cycle was not rejected")
+				}
+				return map[string]any{
+					"messages":          []any{map[string]any{"ts": "1.000001", "text": "partial page"}},
+					"response_metadata": map[string]any{"next_cursor": tc.cursors[pages-1]},
+				}, nil
+			})
+			h := portHost(t, "archive-helper", nil, rec, services)
+			err := portCommand(h, rec, "T", "U", "/archive-channel", "500")
+			require.ErrorContains(t, err, tc.wantError)
+			require.Equal(t, tc.wantPages, pages)
+			for _, op := range rec.Operations() {
+				require.NotEqual(t, "files.upload", op.Kind, "failed archive must not publish partial history")
+				require.NotEqual(t, "reply", op.Kind, "failed archive must not report success")
+			}
+		})
+	}
+}

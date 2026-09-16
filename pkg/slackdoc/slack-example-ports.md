@@ -47,6 +47,11 @@ If scopes change, the CLI asks for reinstallation before connecting.
 | moderation | `/mod-summary`, `/mod-guidelines`, message/channel/member/group commands and conditional workspace removal described below. |
 | ui-showcase | `/ui-showcase`, `/demo-message`, `/demo-form`, `/demo-search`, `/find`, `/demo-review`, `/demo-confirm`, `/demo-pager`, `/demo-cards`, `/browse`, `/demo-selects`, `/demo-alias`, `/demo-alias-alt`. |
 
+Archive Helper aborts if a pagination cursor repeats anywhere in the traversal
+or a history request fails. It uploads only after retrieval completes, so those
+failures do not publish a partial archive. The requested message limit still
+intentionally bounds a successful export.
+
 Commands that open forms require a real trigger ID when running on Slack.
 Autocomplete is presented through an external select inside a modal; Slack does
 not support Discord-style slash-option autocomplete. For search commands, omit
