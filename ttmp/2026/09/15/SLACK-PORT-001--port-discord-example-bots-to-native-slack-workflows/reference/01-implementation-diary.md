@@ -447,3 +447,18 @@ then installed without hidden platform or credential assumptions.
 - No live bot restart, workspace moderation or credential import was performed
   during this final qualification step. Existing unrelated generated artifacts
   are excluded from staging.
+
+## Step 8: Record the final commit and normalize captured CLI output
+
+Committed the completed ports and handoff as **8fd3090**. The staged-file check
+also exposed trailing padding in captured CLI help that was untracked during the
+earlier working-tree check. Removed presentation-only trailing whitespace from
+that artifact; implementation and test results are unchanged.
+
+- Prompt context: Step 2.
+- Validation: final affected-package tests passed; the final lint run reports
+  nine existing findings. Full test/build/vet receipts remain in artifacts.
+- Review: the final commit contains the port code, 41 archived references,
+  acceptance mapping, operations help and upload receipts.
+- Remaining: live installation acceptance and separately recorded lint/toolchain
+  debt. Unrelated generated files remain unstaged.
