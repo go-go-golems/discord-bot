@@ -1,0 +1,8 @@
+{
+  "id": "ui-command-1",
+  "teamId": "T-DEVELOPMENT",
+  "channelId": "C-TEST",
+  "userId": "U-TEST",
+  "command": "/ui-showcase",
+  "text": ""
+}

@@ -1,0 +1,20 @@
+{
+  "id": "view-1",
+  "teamId": "T-DEVELOPMENT",
+  "userId": "U-TEST",
+  "interaction": {
+    "type": "view_submission",
+    "callbackId": "showcase.edit",
+    "privateMetadata": "showcase",
+    "viewId": "V1",
+    "viewHash": "H1",
+    "values": {
+      "title": {
+        "title_input": {
+          "type": "plain_text_input",
+          "value": "A saved title"
+        }
+      }
+    }
+  }
+}

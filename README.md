@@ -63,7 +63,7 @@ go run ./cmd/slack-bot bots run ping --profile go-go-golems --log-level debug
 ```
 
 The setup workflow is documented in the built-in help topic
-`slack-offline`: import a configuration-token pair, create an app from the
+`slack-bot-guide`: import a configuration-token pair, create an app from the
 manifest, install it into a workspace, and then run the selected profile.
 `bots run-local` remains available for loopback-only Socket Mode fixtures.
 
@@ -330,21 +330,23 @@ make goreleaser    # Snapshot release (local)
 
 MIT
 
-## Offline Slack development
+## Slack bot development
 
 A separate Slack host follows the same Go/JavaScript concepts. It currently supports
-inspection, manifest generation, fixture replay, and an explicit loopback-only Socket Mode runner:
+app creation and installation, automatic manifest sync, live Socket Mode,
+Block Kit interactions, and offline fixture replay:
 
 ```sh
 go run ./cmd/slack-bot bots list
 go run ./cmd/slack-bot bots simulate ping --event-file examples/slack-bots/fixtures/command.json
-go run ./cmd/slack-bot help slack-offline
+go run ./cmd/slack-bot help slack-bot-guide
 ```
 
-See [the offline API guide](pkg/slackdoc/slack-offline.md), the
+See [the bot development guide](pkg/slackdoc/slack-bot-guide.md), the
 [text bot](examples/slack-bots/ping/index.js), and the
 [Block Kit showcase](examples/slack-bots/ui-showcase/index.js). External Slack
-connections and broader retry/reconnect acceptance coverage remain planned.
+connections are supported through `bots run`. Read the
+[UI DSL tutorial and reference](pkg/slackdoc/slack-ui-dsl.md) for builders and modal handlers.
 The commands above need no credentials; `bots run-local` uses an explicit
 synthetic connection file.
 

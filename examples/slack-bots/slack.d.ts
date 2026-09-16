@@ -24,6 +24,7 @@ declare module "slack" {
     configure(spec: {name: string; description?: string; run?: {fields: Record<string, {type: "string" | "bool" | "number"; default?: string | boolean | number; required?: boolean; help?: string}>}}): void;
     command(name: string, spec: {description: string}, handler: (ctx: Context) => MessagePayload | void | Promise<MessagePayload | void>): void;
     event(name: "app_mention", handler: (ctx: Context) => MessagePayload | void | Promise<MessagePayload | void>): void;
+    view(callbackId: string, handler: (ctx: Context) => void | Promise<void>): void;
     action(actionId: string, handler: (ctx: Context) => MessagePayload | void | Promise<MessagePayload | void>): void;
   }
   export function defineBot(register: (api: Registration) => void): object;
@@ -42,7 +43,7 @@ declare module "slack/ui" {
   }
   export function button(actionId: string, label: string): ButtonBuilder;
   export function section(text: Block): Block;
-  export function actions(blockId: string, ...buttons: ButtonBuilder[]): Block;
+  export function actions(blockId: string, ...buttons: (ButtonBuilder | Block)[]): Block;
   export interface MessageBuilder {
     block(block: Block): MessageBuilder;
     build(): {text: string; blocks: Block[]};
@@ -55,10 +56,12 @@ declare module "slack/ui" {
     optional(): TextInputBuilder;
     build(): Block;
   }
+  export function input(blockId: string, label: string, input: TextInputBuilder | Block): Block;
   export function textInput(actionId: string): TextInputBuilder;
   export interface ModalBuilder {
     metadata(value: string): ModalBuilder;
-    input(blockId: string, label: string, input: TextInputBuilder): ModalBuilder;
+    input(blockId: string, label: string, input: TextInputBuilder | Block): ModalBuilder;
+    input(block: Block): ModalBuilder;
     submit(label: string): ModalBuilder;
     close(label: string): ModalBuilder;
     build(): Block;

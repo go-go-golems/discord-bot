@@ -1,19 +1,30 @@
 ---
-Title: Offline Slack bot development
-Slug: slack-offline
-Short: Inspect Slack bots, generate manifests, and replay invocation fixtures without credentials.
+Title: Slack bot development guide
+Slug: slack-bot-guide
+Short: Create, install, run, and test JavaScript Slack bots with the Go host.
 Topics:
 - slack
 - javascript
-- offline
+- development
+Commands:
+- bots
+- credentials
+Flags:
+- profile
+- skip-manifest-update
 IsTopLevel: true
 ShowPerDefault: true
 SectionType: GeneralTopic
 ---
 
-# Offline Slack bot development
+The `slack-bot` binary hosts JavaScript bots through go-go-goja and
+`require("slack")`. It supports app creation, developer installation, stored
+credentials, live Socket Mode, and offline inspection and simulation. Use
+`bots run` for Slack and `bots run-local` for a prepared loopback mock.
+Neither inspection nor simulation requires Slack credentials.
 
-The separate `slack-bot` binary uses the existing Go module and dependencies. It hosts JavaScript through go-go-goja and `require("slack")`. This release implements offline behavior, bounded ingress, and an explicit loopback-only Socket Mode runner. Inspection and simulation require no credentials or network. The local runner reads synthetic connection settings from a file; it cannot connect to real Slack.
+For Block Kit builders, buttons and modal submissions, read
+[Slack UI DSL](slack-ui-dsl.md), also available as `slack-bot help slack-ui-dsl`.
 
 Run these commands from the repository root:
 
@@ -63,11 +74,10 @@ A reserved credentials file can remain empty after failure; choose a new path
 after resolving the failure. Explicit token files do not depend on environment
 variables or the Slack CLI login store.
 
-The manifest is generated from the current JavaScript descriptor each time
-`bots manifest NAME` runs. The current CLI creates apps but does not update an
-existing app manifest. If commands or event subscriptions change during
-development, review the generated manifest and apply the update through the
-Slack CLI or app settings before reinstalling runtime credentials.
+The manifest is generated from the selected JavaScript descriptor.
+`bots manifest NAME` only prints it. `bots run NAME` updates the existing app
+before connecting, unless `--skip-manifest-update` is supplied. See
+“Automatic manifest sync on startup” below for token and reinstall requirements.
 
 ## Local credential profiles
 
@@ -104,8 +114,8 @@ dashboard/OAuth flow, then import the resulting tokens with
 `credentials import-runtime`.
 
 Refresh is explicit and replaces both tokens together. If it fails, import a
-new pair. Installation and runtime bot tokens remain manual; this store does
-not run a daemon or contact Slack during status/list commands.
+new pair. Runtime tokens are saved by `bots install` or imported explicitly; this store
+does not run a daemon or contact Slack during status/list commands.
 
 After manual installation, runtime tokens can be stored with:
 
@@ -185,7 +195,7 @@ The input is a normalized invocation, **not a raw Slack envelope**:
 }
 ```
 
-Use exactly one of `command` or `event`. A mention requires `ts`. Simulation returns recorded `post` and `ephemeral_reply` operations. Fake message references such as `offline.000001` are deliberately recognizable and cannot be used as Slack message IDs. A manifest is a review artifact; generation does not validate or install it with Slack.
+Use exactly one of `command`, `event`, `action`, or `interaction`. A mention requires `ts`. Simulation records `post`, `ephemeral_reply`, `open_view`, and `ack` operations. The UI DSL guide includes action and submission fixtures. Fake message references such as `offline.000001` are deliberately recognizable and cannot be used as Slack message IDs. A manifest is a review artifact; generation does not validate or install it with Slack.
 
 ## Go embedding
 
@@ -201,7 +211,7 @@ err = host.Dispatch(ctx, slackbot.Invocation{
 }, recorder)
 ```
 
-Import `pkg/slackbot` and `pkg/slackhost` from this repository's module. Inject context-aware `MessageService` and `Responder` implementations; keep any future tokens and response URLs private to those implementations. The public host serializes whole invocations, and a deadline interrupts CPU-bound JavaScript. Go services must honor context cancellation; a service that blocks forever cannot be forcibly stopped safely by the host.
+Import `pkg/slackbot` and `pkg/slackhost` from this repository's module. Inject context-aware `MessageService` and `Responder` implementations; keep tokens and response URLs private to those implementations. The public host serializes whole invocations, and a deadline interrupts CPU-bound JavaScript. Go services must honor context cancellation; a service that blocks forever cannot be forcibly stopped safely by the host.
 
 `slackbot.NewIngress` accepts a dispatcher, workspace/app policy, queue capacity, dedupe capacity and TTL. `Admit` takes a detached envelope and an `Acknowledger`. Receipt does not enter JS, duplicate events are keyed by workspace/event ID, and full queues/dedupe caches return `busy`. The worker uses host lifetime, not the ACK context. Shutdown cancels pending work. This is best-effort memory admission, not durable delivery. The local and remote transports connect this ingress to the pinned Slack SDK. Rate-limit retry policy remains intentionally out of scope.
 
@@ -216,16 +226,14 @@ go run ./cmd/slack-bot bots run ping --profile go-go-golems --log-level debug
 
 The profile must have an app ID, workspace installation, bot token, and
 Socket Mode app token. The command verifies the workspace with `auth.test`,
-acknowledges Socket Mode envelopes before dispatching JavaScript, and uses the
-existing ingress and host contracts for `app_mention` and slash-command
-handlers. Press Ctrl-C to cancel the connection. Use `--bot-config-file` for
+automatically acknowledges commands, mentions and block actions before handler completion. Modal submissions require the handler to choose `ctx.ack.accept()` or `ctx.ack.errors(...)`. Press Ctrl-C to cancel the connection. Use `--bot-config-file` for
 declared bot configuration fields; credentials never enter JavaScript.
 
 ## Validation and remaining work
 
 Run `go test ./...`, `go build ./...`, `go vet ./...`, and race tests for the Slack packages. On the development workstation the ticket's `scripts/04-go-offline.sh` selects the cached matching Go 1.26.4 toolchain, disables downloads and bypasses the mismatched parent workspace.
 
-A pinned SDK/mock probe, a complete local CLI scenario, and baseline HTTP/WebSocket fixtures exercise real network encoding. Extended reconnect and deployment tests, buttons, modals and xgoja providers remain pending. See the ticket's intern guide and local-testing plan for those phases. Offline tests require no Slack tokens or test-message authorization.
+A pinned SDK/mock probe, a complete local CLI scenario, and baseline HTTP/WebSocket fixtures exercise real network encoding. Messages, buttons, modal submissions and ACK handling are implemented; broader reconnect/deployment coverage and Slack-specific xgoja providers remain follow-up work. See the ticket's intern guide and local-testing plan for those phases. Offline tests require no Slack tokens or test-message authorization.
 
 ## Run against a prepared local mock
 
@@ -237,7 +245,7 @@ go run ./cmd/slack-bot bots run-local ping \
 
 The connection file contains `apiURL`, `botToken`, `appToken`, `teamID`, `appID`, optional `userID` (probe metadata), and optional `allowedChannels`. Use synthetic mock values, not real Slack credentials. `apiURL` must use HTTP, a literal loopback IP, an explicit port and a trailing slash, for example `http://127.0.0.1:12345/api/`. The mock launcher in `testdata/slack/mock/probe.ts` writes this file with mode 0600. No host connection field enters JavaScript. `--bot-config-file` supplies declared bot configuration separately.
 
-All HTTP and WebSocket dials are restricted to that exact host and port. HTTP proxies are disabled and redirects are rejected. A response URL from any other origin is rejected. The runner verifies the workspace using `auth.test`, decodes mention/command envelopes, acknowledges receipt independently of handler completion, and dispatches through bounded ingress to the actual JS host. SIGINT and SIGTERM cancel the process lifetime.
+All HTTP and WebSocket dials are restricted to that exact host and port. HTTP proxies are disabled and redirects are rejected. A response URL from any other origin is rejected. The runner verifies the workspace using `auth.test`, decodes mention, command, block-action and view-submission envelopes, acknowledges receipt independently of handler completion, and dispatches through bounded ingress to the actual JS host. SIGINT and SIGTERM cancel the process lifetime.
 
 Posting performs one SDK request. A 429 returns `rate_limited`; unknown or ambiguous failures return `delivery_unknown` without automatic retransmission. This conservative baseline avoids duplicating messages after a lost response; it does not yet implement method-scoped pacing or retry waits. Invalid input is rejected before HTTP.
 
@@ -258,3 +266,21 @@ without a management token. If a management token has expired, run
 If Slack returns `permissions_updated: true`, startup stops with an install
 command. Run it to grant the changed scopes, then start the bot again. Command-only
 changes normally do not require reinstalling. There is no automatic rate-limit retry.
+
+
+## Troubleshooting
+
+| Problem | Cause | Solution |
+| --- | --- | --- |
+| Slash command is not recognized | Slack has an older or different manifest | Start the intended bot without `--skip-manifest-update`; use the installed workspace. |
+| Startup says `token_expired` | Management access token expired | Run `credentials refresh` with the same profile/config directory and retry. |
+| Startup requests reinstall | Manifest changed permissions | Run the printed install command, then restart. |
+| Command reaches the process but has no handler | Selected script and Slack command differ | Check bot, script and command fields in debug logs. |
+| Modal Save only closes the dialog | Handler accepts without another operation | Add application state or an explicit follow-up; ACK is not a save operation. |
+| API posting returns `not_in_channel` | Bot lacks channel membership | Invite the bot to the target channel. |
+
+## See Also
+
+- `slack-bot help slack-ui-dsl` — interactive UI tutorial and API reference.
+- `slack-bot bots run --help` — live startup flags.
+- `examples/slack-bots/slack.d.ts` — JavaScript-facing declarations.

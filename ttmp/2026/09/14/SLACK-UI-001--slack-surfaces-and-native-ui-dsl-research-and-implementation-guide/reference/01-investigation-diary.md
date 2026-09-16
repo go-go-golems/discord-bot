@@ -662,3 +662,59 @@ The user observed that pong stopped when the showcase process stopped. That is e
 - SHA-256 of literal pong: 9795c5ff8937f23526ccb207a5684c1fc94a7854e19c021b39d944e51f5baef2.
 - SHA-256 of showcase fallback: ca43944b37f349fbf2841f100250fee5d35e7a800c2c6c29cf548c1a513a38ff.
 - Logs report text_sha256, text_bytes, blocks and delivered; no message bodies or response URLs.
+
+## Step 13: Split general Slack documentation from the UI DSL guide
+
+The offline help title no longer represented the installed-app lifecycle or live interactive runtime. Renamed the general guide and added an embedded tutorial/reference specifically for the implemented UI API.
+
+The user also reported that /golem-ping now fails and /ui-showcase works, and suggested the earlier pong observation may have been a misreading. There is no reproduced code defect behind that report; the investigation's test and diagnostics remain useful, but no root-cause fix is claimed.
+
+### Prompt Context
+**User prompt (verbatim):** "ok, do it"
+**Assistant interpretation:** Rename slack-offline to slack-bot-guide and write a separate slack-ui-dsl page, as proposed in the preceding response.
+**Inferred user intent:** Make current runtime documentation discoverable under accurate names and give bot authors a practical UI reference.
+
+### What I did
+- Renamed pkg/slackdoc/slack-offline.md and its help slug to slack-bot-guide.
+- Added slack-ui-dsl.md with message construction, button/modal routing, form state, ACK semantics, builder tables, supported limits, troubleshooting and source references.
+- Embedded both pages and updated README links and help commands.
+- Removed stale claims that live connections, manifest updates, buttons and modals were unimplemented.
+- Corrected fixture documentation to cover action and interaction invocations.
+- Added checked-in UI command/action/view fixtures and filled missing TypeScript declarations for view registration, ui.input and modal input overloads.
+
+### Why
+- General operations and UI authoring have different entry points; the old offline label obscured both.
+- API examples must describe the actual running implementation, especially that accepting a modal does not persist data or update a message.
+
+### What worked
+- Both go run ./cmd/slack-bot help slack-bot-guide and help slack-ui-dsl rendered the intended embedded pages.
+- All three documented bots simulate ui-showcase commands ran and recorded ephemeral_reply, open_view and ack respectively.
+- go test ./cmd/slack-bot ./pkg/slackdoc passed with the established cache and GOWORK=off.
+- No slack-offline references remain outside historical ticket files.
+
+### What didn't work
+- No failures in this documentation validation.
+- Reading the builder exposed an existing limitation: textInput().optional() puts optional on the element rather than the containing input block. The new guide documents this and the raw-input-block workaround.
+
+### What I learned
+- The declarations had omitted APIs already implemented in Go; view, ui.input and the modal input-block overload are now represented.
+- Research proposals and runtime API documentation must identify their different implementation status explicitly.
+
+### What was tricky to build
+- Avoiding claims of complete Block Kit validation or unsupported operations while documenting the raw JSON escape hatch.
+
+### What warrants a second pair of eyes
+- Compare the builder reference with internal/jsslack/ui_module.go when adding new methods.
+- Fix the optional-input builder separately with a wire-shape regression test.
+
+### What should be done in the future
+- Complete a stateful editor with a visible save result; the tutorial accurately documents the current log-only example.
+
+### Code review instructions
+- Read pkg/slackdoc/slack-bot-guide.md and slack-ui-dsl.md, then inspect doc.go's embedding and the README links.
+- Replay examples/slack-bots/fixtures/ui-*.json with bots simulate.
+
+### Technical details
+- New slugs: slack-bot-guide and slack-ui-dsl.
+- The old slug was removed without a compatibility alias.
+- This is a documentation/declaration/fixture change; the live runtime was not restarted.
