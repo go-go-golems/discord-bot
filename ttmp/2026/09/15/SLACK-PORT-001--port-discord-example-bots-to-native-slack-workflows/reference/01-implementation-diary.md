@@ -530,3 +530,23 @@ concrete gaps without changing the running workspace installation unnecessarily.
 - Failure occurs before permalink generation or files.upload.
 - No API credentials were read, no external messages sent, and no live workspace
   mutation performed in this continuation.
+
+## Step 10: Switch the live installation from UI Showcase to Poker
+
+User requested: "restart and run other bots. which ones and how tdo you run?"
+Stopped the prior showcase process with Ctrl-C and selected Poker as the first
+interactive port to try. The existing app/profile is reused, one bot at a time.
+
+- Ran `bots run poker --profile go-go-golems --log-level debug` via `go run
+  -buildvcs=false ./cmd/slack-bot` in tmux with GOWORK=off and the existing cache.
+- Manifest update succeeded but returned permissions_updated=true; startup
+  correctly stopped with instructions to reinstall.
+- Ran `bots install poker --profile go-go-golems --team-id T0C1UJMCPGA`.
+  It succeeded and saved installation go-go-golems-T0C1UJMCPGA without printing tokens.
+- Renamed the tmux session from slack-ui-showcase to slack-bot and launched Poker
+  again. User-facing trials are /poker-help, /poker-deal, /poker-draw and /poker-score.
+- This is an authorized live app configuration/install change. Command responses
+  still require the user's Slack interaction; process startup alone is not full
+  workflow acceptance. No bot-authored test message was sent by the agent.
+- Verified final startup at 21:58: manifest permissions_updated=false,
+  authentication succeeded, Socket Mode connected and hello received (PID227789).
