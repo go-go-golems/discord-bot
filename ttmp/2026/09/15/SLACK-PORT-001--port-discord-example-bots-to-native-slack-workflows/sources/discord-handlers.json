@@ -1,0 +1,938 @@
+[
+  {
+    "file": "examples/discord-bots/announcements.js",
+    "line": 10,
+    "kind": "command",
+    "name": "announce-preview"
+  },
+  {
+    "file": "examples/discord-bots/announcements.js",
+    "line": 26,
+    "kind": "event",
+    "name": "ready"
+  },
+  {
+    "file": "examples/discord-bots/archive-helper/index.js",
+    "line": 21,
+    "kind": "event",
+    "name": "ready"
+  },
+  {
+    "file": "examples/discord-bots/archive-helper/index.js",
+    "line": 27,
+    "kind": "command",
+    "name": "archive-channel"
+  },
+  {
+    "file": "examples/discord-bots/archive-helper/index.js",
+    "line": 101,
+    "kind": "messageCommand",
+    "name": "Archive Thread"
+  },
+  {
+    "file": "examples/discord-bots/custom-kb/index.js",
+    "line": 23,
+    "kind": "event",
+    "name": "ready"
+  },
+  {
+    "file": "examples/discord-bots/custom-kb/index.js",
+    "line": 28,
+    "kind": "command",
+    "name": "kb-add"
+  },
+  {
+    "file": "examples/discord-bots/custom-kb/index.js",
+    "line": 48,
+    "kind": "command",
+    "name": "kb-link"
+  },
+  {
+    "file": "examples/discord-bots/custom-kb/index.js",
+    "line": 62,
+    "kind": "command",
+    "name": "kb-search"
+  },
+  {
+    "file": "examples/discord-bots/custom-kb/index.js",
+    "line": 67,
+    "kind": "command",
+    "name": "kb-list"
+  },
+  {
+    "file": "examples/discord-bots/hater/index.js",
+    "line": 38,
+    "kind": "command",
+    "name": "hate"
+  },
+  {
+    "file": "examples/discord-bots/hater/index.js",
+    "line": 60,
+    "kind": "command",
+    "name": "roast"
+  },
+  {
+    "file": "examples/discord-bots/hater/index.js",
+    "line": 76,
+    "kind": "command",
+    "name": "compliment"
+  },
+  {
+    "file": "examples/discord-bots/hater/index.js",
+    "line": 90,
+    "kind": "component",
+    "name": "hater:roast"
+  },
+  {
+    "file": "examples/discord-bots/hater/index.js",
+    "line": 97,
+    "kind": "component",
+    "name": "hater:mercy"
+  },
+  {
+    "file": "examples/discord-bots/hater/index.js",
+    "line": 105,
+    "kind": "component",
+    "name": "hater:apology"
+  },
+  {
+    "file": "examples/discord-bots/hater/index.js",
+    "line": 114,
+    "kind": "modal",
+    "name": "hater:apology:submit"
+  },
+  {
+    "file": "examples/discord-bots/hater/index.js",
+    "line": 131,
+    "kind": "event",
+    "name": "ready"
+  },
+  {
+    "file": "examples/discord-bots/hater/index.js",
+    "line": 138,
+    "kind": "event",
+    "name": "messageCreate"
+  },
+  {
+    "file": "examples/discord-bots/interaction-types/index.js",
+    "line": 11,
+    "kind": "command",
+    "name": "hello"
+  },
+  {
+    "file": "examples/discord-bots/interaction-types/index.js",
+    "line": 18,
+    "kind": "command",
+    "name": "echo"
+  },
+  {
+    "file": "examples/discord-bots/interaction-types/index.js",
+    "line": 28,
+    "kind": "command",
+    "name": "fun"
+  },
+  {
+    "file": "examples/discord-bots/interaction-types/index.js",
+    "line": 48,
+    "kind": "subcommand",
+    "name": "fun"
+  },
+  {
+    "file": "examples/discord-bots/interaction-types/index.js",
+    "line": 59,
+    "kind": "subcommand",
+    "name": "fun"
+  },
+  {
+    "file": "examples/discord-bots/interaction-types/index.js",
+    "line": 70,
+    "kind": "userCommand",
+    "name": "Show Avatar"
+  },
+  {
+    "file": "examples/discord-bots/interaction-types/index.js",
+    "line": 85,
+    "kind": "messageCommand",
+    "name": "Quote Message"
+  },
+  {
+    "file": "examples/discord-bots/interaction-types/index.js",
+    "line": 98,
+    "kind": "event",
+    "name": "ready"
+  },
+  {
+    "file": "examples/discord-bots/knowledge-base/index.js",
+    "line": 18,
+    "kind": "event",
+    "name": "ready"
+  },
+  {
+    "file": "examples/discord-bots/knowledge-base/index.js",
+    "line": 28,
+    "kind": "event",
+    "name": "messageCreate"
+  },
+  {
+    "file": "examples/discord-bots/knowledge-base/index.js",
+    "line": 40,
+    "kind": "command",
+    "name": "remember"
+  },
+  {
+    "file": "examples/discord-bots/knowledge-base/index.js",
+    "line": 46,
+    "kind": "command",
+    "name": "teach"
+  },
+  {
+    "file": "examples/discord-bots/knowledge-base/index.js",
+    "line": 52,
+    "kind": "modal",
+    "name": "knowledge:submit"
+  },
+  {
+    "file": "examples/discord-bots/knowledge-base/index.js",
+    "line": 64,
+    "kind": "command",
+    "name": "ask"
+  },
+  {
+    "file": "examples/discord-bots/knowledge-base/index.js",
+    "line": 83,
+    "kind": "command",
+    "name": "kb-search"
+  },
+  {
+    "file": "examples/discord-bots/knowledge-base/index.js",
+    "line": 102,
+    "kind": "command",
+    "name": "article"
+  },
+  {
+    "file": "examples/discord-bots/knowledge-base/index.js",
+    "line": 124,
+    "kind": "command",
+    "name": "kb-article"
+  },
+  {
+    "file": "examples/discord-bots/knowledge-base/index.js",
+    "line": 146,
+    "kind": "command",
+    "name": "review"
+  },
+  {
+    "file": "examples/discord-bots/knowledge-base/index.js",
+    "line": 169,
+    "kind": "command",
+    "name": "kb-review"
+  },
+  {
+    "file": "examples/discord-bots/knowledge-base/index.js",
+    "line": 192,
+    "kind": "command",
+    "name": "recent"
+  },
+  {
+    "file": "examples/discord-bots/knowledge-base/index.js",
+    "line": 206,
+    "kind": "command",
+    "name": "kb-recent"
+  },
+  {
+    "file": "examples/discord-bots/knowledge-base/index.js",
+    "line": 220,
+    "kind": "command",
+    "name": "kb-verify"
+  },
+  {
+    "file": "examples/discord-bots/knowledge-base/index.js",
+    "line": 243,
+    "kind": "command",
+    "name": "kb-stale"
+  },
+  {
+    "file": "examples/discord-bots/knowledge-base/index.js",
+    "line": 266,
+    "kind": "command",
+    "name": "kb-reject"
+  },
+  {
+    "file": "examples/discord-bots/knowledge-base/lib/reactions.js",
+    "line": 2,
+    "kind": "event",
+    "name": "reactionAdd"
+  },
+  {
+    "file": "examples/discord-bots/moderation/lib/register-channel-moderation-commands.js",
+    "line": 2,
+    "kind": "command",
+    "name": "mod-fetch-channel"
+  },
+  {
+    "file": "examples/discord-bots/moderation/lib/register-channel-moderation-commands.js",
+    "line": 25,
+    "kind": "command",
+    "name": "mod-set-topic"
+  },
+  {
+    "file": "examples/discord-bots/moderation/lib/register-channel-moderation-commands.js",
+    "line": 39,
+    "kind": "command",
+    "name": "mod-set-slowmode"
+  },
+  {
+    "file": "examples/discord-bots/moderation/lib/register-events.js",
+    "line": 2,
+    "kind": "event",
+    "name": "messageCreate"
+  },
+  {
+    "file": "examples/discord-bots/moderation/lib/register-events.js",
+    "line": 9,
+    "kind": "event",
+    "name": "messageUpdate"
+  },
+  {
+    "file": "examples/discord-bots/moderation/lib/register-events.js",
+    "line": 24,
+    "kind": "event",
+    "name": "messageDelete"
+  },
+  {
+    "file": "examples/discord-bots/moderation/lib/register-events.js",
+    "line": 33,
+    "kind": "event",
+    "name": "reactionAdd"
+  },
+  {
+    "file": "examples/discord-bots/moderation/lib/register-events.js",
+    "line": 42,
+    "kind": "event",
+    "name": "reactionRemove"
+  },
+  {
+    "file": "examples/discord-bots/moderation/lib/register-events.js",
+    "line": 51,
+    "kind": "event",
+    "name": "guildMemberAdd"
+  },
+  {
+    "file": "examples/discord-bots/moderation/lib/register-events.js",
+    "line": 60,
+    "kind": "event",
+    "name": "guildMemberUpdate"
+  },
+  {
+    "file": "examples/discord-bots/moderation/lib/register-events.js",
+    "line": 70,
+    "kind": "event",
+    "name": "guildMemberRemove"
+  },
+  {
+    "file": "examples/discord-bots/moderation/lib/register-guild-role-lookup-commands.js",
+    "line": 2,
+    "kind": "command",
+    "name": "mod-fetch-guild"
+  },
+  {
+    "file": "examples/discord-bots/moderation/lib/register-guild-role-lookup-commands.js",
+    "line": 26,
+    "kind": "command",
+    "name": "mod-list-roles"
+  },
+  {
+    "file": "examples/discord-bots/moderation/lib/register-guild-role-lookup-commands.js",
+    "line": 51,
+    "kind": "command",
+    "name": "mod-fetch-role"
+  },
+  {
+    "file": "examples/discord-bots/moderation/lib/register-member-moderation-commands.js",
+    "line": 2,
+    "kind": "command",
+    "name": "mod-fetch-member"
+  },
+  {
+    "file": "examples/discord-bots/moderation/lib/register-member-moderation-commands.js",
+    "line": 29,
+    "kind": "command",
+    "name": "mod-list-members"
+  },
+  {
+    "file": "examples/discord-bots/moderation/lib/register-member-moderation-commands.js",
+    "line": 59,
+    "kind": "command",
+    "name": "mod-add-role"
+  },
+  {
+    "file": "examples/discord-bots/moderation/lib/register-member-moderation-commands.js",
+    "line": 74,
+    "kind": "command",
+    "name": "mod-timeout"
+  },
+  {
+    "file": "examples/discord-bots/moderation/lib/register-member-moderation-commands.js",
+    "line": 89,
+    "kind": "command",
+    "name": "mod-kick"
+  },
+  {
+    "file": "examples/discord-bots/moderation/lib/register-member-moderation-commands.js",
+    "line": 104,
+    "kind": "command",
+    "name": "mod-ban"
+  },
+  {
+    "file": "examples/discord-bots/moderation/lib/register-member-moderation-commands.js",
+    "line": 123,
+    "kind": "command",
+    "name": "mod-unban"
+  },
+  {
+    "file": "examples/discord-bots/moderation/lib/register-message-moderation-commands.js",
+    "line": 2,
+    "kind": "command",
+    "name": "mod-list-messages"
+  },
+  {
+    "file": "examples/discord-bots/moderation/lib/register-message-moderation-commands.js",
+    "line": 31,
+    "kind": "command",
+    "name": "mod-fetch-message"
+  },
+  {
+    "file": "examples/discord-bots/moderation/lib/register-message-moderation-commands.js",
+    "line": 53,
+    "kind": "command",
+    "name": "mod-pin"
+  },
+  {
+    "file": "examples/discord-bots/moderation/lib/register-message-moderation-commands.js",
+    "line": 67,
+    "kind": "command",
+    "name": "mod-unpin"
+  },
+  {
+    "file": "examples/discord-bots/moderation/lib/register-message-moderation-commands.js",
+    "line": 81,
+    "kind": "command",
+    "name": "mod-list-pins"
+  },
+  {
+    "file": "examples/discord-bots/moderation/lib/register-message-moderation-commands.js",
+    "line": 99,
+    "kind": "command",
+    "name": "mod-bulk-delete"
+  },
+  {
+    "file": "examples/discord-bots/moderation/lib/register-overview-commands.js",
+    "line": 2,
+    "kind": "command",
+    "name": "mod-summary"
+  },
+  {
+    "file": "examples/discord-bots/moderation/lib/register-overview-commands.js",
+    "line": 25,
+    "kind": "command",
+    "name": "mod-guidelines"
+  },
+  {
+    "file": "examples/discord-bots/ping/index.js",
+    "line": 7,
+    "kind": "command",
+    "name": "ping"
+  },
+  {
+    "file": "examples/discord-bots/ping/index.js",
+    "line": 56,
+    "kind": "command",
+    "name": "echo"
+  },
+  {
+    "file": "examples/discord-bots/ping/index.js",
+    "line": 83,
+    "kind": "command",
+    "name": "feedback"
+  },
+  {
+    "file": "examples/discord-bots/ping/index.js",
+    "line": 120,
+    "kind": "command",
+    "name": "search"
+  },
+  {
+    "file": "examples/discord-bots/ping/index.js",
+    "line": 161,
+    "kind": "command",
+    "name": "announce"
+  },
+  {
+    "file": "examples/discord-bots/ping/index.js",
+    "line": 183,
+    "kind": "component",
+    "name": "ping:panel"
+  },
+  {
+    "file": "examples/discord-bots/ping/index.js",
+    "line": 190,
+    "kind": "component",
+    "name": "ping:topic"
+  },
+  {
+    "file": "examples/discord-bots/ping/index.js",
+    "line": 198,
+    "kind": "modal",
+    "name": "feedback:submit"
+  },
+  {
+    "file": "examples/discord-bots/ping/index.js",
+    "line": 217,
+    "kind": "event",
+    "name": "ready"
+  },
+  {
+    "file": "examples/discord-bots/ping/index.js",
+    "line": 224,
+    "kind": "event",
+    "name": "guildCreate"
+  },
+  {
+    "file": "examples/discord-bots/ping/index.js",
+    "line": 231,
+    "kind": "event",
+    "name": "messageCreate"
+  },
+  {
+    "file": "examples/discord-bots/poker/index.js",
+    "line": 266,
+    "kind": "command",
+    "name": "poker-help"
+  },
+  {
+    "file": "examples/discord-bots/poker/index.js",
+    "line": 270,
+    "kind": "command",
+    "name": "poker-deal"
+  },
+  {
+    "file": "examples/discord-bots/poker/index.js",
+    "line": 274,
+    "kind": "command",
+    "name": "poker-draw"
+  },
+  {
+    "file": "examples/discord-bots/poker/index.js",
+    "line": 301,
+    "kind": "command",
+    "name": "poker-score"
+  },
+  {
+    "file": "examples/discord-bots/poker/index.js",
+    "line": 305,
+    "kind": "command",
+    "name": "poker-reset"
+  },
+  {
+    "file": "examples/discord-bots/poker/index.js",
+    "line": 309,
+    "kind": "command",
+    "name": "poker-rank"
+  },
+  {
+    "file": "examples/discord-bots/poker/index.js",
+    "line": 326,
+    "kind": "command",
+    "name": "poker-action"
+  },
+  {
+    "file": "examples/discord-bots/poker/index.js",
+    "line": 360,
+    "kind": "component",
+    "name": "poker:help:deal"
+  },
+  {
+    "file": "examples/discord-bots/poker/index.js",
+    "line": 362,
+    "kind": "component",
+    "name": "poker:help:score"
+  },
+  {
+    "file": "examples/discord-bots/poker/index.js",
+    "line": 364,
+    "kind": "component",
+    "name": "poker:help:rank"
+  },
+  {
+    "file": "examples/discord-bots/poker/index.js",
+    "line": 368,
+    "kind": "component",
+    "name": "poker:help:action"
+  },
+  {
+    "file": "examples/discord-bots/poker/index.js",
+    "line": 372,
+    "kind": "component",
+    "name": "poker:help:reset"
+  },
+  {
+    "file": "examples/discord-bots/poker/index.js",
+    "line": 374,
+    "kind": "modal",
+    "name": "poker:rank:submit"
+  },
+  {
+    "file": "examples/discord-bots/poker/index.js",
+    "line": 382,
+    "kind": "modal",
+    "name": "poker:action:submit"
+  },
+  {
+    "file": "examples/discord-bots/poker/index.js",
+    "line": 390,
+    "kind": "event",
+    "name": "ready"
+  },
+  {
+    "file": "examples/discord-bots/poker/index.js",
+    "line": 397,
+    "kind": "event",
+    "name": "messageCreate"
+  },
+  {
+    "file": "examples/discord-bots/show-space/index.js",
+    "line": 463,
+    "kind": "event",
+    "name": "ready"
+  },
+  {
+    "file": "examples/discord-bots/show-space/index.js",
+    "line": 473,
+    "kind": "command",
+    "name": "upcoming"
+  },
+  {
+    "file": "examples/discord-bots/show-space/index.js",
+    "line": 483,
+    "kind": "command",
+    "name": "debug"
+  },
+  {
+    "file": "examples/discord-bots/show-space/index.js",
+    "line": 498,
+    "kind": "command",
+    "name": "debug-roles"
+  },
+  {
+    "file": "examples/discord-bots/show-space/index.js",
+    "line": 513,
+    "kind": "command",
+    "name": "debug-my-roles"
+  },
+  {
+    "file": "examples/discord-bots/show-space/index.js",
+    "line": 528,
+    "kind": "component",
+    "name": "show-space:debug:summary"
+  },
+  {
+    "file": "examples/discord-bots/show-space/index.js",
+    "line": 541,
+    "kind": "component",
+    "name": "show-space:debug:member"
+  },
+  {
+    "file": "examples/discord-bots/show-space/index.js",
+    "line": 554,
+    "kind": "component",
+    "name": "show-space:debug:guild"
+  },
+  {
+    "file": "examples/discord-bots/show-space/index.js",
+    "line": 567,
+    "kind": "component",
+    "name": "show-space:debug:config"
+  },
+  {
+    "file": "examples/discord-bots/show-space/index.js",
+    "line": 580,
+    "kind": "component",
+    "name": "show-space:debug:checks"
+  },
+  {
+    "file": "examples/discord-bots/show-space/index.js",
+    "line": 593,
+    "kind": "command",
+    "name": "announce"
+  },
+  {
+    "file": "examples/discord-bots/show-space/index.js",
+    "line": 624,
+    "kind": "command",
+    "name": "add-show"
+  },
+  {
+    "file": "examples/discord-bots/show-space/index.js",
+    "line": 662,
+    "kind": "command",
+    "name": "show"
+  },
+  {
+    "file": "examples/discord-bots/show-space/index.js",
+    "line": 678,
+    "kind": "command",
+    "name": "cancel-show"
+  },
+  {
+    "file": "examples/discord-bots/show-space/index.js",
+    "line": 719,
+    "kind": "command",
+    "name": "archive-show"
+  },
+  {
+    "file": "examples/discord-bots/show-space/index.js",
+    "line": 752,
+    "kind": "command",
+    "name": "past-shows"
+  },
+  {
+    "file": "examples/discord-bots/show-space/index.js",
+    "line": 762,
+    "kind": "command",
+    "name": "unpin-old"
+  },
+  {
+    "file": "examples/discord-bots/show-space/index.js",
+    "line": 797,
+    "kind": "command",
+    "name": "archive-expired"
+  },
+  {
+    "file": "examples/discord-bots/support/index.js",
+    "line": 10,
+    "kind": "command",
+    "name": "support-ticket"
+  },
+  {
+    "file": "examples/discord-bots/support/index.js",
+    "line": 41,
+    "kind": "command",
+    "name": "support-status"
+  },
+  {
+    "file": "examples/discord-bots/support/index.js",
+    "line": 50,
+    "kind": "command",
+    "name": "support-fetch-thread"
+  },
+  {
+    "file": "examples/discord-bots/support/index.js",
+    "line": 77,
+    "kind": "command",
+    "name": "support-join-thread"
+  },
+  {
+    "file": "examples/discord-bots/support/index.js",
+    "line": 91,
+    "kind": "command",
+    "name": "support-leave-thread"
+  },
+  {
+    "file": "examples/discord-bots/support/index.js",
+    "line": 105,
+    "kind": "command",
+    "name": "support-start-thread"
+  },
+  {
+    "file": "examples/discord-bots/support/index.js",
+    "line": 155,
+    "kind": "event",
+    "name": "guildCreate"
+  },
+  {
+    "file": "examples/discord-bots/support/index.js",
+    "line": 159,
+    "kind": "event",
+    "name": "messageCreate"
+  },
+  {
+    "file": "examples/discord-bots/ui-showcase/index.js",
+    "line": 49,
+    "kind": "event",
+    "name": "ready"
+  },
+  {
+    "file": "examples/discord-bots/ui-showcase/index.js",
+    "line": 55,
+    "kind": "event",
+    "name": "messageCreate"
+  },
+  {
+    "file": "examples/discord-bots/ui-showcase/index.js",
+    "line": 66,
+    "kind": "command",
+    "name": "demo-message"
+  },
+  {
+    "file": "examples/discord-bots/ui-showcase/index.js",
+    "line": 96,
+    "kind": "component",
+    "name": "showcase:msg:primary"
+  },
+  {
+    "file": "examples/discord-bots/ui-showcase/index.js",
+    "line": 97,
+    "kind": "component",
+    "name": "showcase:msg:success"
+  },
+  {
+    "file": "examples/discord-bots/ui-showcase/index.js",
+    "line": 98,
+    "kind": "component",
+    "name": "showcase:msg:danger"
+  },
+  {
+    "file": "examples/discord-bots/ui-showcase/index.js",
+    "line": 100,
+    "kind": "component",
+    "name": "showcase:msg:select"
+  },
+  {
+    "file": "examples/discord-bots/ui-showcase/index.js",
+    "line": 115,
+    "kind": "command",
+    "name": "demo-form"
+  },
+  {
+    "file": "examples/discord-bots/ui-showcase/index.js",
+    "line": 128,
+    "kind": "modal",
+    "name": "showcase:form:submit"
+  },
+  {
+    "file": "examples/discord-bots/ui-showcase/index.js",
+    "line": 152,
+    "kind": "command",
+    "name": "demo-search"
+  },
+  {
+    "file": "examples/discord-bots/ui-showcase/index.js",
+    "line": 167,
+    "kind": "command",
+    "name": "find"
+  },
+  {
+    "file": "examples/discord-bots/ui-showcase/index.js",
+    "line": 342,
+    "kind": "command",
+    "name": "demo-review"
+  },
+  {
+    "file": "examples/discord-bots/ui-showcase/index.js",
+    "line": 510,
+    "kind": "command",
+    "name": "demo-confirm"
+  },
+  {
+    "file": "examples/discord-bots/ui-showcase/index.js",
+    "line": 530,
+    "kind": "component",
+    "name": "showcase:confirm:yes"
+  },
+  {
+    "file": "examples/discord-bots/ui-showcase/index.js",
+    "line": 542,
+    "kind": "component",
+    "name": "showcase:confirm:no"
+  },
+  {
+    "file": "examples/discord-bots/ui-showcase/index.js",
+    "line": 550,
+    "kind": "command",
+    "name": "demo-pager"
+  },
+  {
+    "file": "examples/discord-bots/ui-showcase/index.js",
+    "line": 602,
+    "kind": "command",
+    "name": "demo-cards"
+  },
+  {
+    "file": "examples/discord-bots/ui-showcase/index.js",
+    "line": 611,
+    "kind": "command",
+    "name": "browse"
+  },
+  {
+    "file": "examples/discord-bots/ui-showcase/index.js",
+    "line": 675,
+    "kind": "component",
+    "name": "showcase:buy:confirm"
+  },
+  {
+    "file": "examples/discord-bots/ui-showcase/index.js",
+    "line": 685,
+    "kind": "component",
+    "name": "showcase:buy:cancel"
+  },
+  {
+    "file": "examples/discord-bots/ui-showcase/index.js",
+    "line": 728,
+    "kind": "command",
+    "name": "demo-selects"
+  },
+  {
+    "file": "examples/discord-bots/ui-showcase/index.js",
+    "line": 758,
+    "kind": "component",
+    "name": "showcase:select:string"
+  },
+  {
+    "file": "examples/discord-bots/ui-showcase/index.js",
+    "line": 763,
+    "kind": "component",
+    "name": "showcase:select:user"
+  },
+  {
+    "file": "examples/discord-bots/ui-showcase/index.js",
+    "line": 768,
+    "kind": "component",
+    "name": "showcase:select:role"
+  },
+  {
+    "file": "examples/discord-bots/ui-showcase/index.js",
+    "line": 773,
+    "kind": "component",
+    "name": "showcase:select:channel"
+  },
+  {
+    "file": "examples/discord-bots/ui-showcase/index.js",
+    "line": 778,
+    "kind": "component",
+    "name": "showcase:select:mentionable"
+  },
+  {
+    "file": "examples/discord-bots/ui-showcase/index.js",
+    "line": 787,
+    "kind": "command",
+    "name": "demo-alias"
+  },
+  {
+    "file": "examples/discord-bots/ui-showcase/index.js",
+    "line": 803,
+    "kind": "command",
+    "name": "demo-alias-alt"
+  },
+  {
+    "file": "examples/discord-bots/unified-demo/index.js",
+    "line": 10,
+    "kind": "command",
+    "name": "unified-ping"
+  },
+  {
+    "file": "examples/discord-bots/unified-demo/index.js",
+    "line": 21,
+    "kind": "event",
+    "name": "ready"
+  }
+]

@@ -71,19 +71,9 @@ layout unit; an **action ID** selects an element handler; a modal's **callback
 ID** selects its submission handler. All of these are strings, as are Slack
 timestamps. Never convert a Slack timestamp into a floating-point number.
 
-```mermaid
-flowchart TD
-  Source["Discord source handlers"] --> Matrix["Feature parity matrix"]
-  Matrix --> Bots["Native Slack scripts"]
-  Bots --> Host["Go-owned JavaScript runtime"]
-  Host --> Domain["Detached domain operations"]
-  Domain --> Live["Slack transport"]
-  Domain --> Recorder["Offline recorder"]
-  Host --> DB["SQLite module"]
-  Live --> Slack["Slack workspace"]
-  Recorder --> Tests["Fixture assertions"]
-  DB --> Reopen["Close and reopen tests"]
-```
+![Architecture flow](architecture-flow.png)
+
+*Architecture diagram rendered with Graphviz for print readability.*
 
 The architecture has two testable boundaries. Runtime tests verify that an
 invocation chooses the right operation with the right data. Transport tests
@@ -364,29 +354,9 @@ It is application context, not proof of authorization. Revalidate the record
 and actor on submission. A process restart may remove transient UI state; a
 clear reopen instruction is sufficient.
 
-```mermaid
-sequenceDiagram
-  participant U as User
-  participant S as Slack
-  participant G as Go host
-  participant J as Bot handler
-  participant D as SQLite
-  U->>S: Click Edit
-  S->>G: Block action
-  G-->>S: Empty ACK
-  G->>J: Record/action context
-  J->>D: Read record
-  J->>G: Open modal with record metadata
-  G->>S: views.open
-  U->>S: Submit edit
-  S->>G: View submission
-  G->>J: Fields and ACK capability
-  J->>J: Validate actor and fields
-  J->>G: Accept or field errors
-  G-->>S: Submission ACK
-  J->>D: Commit valid edit
-  J->>G: Update visible result
-```
+![Review edit sequence](review-edit-sequence.png)
+
+*Review/edit sequence rendered with Graphviz for print readability.*
 
 The ordering of acceptance and persistence is an application decision. A short
 local transaction may finish before acceptance; a slow operation should accept

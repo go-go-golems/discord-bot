@@ -7,7 +7,13 @@ Topics:
 DocType: index
 Intent: long-term
 Owners: []
-RelatedFiles: []
+RelatedFiles:
+    - Path: repo://internal/jsslack/ui_module.go
+      Note: Native UI builders extended by ports
+    - Path: repo://internal/slacktransport/client.go
+      Note: Slack service implementations
+    - Path: repo://pkg/slackbot/model.go
+      Note: Existing domain and service contracts
 ExternalSources: []
 Summary: ""
 LastUpdated: 2026-09-15T20:06:08.439908875-04:00

@@ -88,3 +88,55 @@ Inventoried the 13 Discord examples and started independent Slack command/UI por
 ### Technical details
 - No production workspace operations or manifest updates were performed for the new ports.
 - Existing ping and ui-showcase remain the live-tested foundation.
+
+
+## Step 2: Publish the source-backed porting guide
+
+Completed the intern guide after publishing the separate Obsidian project report. The guide distinguishes existing functionality from planned interfaces, includes a source-handler inventory, and documents Slack platform restrictions without treating unsupported Discord semantics as implemented.
+
+### Prompt Context
+**User prompt (verbatim):** "then once you're done with the report and wrapping up your current work, then creat a new docmgr ticket for portingt he discord bots and Create  a detailed analysis / design / implementation guide that is for a new intern, explaining all the parts of the system needed to understand what it is, with prose paragraphs and bullet point sand pseudocode and diagrams and api references and file references. It should be very clear and technical. Store in the ticket and the nupload to remarkable.
+
+Then implement task by task, commit at appropriate intervals and keep a detailed diary as you work (using the diary format from the skill)"
+**Assistant interpretation:** Finish publication, establish an auditable implementation plan, then implement all equivalent workflows.
+**Inferred user intent:** A clear engineering handoff backed by working code and evidence.
+**Prior code commit:** bf79512 — initial example ports.
+
+### What I did
+- Published the 4,314-word runtime report to go-go-parc; commit f5d7b60 was pushed to main.
+- Wrote the port guide, inventoried 156 source registrations, and archived 20 official reference pages with Defuddle.
+- Added reproducible inventory and source archival scripts.
+- Rendered the guide and two diagrams to a 10-page PDF and uploaded it to /ai/2026/09/15/SLACK-PORT-001.
+
+### Why
+- The inventory prevents initial slash command demonstrations from being mistaken for full parity.
+- Archived sources keep API constraints reviewable alongside implementation decisions.
+
+### What worked
+- docmgr doctor passed after adding frontmatter to the acceptance matrix.
+- reMarkable returned OK: uploaded; artifacts/upload-receipt-escalated.txt records delivery.
+- Both rendered figures were visually inspected by the delivery specialist.
+
+### What didn't work
+- The first doctor check rejected missing acceptance-matrix frontmatter; corrected before publication.
+- Defuddle does not preserve all Slack method Facts tables; token and scope claims still need verification against the official pages when implemented.
+
+### What I learned
+- Message deletion, user-group membership replacement and workspace removal require materially different permissions and semantics from Discord moderation.
+
+### What was tricky to build
+- Keeping implementation proposals distinct from the existing runtime and from platform features without a direct equivalent.
+
+### What warrants a second pair of eyes
+- The source registration inventory is syntactic; helper-generated registrations must be reviewed manually.
+
+### What should be done in the future
+- Complete acceptance mappings and implement the nine task groups in tasks.md.
+
+### Code review instructions
+- Start with design-doc/01-port-inventory-and-implementation-plan.md and reference/02-source-handler-acceptance-matrix.md.
+- Use sources/index.json for source URLs and checksums.
+
+### Technical details
+- Source scripts, printable Markdown, figures, PDF and upload receipts are stored with this ticket.
+- This is a design and delivery checkpoint, not a full parity qualification.

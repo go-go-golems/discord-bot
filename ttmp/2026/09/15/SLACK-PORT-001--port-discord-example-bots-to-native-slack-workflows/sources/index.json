@@ -1,0 +1,102 @@
+[
+  {
+    "url": "https://docs.slack.dev/reference/methods/conversations.history/",
+    "file": "01-conversations.history.md",
+    "sha256": "785a442f2b2ef933520f58e6be1217211decd1e93258be297555e86a78c8c480"
+  },
+  {
+    "url": "https://docs.slack.dev/reference/methods/conversations.replies/",
+    "file": "02-conversations.replies.md",
+    "sha256": "737ad7d42dbd7963c545fe5f753a22ac64be8c5022ca0d6c3f7d648b04dd14e0"
+  },
+  {
+    "url": "https://docs.slack.dev/reference/methods/chat.update/",
+    "file": "03-chat.update.md",
+    "sha256": "53b33388966b51bea2cc97998f58bf4fbfb852ea43ec70701c1f456a93d61184"
+  },
+  {
+    "url": "https://docs.slack.dev/reference/methods/chat.delete/",
+    "file": "04-chat.delete.md",
+    "sha256": "4adeddc7ece5653d04e93c26eebe976ea5915e58242a3f50218f55fd60cb0189"
+  },
+  {
+    "url": "https://docs.slack.dev/reference/methods/chat.postEphemeral/",
+    "file": "05-chat.postEphemeral.md",
+    "sha256": "63d5bd68c359671132dc68e8d540111e3968841fd2dc2f230bc4b3cceb4be2fd"
+  },
+  {
+    "url": "https://docs.slack.dev/reference/methods/users.info/",
+    "file": "06-users.info.md",
+    "sha256": "4827ec33e360f11cec4a9cc4c44c1e9a8fbb62840463e4cc1bc3dbfbe7157726"
+  },
+  {
+    "url": "https://docs.slack.dev/reference/methods/usergroups.users.update/",
+    "file": "07-usergroups.users.update.md",
+    "sha256": "7adf6242ff17338abb74f4f036273c3a5a7d4520ae86c93530fa0d9b7940ba5c"
+  },
+  {
+    "url": "https://docs.slack.dev/reference/methods/conversations.kick/",
+    "file": "08-conversations.kick.md",
+    "sha256": "7f2b9ed1f1a2531aa65844730122251aad62f3460ca216bc6798ba250ebbd2b1"
+  },
+  {
+    "url": "https://docs.slack.dev/reference/methods/conversations.setTopic/",
+    "file": "09-conversations.setTopic.md",
+    "sha256": "f464ca1223f499c4dec2998aafe81a8cbcd83c49537469057de57d707b49d2ce"
+  },
+  {
+    "url": "https://docs.slack.dev/reference/methods/pins.add/",
+    "file": "10-pins.add.md",
+    "sha256": "cb047823c3b8d4c4bd845dbe9f14a796d7e1ff16a0bc23b771542257d2e32799"
+  },
+  {
+    "url": "https://docs.slack.dev/reference/methods/pins.remove/",
+    "file": "11-pins.remove.md",
+    "sha256": "4145b783638068d31a839a66ad4062b1e2172dc6813de0c6f0aaa825935b826c"
+  },
+  {
+    "url": "https://docs.slack.dev/reference/methods/pins.list/",
+    "file": "12-pins.list.md",
+    "sha256": "65d26381af591d4837410750caf90765d021df487d71d588cc72113ef1d401a2"
+  },
+  {
+    "url": "https://docs.slack.dev/reference/methods/files.getUploadURLExternal/",
+    "file": "13-files.getUploadURLExternal.md",
+    "sha256": "fc3e3039830974783571790f87b3a3c882469597d5bf98a439ed77fa208122f6"
+  },
+  {
+    "url": "https://docs.slack.dev/reference/methods/files.completeUploadExternal/",
+    "file": "14-files.completeUploadExternal.md",
+    "sha256": "e8c96d7e661c008c19ef5b27b4a6361cac3d6855c8305690d7d815fe56248545"
+  },
+  {
+    "url": "https://docs.slack.dev/reference/methods/reactions.add/",
+    "file": "15-reactions.add.md",
+    "sha256": "5613bb00e9c6d848b5cf9ac89febf4012c09b32d08d511c0bd528dccd99d3e66"
+  },
+  {
+    "url": "https://docs.slack.dev/reference/methods/admin.users.remove/",
+    "file": "16-admin.users.remove.md",
+    "sha256": "98f7c408e0e604f59a6cc2d9c0a8fbb611f387963d2a593aecac89697f4baafb"
+  },
+  {
+    "url": "https://docs.slack.dev/interactivity/implementing-shortcuts/",
+    "file": "17-implementing-shortcuts.md",
+    "sha256": "9cb471c0025e576cee2065865c3ef09116b90a8878b632e94a0536a1f44d3830"
+  },
+  {
+    "url": "https://docs.slack.dev/reference/block-kit/block-elements/",
+    "file": "18-block-elements.md",
+    "sha256": "9997c6ff8013594e157a872d44c12211f9094a355708d67d63f5729b5633bd90"
+  },
+  {
+    "url": "https://docs.slack.dev/reference/events/message/",
+    "file": "19-message.md",
+    "sha256": "dad5a322988974d9f6cf3176638f292498a9b5d586f7a94b812e1cbe855d5c89"
+  },
+  {
+    "url": "https://docs.slack.dev/reference/events/reaction_added/",
+    "file": "20-reaction_added.md",
+    "sha256": "d3f39c334d572585f7ad005dd8fd599500c8f8b7e57e2eda4a8cfff28640709d"
+  }
+]
