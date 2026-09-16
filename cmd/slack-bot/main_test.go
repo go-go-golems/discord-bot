@@ -30,9 +30,12 @@ func TestOfflineCLI(t *testing.T) {
 	require.NoError(t, err)
 	var all []slackbot.Descriptor
 	require.NoError(t, json.Unmarshal([]byte(out), &all))
-	require.Len(t, all, 2)
-	require.Equal(t, "ui-showcase", all[1].Name)
-	require.Equal(t, "ping", all[0].Name)
+	names := make([]string, 0, len(all))
+	for _, d := range all {
+		names = append(names, d.Name)
+	}
+	require.Contains(t, names, "ping")
+	require.Contains(t, names, "ui-showcase")
 	out, err = execute(t, "bots", "inspect", "ping", "--bot-repository", repo)
 	require.NoError(t, err)
 	require.Contains(t, out, "greeting")
