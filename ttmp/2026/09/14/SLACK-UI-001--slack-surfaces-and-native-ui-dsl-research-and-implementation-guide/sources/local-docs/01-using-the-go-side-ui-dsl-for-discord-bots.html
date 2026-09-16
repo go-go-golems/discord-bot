@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>using-the-go-side-ui-dsl-for-discord-bots</title>
+  <style>
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      background-color: #1a1a1a;
+      border: none;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+    /* CSS for syntax highlighting */
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      {   }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #7d9029; } /* Attribute */
+    code span.bn { color: #40a070; } /* BaseN */
+    code span.bu { color: #008000; } /* BuiltIn */
+    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4070a0; } /* Char */
+    code span.cn { color: #880000; } /* Constant */
+    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+    code span.dt { color: #902000; } /* DataType */
+    code span.dv { color: #40a070; } /* DecVal */
+    code span.er { color: #ff0000; font-weight: bold; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #40a070; } /* Float */
+    code span.fu { color: #06287e; } /* Function */
+    code span.im { color: #008000; font-weight: bold; } /* Import */
+    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+    code span.op { color: #666666; } /* Operator */
+    code span.ot { color: #007020; } /* Other */
+    code span.pp { color: #bc7a00; } /* Preprocessor */
+    code span.sc { color: #4070a0; } /* SpecialChar */
+    code span.ss { color: #bb6688; } /* SpecialString */
+    code span.st { color: #4070a0; } /* String */
+    code span.va { color: #19177c; } /* Variable */
+    code span.vs { color: #4070a0; } /* VerbatimString */
+    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+  </style>
+</head>
+<body>
+<h2 id="what-this-tutorial-is-for">What this tutorial is for</h2>
+<p>This tutorial explains how to build interactive Discord bot UIs with
+the Go-side <code>require("ui")</code> module. The important idea is
+simple: JavaScript still writes the fluent chains, but Go owns the
+builder state, the validation rules, and the final response shape.</p>
+<p>That gives you the ergonomics of a DSL without the usual cost of a
+free-form JS object soup.</p>
+<blockquote>
+<p>[!summary] - Use <code>require("ui")</code> when you want fluent
+JavaScript builders with host-enforced validation. - Let Go own the
+payload shape, especially for embeds, components, forms, and response
+types. - Use in-place updates for component clicks so pagers and cards
+stay in one message thread.</p>
+</blockquote>
+<h2 id="start-with-the-mental-model">1. Start with the mental model</h2>
+<p>The UI DSL is not a separate framework. It is a host-side builder
+layer that happens to be exposed to JavaScript.</p>
+<p>In practice that means:</p>
+<ul>
+<li>JavaScript decides <em>what</em> the bot should render.</li>
+<li>Go decides <em>whether</em> the request is valid.</li>
+<li>Discord decides <em>whether</em> the final response shape is
+acceptable.</li>
+</ul>
+<p>The middle step is the one that matters. When a JS bot returns a
+plain object, the host has to guess what the object means. When a bot
+returns a typed builder output from <code>require("ui")</code>, the host
+already knows whether it is dealing with an embed, a button row, a
+modal, or a whole message response.</p>
+<h2 id="use-the-module-from-javascript">2. Use the module from
+JavaScript</h2>
+<p>The showcase bot re-exports the Go module from its
+<code>lib/ui/index.js</code> entrypoint:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode js"><code class="sourceCode javascript"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>module<span class="op">.</span><span class="at">exports</span> <span class="op">=</span> {</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>  <span class="op">...</span><span class="pp">require</span>(<span class="st">&quot;ui&quot;</span>)<span class="op">,</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>  <span class="op">...</span><span class="pp">require</span>(<span class="st">&quot;./screen&quot;</span>)<span class="op">,</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+<p>That lets bot code stay small and readable:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode js"><code class="sourceCode javascript"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> ui <span class="op">=</span> <span class="pp">require</span>(<span class="st">&quot;./lib/ui&quot;</span>)</span></code></pre></div>
+<p>The builders then read naturally:</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode js"><code class="sourceCode javascript"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="cf">return</span> ui<span class="op">.</span><span class="fu">message</span>()</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  <span class="op">.</span><span class="fu">content</span>(<span class="st">&quot;Hello&quot;</span>)</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>  <span class="op">.</span><span class="fu">embed</span>(ui<span class="op">.</span><span class="fu">embed</span>(<span class="st">&quot;Greeting&quot;</span>)<span class="op">.</span><span class="fu">description</span>(<span class="st">&quot;Built with Go-side builders&quot;</span>))</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>  <span class="op">.</span><span class="fu">row</span>(ui<span class="op">.</span><span class="fu">button</span>(<span class="st">&quot;hello:ack&quot;</span><span class="op">,</span> <span class="st">&quot;OK&quot;</span><span class="op">,</span> <span class="st">&quot;primary&quot;</span>))</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>  <span class="op">.</span><span class="fu">build</span>()</span></code></pre></div>
+<h2 id="build-a-message-first">3. Build a message first</h2>
+<p>The message builder is the outer shell for most interaction
+responses.</p>
+<p>It is the place where you decide:</p>
+<ul>
+<li>content text</li>
+<li>embeds</li>
+<li>components</li>
+<li>ephemeral visibility</li>
+<li>whether the payload is an explicit follow-up or an in-place
+update</li>
+</ul>
+<div class="sourceCode" id="cb4"><pre class="sourceCode js"><code class="sourceCode javascript"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="cf">return</span> ui<span class="op">.</span><span class="fu">message</span>()</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  <span class="op">.</span><span class="fu">content</span>(<span class="st">&quot;Search results for **sqlite**&quot;</span>)</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>  <span class="op">.</span><span class="fu">ephemeral</span>()</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>  <span class="op">.</span><span class="fu">embed</span>(</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>    ui<span class="op">.</span><span class="fu">embed</span>(<span class="st">&quot;Results&quot;</span>)</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>      <span class="op">.</span><span class="fu">description</span>(<span class="st">&quot;Five matching entries&quot;</span>)</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>      <span class="op">.</span><span class="fu">field</span>(<span class="st">&quot;Status&quot;</span><span class="op">,</span> <span class="st">&quot;verified&quot;</span><span class="op">,</span> <span class="kw">true</span>)</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>  <span class="op">.</span><span class="fu">build</span>()</span></code></pre></div>
+<p>If a component handler should update the current message instead of
+creating a new one, the host now does that automatically for component
+interactions. If you explicitly want a new message, you can opt into a
+follow-up response.</p>
+<h2 id="layer-embeds-and-components-separately">4. Layer embeds and
+components separately</h2>
+<p>The <code>embed()</code> builder is for layout and structured
+display. The <code>button()</code> and <code>select()</code> builders
+are for interaction.</p>
+<p>That split matters because the host can validate each shape
+independently.</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode js"><code class="sourceCode javascript"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> card <span class="op">=</span> ui<span class="op">.</span><span class="fu">card</span>(selected<span class="op">.</span><span class="at">title</span>)</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  <span class="op">.</span><span class="fu">description</span>(selected<span class="op">.</span><span class="at">summary</span>)</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>  <span class="op">.</span><span class="fu">meta</span>(<span class="st">&quot;Status&quot;</span><span class="op">,</span> selected<span class="op">.</span><span class="at">status</span><span class="op">,</span> <span class="kw">true</span>)</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>  <span class="op">.</span><span class="fu">meta</span>(<span class="st">&quot;Category&quot;</span><span class="op">,</span> selected<span class="op">.</span><span class="at">category</span><span class="op">,</span> <span class="kw">true</span>)</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="cf">return</span> ui<span class="op">.</span><span class="fu">message</span>()</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>  <span class="op">.</span><span class="fu">embed</span>(card)</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>  <span class="op">.</span><span class="fu">row</span>(</span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>    ui<span class="op">.</span><span class="fu">select</span>(<span class="st">&quot;demo:article-select&quot;</span>)</span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>      <span class="op">.</span><span class="fu">placeholder</span>(<span class="st">&quot;Choose an article&quot;</span>)</span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>      <span class="op">.</span><span class="fu">optionEntries</span>(pageEntries<span class="op">.</span><span class="fu">map</span>((entry) <span class="kw">=&gt;</span> ({</span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>        <span class="dt">id</span><span class="op">:</span> entry<span class="op">.</span><span class="at">id</span><span class="op">,</span></span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>        <span class="dt">label</span><span class="op">:</span> entry<span class="op">.</span><span class="at">title</span><span class="op">,</span></span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>        <span class="dt">description</span><span class="op">:</span> entry<span class="op">.</span><span class="at">status</span><span class="op">,</span></span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>      }))<span class="op">,</span> selected<span class="op">.</span><span class="at">id</span>)</span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a>  <span class="op">.</span><span class="fu">build</span>()</span></code></pre></div>
+<p>A useful rule of thumb:</p>
+<ul>
+<li>use <code>embed()</code> for text the user reads</li>
+<li>use <code>button()</code> for direct actions</li>
+<li>use <code>select()</code> when the user is choosing among several
+similar items</li>
+</ul>
+<h3 id="every-component-customid-needs-a-handler">Every component
+<code>customId</code> needs a handler</h3>
+<p>Rendering a button or select is only half the job. Every interactive
+<code>customId</code> you put into a UI payload must also have a
+matching registered handler.</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode js"><code class="sourceCode javascript"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">command</span>(<span class="st">&quot;debug&quot;</span><span class="op">,</span> <span class="kw">async</span> (ctx) <span class="kw">=&gt;</span> {</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> ui<span class="op">.</span><span class="fu">message</span>()</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>    <span class="op">.</span><span class="fu">ephemeral</span>()</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>    <span class="op">.</span><span class="fu">content</span>(<span class="st">&quot;Debug dashboard&quot;</span>)</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>    <span class="op">.</span><span class="fu">row</span>(ui<span class="op">.</span><span class="fu">button</span>(<span class="st">&quot;show-space:debug:member&quot;</span><span class="op">,</span> <span class="st">&quot;Member&quot;</span><span class="op">,</span> <span class="st">&quot;primary&quot;</span>))</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>    <span class="op">.</span><span class="fu">build</span>()</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>})</span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a><span class="fu">component</span>(<span class="st">&quot;show-space:debug:member&quot;</span><span class="op">,</span> <span class="kw">async</span> (ctx) <span class="kw">=&gt;</span> {</span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> <span class="fu">renderDebugScreen</span>(ctx<span class="op">,</span> <span class="st">&quot;member&quot;</span>)</span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>})</span></code></pre></div>
+<p>If you forget the
+<code>component("show-space:debug:member", ...)</code> registration, the
+message still renders, but the click fails because the bot has no
+handler for that <code>customId</code>.</p>
+<p>This is the most common thing to miss when you convert a static
+response into a real interactive screen.</p>
+<h2 id="use-modal-forms-for-structured-input">5. Use modal forms for
+structured input</h2>
+<p>Modal forms are the right tool when the user needs to type several
+values at once.</p>
+<p>The Go-side DSL keeps the <code>customId</code> keys stable so the
+submit handler receives the expected values in
+<code>ctx.values</code>.</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode js"><code class="sourceCode javascript"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="cf">await</span> ctx<span class="op">.</span><span class="fu">showModal</span>(</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>  ui<span class="op">.</span><span class="fu">form</span>(<span class="st">&quot;feedback:submit&quot;</span><span class="op">,</span> <span class="st">&quot;Feedback Form&quot;</span>)</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>    <span class="op">.</span><span class="fu">text</span>(<span class="st">&quot;title&quot;</span><span class="op">,</span> <span class="st">&quot;Title&quot;</span>)</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>    <span class="op">.</span><span class="fu">required</span>()</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>    <span class="op">.</span><span class="fu">textarea</span>(<span class="st">&quot;feedback&quot;</span><span class="op">,</span> <span class="st">&quot;Your feedback&quot;</span>)</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>    <span class="op">.</span><span class="fu">required</span>()</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>    <span class="op">.</span><span class="fu">build</span>()</span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div>
+<p>In the modal submit handler:</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode js"><code class="sourceCode javascript"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">modal</span>(<span class="st">&quot;feedback:submit&quot;</span><span class="op">,</span> <span class="kw">async</span> (ctx) <span class="kw">=&gt;</span> {</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>  <span class="kw">const</span> title <span class="op">=</span> <span class="bu">String</span>((ctx<span class="op">.</span><span class="at">values</span> <span class="op">||</span> {})<span class="op">.</span><span class="at">title</span> <span class="op">||</span> <span class="st">&quot;&quot;</span>)<span class="op">.</span><span class="fu">trim</span>()</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>  <span class="kw">const</span> feedback <span class="op">=</span> <span class="bu">String</span>((ctx<span class="op">.</span><span class="at">values</span> <span class="op">||</span> {})<span class="op">.</span><span class="at">feedback</span> <span class="op">||</span> <span class="st">&quot;&quot;</span>)<span class="op">.</span><span class="fu">trim</span>()</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> ui<span class="op">.</span><span class="fu">message</span>()</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>    <span class="op">.</span><span class="fu">ephemeral</span>()</span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>    <span class="op">.</span><span class="fu">content</span>(<span class="st">&quot;Thanks for your feedback!&quot;</span>)</span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>    <span class="op">.</span><span class="fu">embed</span>(ui<span class="op">.</span><span class="fu">embed</span>(title <span class="op">||</span> <span class="st">&quot;Feedback&quot;</span>)<span class="op">.</span><span class="fu">description</span>(feedback <span class="op">||</span> <span class="st">&quot;(no content)&quot;</span>))</span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>    <span class="op">.</span><span class="fu">build</span>()</span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>})</span></code></pre></div>
+<h3 id="why-the-field-api-is-customid-first">Why the field API is
+customId-first</h3>
+<p>The modal field <code>customId</code> becomes the key in the
+submitted value map. That is why the field builder uses
+<code>text(customId, label)</code> and
+<code>textarea(customId, label)</code> rather than the other way
+around.</p>
+<p>If you get this wrong, the modal opens fine but the submit handler
+sees default or empty values.</p>
+<h2 id="let-the-host-own-in-place-updates">6. Let the host own in-place
+updates</h2>
+<p>A Discord component click is usually not a brand-new conversation. It
+is a mutation of the current screen.</p>
+<p>For that reason the host now treats component interactions as
+update-in-place by default. That means:</p>
+<ul>
+<li>a search pager edits the existing message</li>
+<li>a product card view updates the same card thread</li>
+<li>a review screen stays anchored to one message</li>
+</ul>
+<p>This is what the user expects when they click the next page or choose
+another result.</p>
+<p>Use a new follow-up message only when the interaction really should
+branch into a fresh thread of output.</p>
+<h2 id="separate-transient-screen-state-from-durable-data">7. Separate
+transient screen state from durable data</h2>
+<p>The UI DSL is about interaction shape, not storage strategy.</p>
+<p>Use <code>ctx.store</code> or a small flow helper when you only need
+per-runtime state for the current screen.</p>
+<p>Use <code>require("database")</code> when the state must survive
+restarts or be shared across the bot’s long-term data model.</p>
+<p>A good division looks like this:</p>
+<ul>
+<li><code>ctx.store</code> — current pager position, selected item,
+active screen state</li>
+<li><code>require("database")</code> — knowledge entries, review queues,
+persisted application data</li>
+</ul>
+<p>In the showcase bot, the screen helpers keep track of pagination and
+selection state, while the knowledge-base bot uses
+<code>require("database")</code> for durable SQLite-backed records.</p>
+<h3 id="the-persistence-rule">The persistence rule</h3>
+<p>If the information is part of the UI session, it can live in
+<code>ctx.store</code>.</p>
+<p>If the information is part of the bot’s memory, use
+<code>require("database")</code>.</p>
+<p>That distinction keeps UI code lightweight without pretending
+transient state is durable.</p>
+<h2 id="common-mistakes">8. Common mistakes</h2>
+<h3 id="passing-a-raw-object-instead-of-a-builder">Passing a raw object
+instead of a builder</h3>
+<p>This is the most common mistake when you first adopt the DSL:</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode js"><code class="sourceCode javascript"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>ui<span class="op">.</span><span class="fu">message</span>()<span class="op">.</span><span class="fu">embed</span>({ <span class="dt">title</span><span class="op">:</span> <span class="st">&quot;raw object&quot;</span> }) <span class="co">// wrong</span></span></code></pre></div>
+<p>Use the builder object instead:</p>
+<div class="sourceCode" id="cb10"><pre
+class="sourceCode js"><code class="sourceCode javascript"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>ui<span class="op">.</span><span class="fu">message</span>()<span class="op">.</span><span class="fu">embed</span>(ui<span class="op">.</span><span class="fu">embed</span>(<span class="st">&quot;Title&quot;</span>)<span class="op">.</span><span class="fu">description</span>(<span class="st">&quot;...&quot;</span>))<span class="op">.</span><span class="fu">build</span>()</span></code></pre></div>
+<h3 id="nesting-rows">Nesting rows</h3>
+<p><code>ui.pager()</code> already returns a row. Pass it to
+<code>ui.message().row(...)</code> and let the host flatten it.</p>
+<h3 id="treating-component-clicks-as-new-messages-by-default">Treating
+component clicks as new messages by default</h3>
+<p>That makes interactive UIs noisy. Prefer in-place updates.</p>
+<h3 id="forgetting-to-register-a-component-handler">Forgetting to
+register a component handler</h3>
+<p>A <code>ui.button("some:id", ...)</code> or
+<code>ui.select("some:id")</code> call does not automatically create the
+handler. You still need a matching
+<code>component("some:id", async (ctx) =&gt; { ... })</code>
+registration.</p>
+<h3 id="using-ctx.store-for-durable-state">Using <code>ctx.store</code>
+for durable state</h3>
+<p><code>ctx.store</code> is not a database. It is just session-level
+scratch state.</p>
+<h2 id="example-a-browsable-card-gallery">9. Example: a browsable card
+gallery</h2>
+<div class="sourceCode" id="cb11"><pre
+class="sourceCode js"><code class="sourceCode javascript"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="kw">function</span> <span class="fu">renderProducts</span>(ctx<span class="op">,</span> products<span class="op">,</span> selected) {</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> ui<span class="op">.</span><span class="fu">message</span>()</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>    <span class="op">.</span><span class="fu">ephemeral</span>()</span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>    <span class="op">.</span><span class="fu">content</span>(<span class="st">&quot;Product catalog&quot;</span>)</span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>    <span class="op">.</span><span class="fu">embed</span>(</span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>      ui<span class="op">.</span><span class="fu">card</span>(selected<span class="op">.</span><span class="at">name</span>)</span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>        <span class="op">.</span><span class="fu">description</span>(selected<span class="op">.</span><span class="at">description</span>)</span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>        <span class="op">.</span><span class="fu">meta</span>(<span class="st">&quot;Price&quot;</span><span class="op">,</span> <span class="vs">`$</span><span class="sc">${</span>selected<span class="op">.</span><span class="at">price</span><span class="op">.</span><span class="fu">toFixed</span>(<span class="dv">2</span>)<span class="sc">}</span><span class="vs">`</span><span class="op">,</span> <span class="kw">true</span>)</span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>        <span class="op">.</span><span class="fu">meta</span>(<span class="st">&quot;Stock&quot;</span><span class="op">,</span> <span class="bu">String</span>(selected<span class="op">.</span><span class="at">stock</span>)<span class="op">,</span> <span class="kw">true</span>)</span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a>    <span class="op">.</span><span class="fu">row</span>(</span>
+<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a>      ui<span class="op">.</span><span class="fu">select</span>(<span class="st">&quot;catalog:select&quot;</span>)</span>
+<span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a>        <span class="op">.</span><span class="fu">placeholder</span>(<span class="st">&quot;Choose a product&quot;</span>)</span>
+<span id="cb11-14"><a href="#cb11-14" aria-hidden="true" tabindex="-1"></a>        <span class="op">.</span><span class="fu">optionEntries</span>(products<span class="op">.</span><span class="fu">map</span>((p) <span class="kw">=&gt;</span> ({</span>
+<span id="cb11-15"><a href="#cb11-15" aria-hidden="true" tabindex="-1"></a>          <span class="dt">id</span><span class="op">:</span> p<span class="op">.</span><span class="at">id</span><span class="op">,</span></span>
+<span id="cb11-16"><a href="#cb11-16" aria-hidden="true" tabindex="-1"></a>          <span class="dt">label</span><span class="op">:</span> p<span class="op">.</span><span class="at">name</span><span class="op">,</span></span>
+<span id="cb11-17"><a href="#cb11-17" aria-hidden="true" tabindex="-1"></a>          <span class="dt">description</span><span class="op">:</span> <span class="vs">`$</span><span class="sc">${</span>p<span class="op">.</span><span class="at">price</span><span class="op">.</span><span class="fu">toFixed</span>(<span class="dv">2</span>)<span class="sc">}</span><span class="vs">`</span><span class="op">,</span></span>
+<span id="cb11-18"><a href="#cb11-18" aria-hidden="true" tabindex="-1"></a>        }))<span class="op">,</span> selected<span class="op">.</span><span class="at">id</span>)</span>
+<span id="cb11-19"><a href="#cb11-19" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb11-20"><a href="#cb11-20" aria-hidden="true" tabindex="-1"></a>    <span class="op">.</span><span class="fu">row</span>(ui<span class="op">.</span><span class="fu">pager</span>(<span class="st">&quot;catalog:prev&quot;</span><span class="op">,</span> <span class="st">&quot;catalog:next&quot;</span><span class="op">,</span> { <span class="dt">hasPrevious</span><span class="op">:</span> <span class="kw">true</span><span class="op">,</span> <span class="dt">hasNext</span><span class="op">:</span> <span class="kw">true</span> }))</span>
+<span id="cb11-21"><a href="#cb11-21" aria-hidden="true" tabindex="-1"></a>    <span class="op">.</span><span class="fu">build</span>()</span>
+<span id="cb11-22"><a href="#cb11-22" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+<p>This is the pattern to aim for:</p>
+<ul>
+<li>one message</li>
+<li>one embed describing the current screen</li>
+<li>one select for choosing a record</li>
+<li>one pager row for navigation</li>
+<li>one response type that updates in place</li>
+</ul>
+<h2 id="where-to-look-in-the-repository">10. Where to look in the
+repository</h2>
+<p>The best examples live here:</p>
+<ul>
+<li><code>/home/manuel/code/wesen/2026-04-20--js-discord-bot/examples/discord-bots/ui-showcase/index.js</code></li>
+<li><code>/home/manuel/code/wesen/2026-04-20--js-discord-bot/examples/discord-bots/ui-showcase/lib/ui/index.js</code></li>
+<li><code>/home/manuel/code/wesen/2026-04-20--js-discord-bot/internal/jsdiscord/ui_module.go</code></li>
+<li><code>/home/manuel/code/wesen/2026-04-20--js-discord-bot/internal/jsdiscord/ui_message.go</code></li>
+<li><code>/home/manuel/code/wesen/2026-04-20--js-discord-bot/internal/jsdiscord/ui_components.go</code></li>
+<li><code>/home/manuel/code/wesen/2026-04-20--js-discord-bot/internal/jsdiscord/ui_form.go</code></li>
+<li><code>/home/manuel/code/wesen/2026-04-20--js-discord-bot/internal/jsdiscord/host_responses.go</code></li>
+</ul>
+<h2 id="the-main-lesson">11. The main lesson</h2>
+<p>The point of a Go-side DSL is not to make JavaScript less capable. It
+is to give JavaScript a nicer surface while giving the host enough
+control to prevent malformed payloads, wrong-parent method calls, and
+noisy interaction behavior.</p>
+<p>The bot author sees fluent code. The host sees typed builders.
+Discord sees valid payloads.</p>
+<p>That is the division of labor worth preserving.</p>
+</body>
+</html>

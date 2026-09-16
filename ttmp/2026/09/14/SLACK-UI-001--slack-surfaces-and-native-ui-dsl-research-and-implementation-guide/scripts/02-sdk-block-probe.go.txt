@@ -1,0 +1,11 @@
+package main
+import("encoding/json";"fmt";"github.com/slack-go/slack")
+func main(){
+ for _,s:=range []string{`[{"type":"section","text":{"type":"mrkdwn","text":"hello"}}]`,`[{"type":"table","rows":[[{"type":"raw_text","text":"hello"}]]}]`,`[{"type":"task_card","task_id":"t1","title":"Read","status":"complete"}]`}{
+  var blocks slack.Blocks
+  if err:=json.Unmarshal([]byte(s),&blocks);err!=nil{panic(err)}
+  b,err:=json.Marshal(blocks);if err!=nil{panic(err)}
+  fmt.Printf("%T %s\n",blocks.BlockSet[0],b)
+ }
+ b,_:=json.Marshal(slack.NewErrorsViewSubmissionResponse(map[string]string{"title":"Enter a title"}));fmt.Println(string(b))
+}

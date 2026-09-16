@@ -1,0 +1,67 @@
+lint	golangci-lint	﻿2026-09-16T02:22:58.9956614Z ##[group]Run golangci/golangci-lint-action@v9
+lint	golangci-lint	2026-09-16T02:22:58.9956813Z with:
+lint	golangci-lint	2026-09-16T02:22:58.9956940Z   version-file: .golangci-lint-version
+lint	golangci-lint	2026-09-16T02:22:58.9957135Z   args: --timeout=5m ./cmd/... ./pkg/... ./internal/...
+lint	golangci-lint	2026-09-16T02:22:58.9957305Z   install-mode: binary
+lint	golangci-lint	2026-09-16T02:22:58.9957426Z   install-only: false
+lint	golangci-lint	2026-09-16T02:22:58.9958844Z   github-token: ***
+lint	golangci-lint	2026-09-16T02:22:58.9958960Z   verify: true
+lint	golangci-lint	2026-09-16T02:22:58.9959071Z   only-new-issues: false
+lint	golangci-lint	2026-09-16T02:22:58.9959194Z   skip-cache: false
+lint	golangci-lint	2026-09-16T02:22:58.9959310Z   skip-save-cache: false
+lint	golangci-lint	2026-09-16T02:22:58.9959442Z   cache-invalidation-interval: 7
+lint	golangci-lint	2026-09-16T02:22:58.9959586Z   problem-matchers: false
+lint	golangci-lint	2026-09-16T02:22:58.9959709Z env:
+lint	golangci-lint	2026-09-16T02:22:58.9959813Z   GOTOOLCHAIN: local
+lint	golangci-lint	2026-09-16T02:22:58.9959930Z ##[endgroup]
+lint	golangci-lint	2026-09-16T02:22:59.0894967Z ##[group]Restore cache
+lint	golangci-lint	2026-09-16T02:22:59.0897577Z Checking for go.mod: go.mod
+lint	golangci-lint	2026-09-16T02:22:59.3107109Z Cache not found for input keys: golangci-lint.cache-Linux-2958-a17061b119b4f5b668d0a69f3b59e342d23094f1, golangci-lint.cache-Linux-2958-
+lint	golangci-lint	2026-09-16T02:22:59.3107992Z ##[endgroup]
+lint	golangci-lint	2026-09-16T02:22:59.3108247Z ##[group]Install
+lint	golangci-lint	2026-09-16T02:22:59.3109504Z Finding needed golangci-lint version...
+lint	golangci-lint	2026-09-16T02:22:59.3113311Z Installation mode: binary
+lint	golangci-lint	2026-09-16T02:22:59.3113939Z Installing golangci-lint binary v2.11.2...
+lint	golangci-lint	2026-09-16T02:22:59.3114559Z Downloading binary https://github.com/golangci/golangci-lint/releases/download/v2.11.2/golangci-lint-2.11.2-linux-amd64.tar.gz ...
+lint	golangci-lint	2026-09-16T02:22:59.8169356Z [command]/usr/bin/tar xz --overwrite --warning=no-unknown-keyword --overwrite -C /home/runner -f /home/runner/work/_temp/716c7790-6c46-40cd-b3f6-95c606d636c2
+lint	golangci-lint	2026-09-16T02:23:00.0151190Z Installed golangci-lint into /home/runner/golangci-lint-2.11.2-linux-amd64/golangci-lint in 703ms
+lint	golangci-lint	2026-09-16T02:23:00.0153698Z ##[endgroup]
+lint	golangci-lint	2026-09-16T02:23:00.0156306Z ##[group]run golangci-lint
+lint	golangci-lint	2026-09-16T02:23:00.0159607Z Running [/home/runner/golangci-lint-2.11.2-linux-amd64/golangci-lint config path] in [/home/runner/work/discord-bot/discord-bot] ...
+lint	golangci-lint	2026-09-16T02:23:00.0635028Z Running [/home/runner/golangci-lint-2.11.2-linux-amd64/golangci-lint config verify] in [/home/runner/work/discord-bot/discord-bot] ...
+lint	golangci-lint	2026-09-16T02:23:00.1997670Z Running [/home/runner/golangci-lint-2.11.2-linux-amd64/golangci-lint run  --timeout=5m ./cmd/... ./pkg/... ./internal/...] in [/home/runner/work/discord-bot/discord-bot] ...
+lint	golangci-lint	2026-09-16T02:24:06.6020784Z ##[error]internal/slackconfig/store.go:100:15: Error return value of `f.Close` is not checked (errcheck)
+lint	golangci-lint	2026-09-16T02:24:06.6028029Z 	defer f.Close()
+lint	golangci-lint	2026-09-16T02:24:06.6028307Z 	             ^
+lint	golangci-lint	2026-09-16T02:24:06.6029331Z ##[error]internal/slackconfig/store.go:152:17: Error return value of `os.Remove` is not checked (errcheck)
+lint	golangci-lint	2026-09-16T02:24:06.6030238Z 	defer os.Remove(tmpName)
+lint	golangci-lint	2026-09-16T02:24:06.6030490Z 	               ^
+lint	golangci-lint	2026-09-16T02:24:06.6031065Z ##[error]internal/slackconfig/store.go:154:12: Error return value of `tmp.Close` is not checked (errcheck)
+lint	golangci-lint	2026-09-16T02:24:06.6031831Z 		tmp.Close()
+lint	golangci-lint	2026-09-16T02:24:06.6032382Z 		         ^
+lint	golangci-lint	2026-09-16T02:24:06.6032918Z ##[error]internal/slackconfig/store.go:158:12: Error return value of `tmp.Close` is not checked (errcheck)
+lint	golangci-lint	2026-09-16T02:24:06.6033643Z 		tmp.Close()
+lint	golangci-lint	2026-09-16T02:24:06.6033819Z 		         ^
+lint	golangci-lint	2026-09-16T02:24:06.6034667Z ##[error]internal/slacktransport/showcase_wire_test.go:55:19: Error return value of `conn.Close` is not checked (errcheck)
+lint	golangci-lint	2026-09-16T02:24:06.6035443Z 		defer conn.Close()
+lint	golangci-lint	2026-09-16T02:24:06.6035664Z 		                ^
+lint	golangci-lint	2026-09-16T02:24:06.6037371Z ##[error]internal/slacktransport/showcase_wire_test.go:86:15: Error return value of `h.Close` is not checked (errcheck)
+lint	golangci-lint	2026-09-16T02:24:06.6038237Z 	defer h.Close(context.Background())
+lint	golangci-lint	2026-09-16T02:24:06.6038485Z 	             ^
+lint	golangci-lint	2026-09-16T02:24:06.6039152Z ##[error]internal/jsslack/dispatch.go:35:1: named return "dispatchErr" with type "error" found (nonamedreturns)
+lint	golangci-lint	2026-09-16T02:24:06.6040133Z func (h *Host) Dispatch(ctx context.Context, input slackbot.Invocation, responder slackbot.Responder) (dispatchErr error) {
+lint	golangci-lint	2026-09-16T02:24:06.6040846Z ^
+lint	golangci-lint	2026-09-16T02:24:06.6041376Z ##[error]internal/jsslack/dispatch.go:176:1: named return "result" with type "any" found (nonamedreturns)
+lint	golangci-lint	2026-09-16T02:24:06.6042345Z func (h *Host) sendReply(s *invocationState, message slackbot.MessagePayload) (result any, replyErr error) {
+lint	golangci-lint	2026-09-16T02:24:06.6042749Z ^
+lint	golangci-lint	2026-09-16T02:24:06.6043344Z ##[error]internal/slacktransport/client.go:188:39: QF1008: could remove embedded field "View" from selector (staticcheck)
+lint	golangci-lint	2026-09-16T02:24:06.6044256Z 	return slackbot.ViewRef{ID: response.View.ID, Hash: response.View.Hash}, nil
+lint	golangci-lint	2026-09-16T02:24:06.6044939Z 	                                     ^
+lint	golangci-lint	2026-09-16T02:24:06.6045151Z 9 issues:
+lint	golangci-lint	2026-09-16T02:24:06.6045311Z * errcheck: 6
+lint	golangci-lint	2026-09-16T02:24:06.6045484Z * nonamedreturns: 2
+lint	golangci-lint	2026-09-16T02:24:06.6045662Z * staticcheck: 1
+lint	golangci-lint	2026-09-16T02:24:06.6045766Z
+lint	golangci-lint	2026-09-16T02:24:06.6053318Z ##[error]issues found
+lint	golangci-lint	2026-09-16T02:24:06.6054020Z Ran golangci-lint in 66400ms
+lint	golangci-lint	2026-09-16T02:24:06.6054545Z ##[endgroup]

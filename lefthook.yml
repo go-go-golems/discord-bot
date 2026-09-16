@@ -1,19 +1,16 @@
 pre-commit:
   commands:
     lint:
-      glob: '*.go'
-      run: make lint
+      glob: '*.{go,mod,sum,yml,yaml}'
+      run: make lint logcopter-check
     test:
-      glob: '*.go'
+      glob: '*.{go,js,mod,sum}'
       run: make test
   parallel: true
 
+# Release generation/tidy mutates the checkout and belongs to an explicit release,
+# not a concurrent push hook. Keep the same blocking checks as CI here.
 pre-push:
   commands:
-    release:
-      run: make goreleaser
-    lint:
-      run: make lint
-    test:
-      run: make test
-  parallel: true
+    checks:
+      run: make check

@@ -1,0 +1,196 @@
+---
+Title: "extra multi select menu element"
+Ticket: SLACK-UI-001
+Status: active
+Topics: [slack, architecture]
+DocType: reference
+Intent: long-term
+Owners: []
+RelatedFiles: []
+ExternalSources: ["https://docs.slack.dev/reference/block-kit/block-elements/multi-select-menu-element"]
+Summary: "Official Slack documentation source capture; see sources catalog for extraction details."
+LastUpdated: 2026-09-14T23:00:00-04:00
+WhatFor: "Research evidence."
+WhenToUse: "Check the original API contract."
+---
+
+## Usage info
+
+*Interactive component* - see our [guide to enabling interactivity](https://docs.slack.dev/interactivity/handling-user-interaction).
+
+Just like regular [select menus](#select), multi-select menus also include type-ahead functionality, where a user can type a part or all of an option string to filter the list.
+
+There are different types of multi-select menu that depend on different data sources for their lists of options:
+
+- [Menu with static options](#static_multi_select)
+- [Menu with external data source](#external_multi_select)
+- [Menu with user list](#users_multi_select)
+- [Menu with conversations list](#conversation_multi_select)
+- [Menu with channels list](#channel_multi_select)
+
+Example:
+
+![An example of a multi-select element](https://docs.slack.dev/assets/images/bk_multiselect_example-7f8fde60bb99b8f50169904d9b0e6e75.png)
+
+---
+
+## Static options
+
+This is the most basic form of select menu, with a static list of options passed in when defining the element.
+
+### Fields
+
+| Field | Type | Description | Required? |
+| --- | --- | --- | --- |
+| `type` | String | The type of element. In this case `type` is always `multi_static_select`. | Required |
+| `action_id` | String | An identifier for the action triggered when a menu option is selected. You can use this when you receive an interaction payload to [identify the source of the action](https://docs.slack.dev/messaging/creating-interactive-messages#understanding_payloads). Should be unique among all other `action_id` s in the containing block. Maximum length is 255 characters. | Optional |
+| `options` | Object\[\] | An array of [option objects](https://docs.slack.dev/reference/block-kit/composition-objects/option-object). Maximum number of options is 100. Each option must be less than 76 characters. If `option_groups` is specified, this field should not be. | Required |
+| `option_groups` | Object\[\] | An array of [option group objects](https://docs.slack.dev/reference/block-kit/composition-objects/option-group-object). Maximum number of option groups is 100. If `options` is specified, this field should not be. | Optional |
+| `initial_options` | Object\[\] | An array of [option objects](https://docs.slack.dev/reference/block-kit/composition-objects/option-object) that exactly match one or more of the options within `options` or `option_groups`. These options will be selected when the menu initially loads. | Optional |
+| `confirm` | Object | A [confirm object](https://docs.slack.dev/reference/block-kit/composition-objects/confirmation-dialog-object) that defines an optional confirmation dialog that appears before the multi-select choices are submitted. | Optional |
+| `max_selected_items` | Integer | Specifies the maximum number of items that can be selected in the menu. Minimum number is 1. | Optional |
+| `focus_on_load` | Boolean | Indicates whether the element will be set to auto focus within the [`view object`](https://docs.slack.dev/reference/views). Only one element can be set to `true`. Defaults to `false`. | Optional |
+| `placeholder` | Object | A [`plain_text` only text object](https://docs.slack.dev/reference/block-kit/composition-objects/text-object) that defines the placeholder text shown on the menu. Maximum length for the `text` in this field is 150 characters. | Optional |
+
+### Example
+
+The multi-select menu element must be used inside of the [section](https://docs.slack.dev/reference/block-kit/blocks/section-block) block, [actions](https://docs.slack.dev/reference/block-kit/blocks/actions-block) block, or [input](https://docs.slack.dev/reference/block-kit/blocks/input-block) block. This example shows a section block containing a static multi-select menu:
+
+---
+
+## External data source
+
+This menu will load its options from an external data source, allowing for a dynamic list of options.
+
+### Setup
+
+To use this menu type, you'll need to configure your app first:
+
+1. Go to your [app's settings page](https://api.slack.com/apps) and select **Interactivity & Shortcuts** from the sidebar.
+2. Add a URL to the **Options Load URL** under Select Menus.
+3. Save changes.
+
+Each time a menu of this type is opened or the user starts typing in the typeahead field, we'll send a request to your specified URL. Your app should return an HTTP 200 OK response, along with an `application/json` post body with an object containing either:
+
+- an [`options`](https://docs.slack.dev/reference/block-kit/composition-objects/option-object) array
+- an [`option_groups`](https://docs.slack.dev/reference/block-kit/composition-objects/option-group-object) array
+
+The `option_groups` array can have a maximum number of 100 option groups with a maximum of 100 options.
+
+Here's an example response:
+
+```json
+{
+  "options": [
+    {
+      "text": {
+        "type": "plain_text",
+        "text": "*this is plain_text text*"
+      },
+      "value": "value-0"
+    },
+    {
+      "text": {
+        "type": "plain_text",
+        "text": "*this is plain_text text*"
+      },
+      "value": "value-1"
+    },
+    {
+      "text": {
+        "type": "plain_text",
+        "text": "*this is plain_text text*"
+      },
+      "value": "value-2"
+    }
+  ]
+}
+```
+
+### Making the element optional
+
+By default, external multi-select menu elements require a user to select at least one option from the drop-down menu. However, there is a way to make a selection from this element optional. This is done by containing the element within an [input block](https://docs.slack.dev/reference/block-kit/blocks/input-block), and using its `optional` field to designate the input element as an optional element. (In fact, any Block Kit element can be made optional this way!)
+
+### Fields
+
+| Field | Type | Description | Required? |
+| --- | --- | --- | --- |
+| `type` | String | The type of element. In this case `type` is always `multi_external_select`. | Required |
+| `action_id` | String | An identifier for the action triggered when a menu option is selected. You can use this when you receive an interaction payload to [identify the source of the action](https://docs.slack.dev/interactivity/handling-user-interaction#payloads). Should be unique among all other `action_id` s in the containing block. Maximum length is 255 characters. | Optional |
+| `min_query_length` | Integer | When the typeahead field is used, a request will be sent on every character change. If you prefer fewer requests or more fully ideated queries, use the `min_query_length` attribute to tell Slack the fewest number of typed characters required before dispatch. The default value is `3`. | Optional |
+| `initial_options` | Object\[\] | An array of [option objects](https://docs.slack.dev/reference/block-kit/composition-objects/option-object) that exactly match one or more of the options within `options` or `option_groups`. These options will be selected when the menu initially loads. | Optional |
+| `confirm` | Object | A [confirm object](https://docs.slack.dev/reference/block-kit/composition-objects/confirmation-dialog-object) that defines an optional confirmation dialog that appears before the multi-select choices are submitted. | Optional |
+| `max_selected_items` | Integer | Specifies the maximum number of items that can be selected in the menu. Minimum number is 1. | Optional |
+| `placeholder` | Object | A [`plain_text`](https://docs.slack.dev/reference/block-kit/composition-objects/text-object) only text object that defines the placeholder text shown on the menu. Maximum length for the `text` in this field is 150 characters. | Optional |
+
+### Example
+
+A multi-select menu in a section block with an external data source:
+
+---
+
+## User list
+
+This multi-select menu will populate its options with a list of Slack users visible to the current user in the active workspace.
+
+### Fields
+
+| Field | Type | Description | Required? |
+| --- | --- | --- | --- |
+| `type` | String | The type of element. In this case `type` is always `multi_users_select`. | Required |
+| `action_id` | String | An identifier for the action triggered when a menu option is selected. You can use this when you receive an interaction payload to [identify the source of the action](https://docs.slack.dev/interactivity/handling-user-interaction#payloads). Should be unique among all other `action_id` s in the containing block. Maximum length is 255 characters. | Optional |
+| `initial_users` | String\[\] | An array of user IDs of any valid users to be pre-selected when the menu loads. | Optional |
+| `confirm` | Object | A [confirm object](https://docs.slack.dev/reference/block-kit/composition-objects/confirmation-dialog-object) that defines an optional confirmation dialog that appears before the multi-select choices are submitted. | Optional |
+| `max_selected_items` | Integer | Specifies the maximum number of items that can be selected in the menu. Minimum number is 1. | Optional |
+| `focus_on_load` | Boolean | Indicates whether the element will be set to auto focus within the [`view object`](https://docs.slack.dev/reference/views). Only one element can be set to `true`. Defaults to `false`. | Optional |
+| `placeholder` | Object | A [`plain_text`](https://docs.slack.dev/reference/block-kit/composition-objects/text-object) only text object that defines the placeholder text shown on the menu. Maximum length for the `text` in this field is 150 characters. | Optional |
+
+### Example
+
+A multi-select menu in a section block showing a list of users:
+
+---
+
+## Conversations list
+
+This multi-select menu will populate its options with a list of public and private channels, DMs, and MPIMs visible to the current user in the active workspace.
+
+### Fields
+
+| Field | Type | Description | Required? |
+| --- | --- | --- | --- |
+| `type` | String | The type of element. In this case `type` is always `multi_conversations_select`. | Required |
+| `action_id` | String | An identifier for the action triggered when a menu option is selected. You can use this when you receive an interaction payload to [identify the source of the action](https://docs.slack.dev/interactivity/handling-user-interaction#payloads). Should be unique among all other `action_id` s in the containing block. Maximum length is 255 characters. | Optional |
+| `initial_conversations` | String\[\] | An array of one or more IDs of any valid conversations to be pre-selected when the menu loads. If `default_to_current_conversation` is also supplied, `initial_conversations` will be ignored. | Optional |
+| `default_to_current_conversation` | Boolean | Pre-populates the select menu with the conversation that the user was viewing when they opened the modal, if available. Default is `false`. | Optional |
+| `confirm` | Object | A [confirm object](https://docs.slack.dev/reference/block-kit/composition-objects/confirmation-dialog-object) that defines an optional confirmation dialog that appears before the multi-select choices are submitted. | Optional |
+| `max_selected_items` | Integer | Specifies the maximum number of items that can be selected in the menu. Minimum number is 1. | Optional |
+| `filter` | Object | A [filter object](https://docs.slack.dev/reference/block-kit/composition-objects/conversation-filter-object) that reduces the list of available conversations using the specified criteria. | Optional |
+| `focus_on_load` | Boolean | Indicates whether the element will be set to auto focus within the [`view object`](https://docs.slack.dev/reference/views). Only one element can be set to `true`. Defaults to `false`. | Optional |
+| `placeholder` | Object | A [`plain_text`](https://docs.slack.dev/reference/block-kit/composition-objects/text-object) only text object that defines the placeholder text shown on the menu. Maximum length for the `text` in this field is 150 characters. | Optional |
+
+### Example
+
+A multi-select menu in a section block showing a list of conversations:
+
+---
+
+## Public channels select
+
+This multi-select menu will populate its options with a list of public channels visible to the current user in the active workspace.
+
+### Fields
+
+| Field | Type | Description | Required? |
+| --- | --- | --- | --- |
+| `type` | String | The type of element. In this case `type` is always `multi_channels_select`. | Required |
+| `action_id` | String | An identifier for the action triggered when a menu option is selected. You can use this when you receive an interaction payload to [identify the source of the action](https://docs.slack.dev/interactivity/handling-user-interaction#payloads). Should be unique among all other `action_id` s in the containing block. Maximum length is 255 characters. | Optional |
+| `initial_channels` | String\[\] | An array of one or more IDs of any valid public channel to be pre-selected when the menu loads. | Optional |
+| `confirm` | Object | A [confirm object](https://docs.slack.dev/reference/block-kit/composition-objects/confirmation-dialog-object) that defines an optional confirmation dialog that appears before the multi-select choices are submitted. | Optional |
+| `max_selected_items` | Integer | Specifies the maximum number of items that can be selected in the menu. Minimum number is 1. | Optional |
+| `focus_on_load` | Boolean | Indicates whether the element will be set to auto focus within the [`view object`](https://docs.slack.dev/reference/views). Only one element can be set to `true`. Defaults to `false`. | Optional |
+| `placeholder` | Object | A [`plain_text`](https://docs.slack.dev/reference/block-kit/composition-objects/text-object) only text object that defines the placeholder text shown on the menu. Maximum length for the `text` in this field is 150 characters. | Optional |
+
+### Example
+
+A multi-select menu in a section block showing a list of channels:

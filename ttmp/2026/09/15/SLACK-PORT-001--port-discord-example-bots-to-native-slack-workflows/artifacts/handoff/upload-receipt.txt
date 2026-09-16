@@ -1,0 +1,3 @@
+ERROR: 2026/09/15 21:08:51 transport.go:258: http request failed with Get "https://internal.cloud.remarkable.com/sync/v4/root": dial tcp: lookup internal.cloud.remarkable.com: no such host
+ERROR: 2026/09/15 21:08:51 transport.go:258: http request failed with Post "https://webapp-prod.cloud.remarkable.engineering/token/json/2/user/new": dial tcp: lookup webapp-prod.cloud.remarkable.engineering: no such host
+ERROR: 2026/09/15 21:08:51 auth.go:53: failed to create user token from device token Post "https://webapp-prod.cloud.remarkable.engineering/token/json/2/user/new": dial tcp: lookup webapp-prod.cloud.remarkable.engineering: no such host

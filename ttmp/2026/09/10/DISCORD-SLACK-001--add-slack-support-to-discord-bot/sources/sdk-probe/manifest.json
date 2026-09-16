@@ -1,0 +1,47 @@
+[
+  {
+    "source": "/home/manuel/go/pkg/mod/github.com/slack-go/slack@v0.17.3/go.mod",
+    "snapshot": "sdk-go.mod.txt",
+    "sha256": "efae7e1d11bb460d85523fc2755f61ea7f8eaf28cd59cc53e6509ccc3a720e97"
+  },
+  {
+    "source": "/home/manuel/go/pkg/mod/github.com/slack-go/slack@v0.17.3/socketmode/socketmode.go",
+    "snapshot": "sdk-socketmode-socketmode.go.txt",
+    "sha256": "508c15fe6fd409ad906f392bb9ac99118e3536067bfb2313fe3f132c4915eab0"
+  },
+  {
+    "source": "/home/manuel/go/pkg/mod/github.com/slack-go/slack@v0.17.3/socketmode/socket_mode_managed_conn.go",
+    "snapshot": "sdk-socketmode-socket_mode_managed_conn.go.txt",
+    "sha256": "981ceed0628117f75b3139489d5595f3ea014e64eb29bbc5d14517800dc21421"
+  },
+  {
+    "source": "/home/manuel/code/others/slack/desplega-slack-mock/package.json",
+    "snapshot": "mock-package.json.txt",
+    "sha256": "53d0c015403c9581efe1e0669ffd21b0f103efe876337bb0e77ad5cb1731a9de"
+  },
+  {
+    "source": "/home/manuel/code/others/slack/desplega-slack-mock/src/server.ts",
+    "snapshot": "mock-src-server.ts.txt",
+    "sha256": "174c10ff1dded19458ab01655a721ce6157f09cdaa8aae199b5c9c083f995435"
+  },
+  {
+    "source": "/home/manuel/code/others/slack/desplega-slack-mock/src/socket-mode.ts",
+    "snapshot": "mock-src-socket-mode.ts.txt",
+    "sha256": "7fbe53212f05bc4f0adbc8d9e47509c1b83eeff007f55362f7b3ed9215f257a3"
+  },
+  {
+    "source": "/home/manuel/go/pkg/mod/github.com/slack-go/slack@v0.17.3/misc.go",
+    "snapshot": "sdk-misc.go.txt",
+    "sha256": "3695816515982df8586021164b7e35157b5055cb6a8202598f666b52f9a1d795"
+  },
+  {
+    "source": "/home/manuel/go/pkg/mod/github.com/slack-go/slack@v0.17.3/slack.go",
+    "snapshot": "sdk-slack.go.txt",
+    "sha256": "7c4abc967e389c30499f42b3e4afdc61dc88a949401088f7a739f3aa9fbac9c0"
+  },
+  {
+    "source": "/home/manuel/go/pkg/mod/github.com/slack-go/slack@v0.17.3/auth.go",
+    "snapshot": "sdk-auth.go.txt",
+    "sha256": "2e256cef29c8a7bd5255ee29ac10f1406731616a8c24a878cefb371f6ca5d9fe"
+  }
+]

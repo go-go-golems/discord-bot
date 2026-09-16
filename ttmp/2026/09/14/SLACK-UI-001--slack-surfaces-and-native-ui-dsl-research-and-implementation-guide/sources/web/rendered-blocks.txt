@@ -1,0 +1,120 @@
+Block KitBLOCKS
+Copy as markdown
+Blocks
+
+Blocks are a series of components that can be combined to create visually rich and compellingly interactive messages. You can include up to 50 blocks in each message, and 100 blocks in modals or Home tabs.
+
+This page describes the JSON payloads that your app can use to generate each block. Select the block you'd like to build:
+
+All
+Modals
+Messages
+Home tabs
+Name
+Description
+Surfaces
+Actions
+
+Holds multiple interactive elements.
+
+ModalsMessagesHome tabs
+Alert
+
+Displays alerts, warnings, and informational messages.
+
+Modals
+Card
+
+Displays content in a card.
+
+ModalsMessagesHome tabs
+Carousel
+
+Displays related card blocks in a horizontally-scrolling container.
+
+MessagesHome tabs
+Container
+
+A general-purpose wrapper for grouping child blocks together, with a configurable size.
+
+MessagesHome tabs
+Context
+
+Provides contextual info, which can include both images and text.
+
+ModalsMessagesHome tabs
+Context actions
+
+Displays actions as contextual info, which can include both feedback buttons and icon buttons.
+
+Messages
+Data table
+
+Displays rich tables that support pagination, sorting, filtering, and interactivity.
+
+MessagesHome tabs
+Data visualization
+
+Displays data visually in pie, bar, area, or line chart formats.
+
+MessagesHome tabs
+Divider
+
+Visually separates pieces of info inside of a message.
+
+ModalsMessagesHome tabs
+File
+
+Displays info about remote files.
+
+Messages
+Header
+
+Displays a larger-sized text.
+
+ModalsMessagesHome tabs
+Image
+
+Displays an image.
+
+ModalsMessagesHome tabs
+Input
+
+Collects information from users via elements.
+
+ModalsMessagesHome tabs
+Markdown
+
+Displays formatted markdown.
+
+Messages
+Plan
+
+Displays a collection of related tasks.
+
+Messages
+Rich text
+
+Displays formatted, structured representation of text.
+
+ModalsMessagesHome tabs
+Section
+
+Displays text, possibly alongside elements.
+
+ModalsMessagesHome tabs
+Table
+
+Displays structured information in a table.
+
+MessagesHome tabs
+Task card
+
+Displays a single task, representing a single action.
+
+Messages
+Video
+
+Displays an embedded video player.
+
+ModalsMessagesHome tabs

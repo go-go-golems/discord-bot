@@ -42,6 +42,31 @@ discord-bot bots list --bot-repository ./examples/discord-bots
 discord-bot bots help ping --bot-repository ./examples/discord-bots
 ```
 
+### Slack bots
+
+The repository also contains a Go-hosted Slack runtime under `cmd/slack-bot`.
+It discovers JavaScript bots from `examples/slack-bots`, exposes the typed
+`require("slack")` API plus the native `require("slack/ui")` Block Kit
+builders, and supports offline inspection/simulation alongside real Slack
+Socket Mode execution. A local profile stores management, app, and
+workspace-installation credentials under `~/.config/go-go-slack/`.
+
+```bash
+# Inspect and simulate without Slack credentials
+go run ./cmd/slack-bot bots list
+go run ./cmd/slack-bot bots manifest ping
+go run ./cmd/slack-bot bots simulate ping \
+  --event-file examples/slack-bots/fixtures/mention.json
+
+# Run an installed Slack app
+go run ./cmd/slack-bot bots run ping --profile go-go-golems --log-level debug
+```
+
+The setup workflow is documented in the built-in help topic
+`slack-bot-guide`: import a configuration-token pair, create an app from the
+manifest, install it into a workspace, and then run the selected profile.
+`bots run-local` remains available for loopback-only Socket Mode fixtures.
+
 ### 3. Run a bot
 
 ```bash
@@ -284,8 +309,23 @@ Discord gateway → discordgo session → jsdiscord.Host
 
 ## Development
 
+Install local hooks with `make hooks-install`. `make check` runs the blocking
+push checks: lint (including Glazed policy), tests, build, vet, generated logger
+verification, GoSec and govulncheck. CI uses the same Makefile targets.
+
+These targets default to `GOWORK=off` so a surrounding workspace cannot silently
+replace pinned APIs. Validation defaults to `GOFLAGS=-buildvcs=false` so it also
+works in linked or restricted worktrees. Glazed's analyzer is built from the exact version in go.mod;
+there is no fallback to an older analyzer. Tools live under ignored `.bin/`.
+GoSec and govulncheck versions are pinned in the Makefile. When changing source
+that affects package logging, run `make logcopter-generate` and commit generated
+files; checks only verify them. Release snapshots remain explicit via
+`make goreleaser` and never run as a push hook because their tidy/generate steps
+modify the checkout.
+
+
 ```bash
-make lint          # Run golangci-lint
+make lint          # Run pinned golangci-lint and Glazed CLI policy checks
 make test          # Run all tests
 make build         # Build binary
 make goreleaser    # Snapshot release (local)
@@ -304,3 +344,57 @@ make goreleaser    # Snapshot release (local)
 ## License
 
 MIT
+
+## Slack bot development
+
+A separate Slack host follows the same Go/JavaScript concepts. It currently supports
+app creation and installation, automatic manifest sync, live Socket Mode,
+Block Kit interactions, and offline fixture replay:
+
+```sh
+go run ./cmd/slack-bot bots list
+go run ./cmd/slack-bot bots simulate ping --event-file examples/slack-bots/fixtures/command.json
+go run ./cmd/slack-bot help slack-bot-guide
+```
+
+See [the bot development guide](pkg/slackdoc/slack-bot-guide.md), the
+[Ping bot](examples/slack-bots/ping/index.js), and the
+[Block Kit showcase](examples/slack-bots/ui-showcase/index.js). External Slack
+connections are supported through `bots run`. Read the
+[UI DSL tutorial and reference](pkg/slackdoc/slack-ui-dsl.md) for builders and modal handlers.
+The commands above need no credentials; `bots run-local` uses an explicit
+synthetic connection file.
+
+## Automatic manifest sync on startup
+
+`slack-bot bots run ui-showcase --profile go-go-golems` updates the selected
+Slack app with the bot's generated manifest before connecting to Socket Mode.
+This replaces the app configuration, including its display name, slash commands,
+events and scopes. The profile's stored management access token is required.
+The app ID and existing runtime tokens are reused.
+
+Use `--skip-manifest-update` to connect using the current Slack configuration
+without a management token. If a management token has expired, run
+`slack-bot credentials refresh --profile go-go-golems` and retry.
+
+If Slack returns `permissions_updated: true`, startup stops with an install
+command. Run it to grant the changed scopes, then start the bot again. Command-only
+changes normally do not require reinstalling. There is no automatic rate-limit retry.
+
+
+## Native Slack example collection
+
+All thirteen Discord example names have native Slack entries. The collection
+includes persistent knowledge/link stores, show management, Poker, archive
+export, moderation, and the full set of UI demonstration workflows. See the
+[example setup and platform differences guide](pkg/slackdoc/slack-example-ports.md)
+or `go run ./cmd/slack-bot help slack-example-ports` for commands, configuration,
+permission requirements and local test coverage.
+
+The ports use native Slack surfaces and explicitly document unsupported Discord
+semantics. The new workflows are locally tested; live workspace qualification is
+separate. Unified Demo also exposes local JSON verbs:
+
+```sh
+go run ./cmd/slack-bot bots invoke unified-demo status
+```

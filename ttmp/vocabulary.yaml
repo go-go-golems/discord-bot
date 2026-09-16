@@ -59,6 +59,8 @@ topics:
       description: Kubernetes manifests, workloads, controllers, and validation
     - slug: vault
       description: HashiCorp Vault secret storage, policy, auth, and operator integration
+    - slug: slack
+      description: Slack bot runtime, surfaces, and APIs
 docTypes:
     - slug: design-doc
       description: Structured rationale and architecture notes

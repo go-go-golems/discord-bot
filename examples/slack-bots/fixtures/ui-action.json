@@ -1,0 +1,11 @@
+{
+  "id": "action-1",
+  "teamId": "T-DEVELOPMENT",
+  "channelId": "C-TEST",
+  "userId": "U-TEST",
+  "action": {
+    "type": "button",
+    "actionId": "showcase.ack",
+    "triggerId": "trigger-offline"
+  }
+}

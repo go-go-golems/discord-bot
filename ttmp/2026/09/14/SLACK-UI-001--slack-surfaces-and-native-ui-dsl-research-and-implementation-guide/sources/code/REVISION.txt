@@ -1,0 +1,3 @@
+discord-bot 5c700b233800245c2c6ea5afdee5195f1b6657b0
+slack-go/slack v0.17.3 from Go module cache
+Vault ownership article: accessed 2026-09-14; explanatory background, API names must be checked against pinned host.

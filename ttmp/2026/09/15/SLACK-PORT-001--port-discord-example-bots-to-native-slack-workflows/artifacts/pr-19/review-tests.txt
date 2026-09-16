@@ -1,0 +1,1 @@
+ok  	github.com/go-go-golems/discord-bot/pkg/slackcli	1.012s

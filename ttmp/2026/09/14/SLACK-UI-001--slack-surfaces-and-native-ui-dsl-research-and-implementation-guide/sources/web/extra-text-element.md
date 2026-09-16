@@ -1,0 +1,58 @@
+---
+Title: "extra text element"
+Ticket: SLACK-UI-001
+Status: active
+Topics: [slack, architecture]
+DocType: reference
+Intent: long-term
+Owners: []
+RelatedFiles: []
+ExternalSources: ["https://docs.slack.dev/reference/block-kit/block-elements/text-element"]
+Summary: "Official Slack documentation source capture; see sources catalog for extraction details."
+LastUpdated: 2026-09-14T23:00:00-04:00
+WhatFor: "Research evidence."
+WhenToUse: "Check the original API contract."
+---
+
+This is a rich text element, compatible only with the [`rich_text`](https://docs.slack.dev/reference/block-kit/blocks/rich-text-block) block. It must be used within the [`rich_text_list`](https://docs.slack.dev/reference/block-kit/block-elements/rich-text-list-element), [`rich_text_quote`](https://docs.slack.dev/reference/block-kit/block-elements/rich-text-quote-element), or [`rich_text_section`](https://docs.slack.dev/reference/block-kit/block-elements/rich-text-section-element) block element within the `rich_text` block's `elements` array.
+
+## Fields
+
+| Field | Type | Description | Required? |
+| --- | --- | --- | --- |
+| `type` | String | The type of object; in this case, "text". | Required |
+| `text` | String | The text shown to the user. | Required |
+| `style` | Object | An object of optional boolean properties that dictate style: `bold`, `italic`, `strike`, `highlight`, `client_highlight`, `underline`, and `unlink`. | Optional |
+
+## Example
+
+- JSON
+- Python Slack SDK
+- Node Slack SDK
+- Java Slack SDK
+
+```json
+{
+  "type": "rich_text",
+  "elements": [
+    {
+      "type": "rich_text_section",
+      "elements": [
+        {
+          "type": "text",
+          "text": "Hello there, "
+        },
+        {
+          "type": "text",
+          "text": "I am a bold rich text block!",
+          "style": {
+            "bold": true
+          }
+        }
+      ]
+    }
+  ]
+}
+```
+
+[View in Block Kit Builder](https://app.slack.com/block-kit-builder/#%7B%2522blocks%2522%3A%255B%257B%2522type%2522%3A%2522rich_text%2522%2C%2522elements%2522%3A%255B%257B%2522type%2522%3A%2522rich_text_section%2522%2C%2522elements%2522%3A%255B%257B%2522type%2522%3A%2522text%2522%2C%2522text%2522%3A%2522Hello%2520there%2C%2520%2522%257D%2C%257B%2522type%2522%3A%2522text%2522%2C%2522text%2522%3A%2522I%2520am%2520a%2520bold%2520rich%2520text%2520block%21%2522%2C%2522style%2522%3A%257B%2522bold%2522%3Atrue%257D%257D%255D%257D%255D%257D%255D%257D)

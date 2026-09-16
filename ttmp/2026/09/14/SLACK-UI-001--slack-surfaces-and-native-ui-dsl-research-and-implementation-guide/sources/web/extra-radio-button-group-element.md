@@ -1,0 +1,84 @@
+---
+Title: "extra radio button group element"
+Ticket: SLACK-UI-001
+Status: active
+Topics: [slack, architecture]
+DocType: reference
+Intent: long-term
+Owners: []
+RelatedFiles: []
+ExternalSources: ["https://docs.slack.dev/reference/block-kit/block-elements/radio-button-group-element"]
+Summary: "Official Slack documentation source capture; see sources catalog for extraction details."
+LastUpdated: 2026-09-14T23:00:00-04:00
+WhatFor: "Research evidence."
+WhenToUse: "Check the original API contract."
+---
+
+Example:
+
+![An example of a radio button element](data:image/png;base64,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)
+
+## Fields
+
+| Field | Type | Description | Required? |
+| --- | --- | --- | --- |
+| `type` | String | The type of element. In this case `type` is always `radio_buttons`. | Required |
+| `action_id` | String | An identifier for the action triggered when the radio button group is changed. You can use this when you receive an interaction payload to [identify the source of the action](https://docs.slack.dev/interactivity/handling-user-interaction#payloads). Should be unique among all other `action_id` s in the containing block. Maximum length is 255 characters. | Optional |
+| `options` | Object\[\] | An array of [option objects](https://docs.slack.dev/reference/block-kit/composition-objects/option-object). A maximum of 10 options are allowed. | Required |
+| `initial_option` | Object | An [option object](https://docs.slack.dev/reference/block-kit/composition-objects/option-object) that exactly matches one of the options within `options`. This option will be selected when the radio button group initially loads. | Optional |
+| `confirm` | Object | A [confirm object](https://docs.slack.dev/reference/block-kit/composition-objects/confirmation-dialog-object) that defines an optional confirmation dialog that appears after clicking one of the radio buttons in this element. | Optional |
+| `focus_on_load` | Boolean | Indicates whether the element will be set to auto focus within the [`view object`](https://docs.slack.dev/reference/views). Only one element can be set to `true`. Defaults to `false`. | Optional |
+
+## Example
+
+The radio button group element must be used inside of the [section](https://docs.slack.dev/reference/block-kit/blocks/section-block) block, [actions](https://docs.slack.dev/reference/block-kit/blocks/actions-block) block, or [input](https://docs.slack.dev/reference/block-kit/blocks/input-block) block. This example shows a section block containing a set of radio buttons:
+
+- JSON
+- Python Slack SDK
+- Node Slack SDK
+- Java Slack SDK
+
+```json
+{
+    "blocks": [
+        {
+            "type": "section",
+            "text": {
+                "type": "plain_text",
+                "text": "Check out these rad radio buttons"
+            },
+            "accessory": {
+                "type": "radio_buttons",
+                "action_id": "this_is_an_action_id",
+                "initial_option": {
+                    "value": "A1",
+                    "text": {
+                        "type": "plain_text",
+                        "text": "Radio 1"
+                    }
+                },
+                "options": [
+                    {
+                        "value": "A1",
+                        "text": {
+                            "type": "plain_text",
+                            "text": "Radio 1"
+                        }
+                    },
+                    {
+                        "value": "A2",
+                        "text": {
+                            "type": "plain_text",
+                            "text": "Radio 2"
+                        }
+                    }
+                ]
+            }
+        }
+    ]
+}
+```
+
+[View in Block Kit Builder](https://app.slack.com/block-kit-builder/T024BE7LD#%7B%22blocks%22:%5B%7B%22type%22:%22section%22,%22text%22:%7B%22type%22:%22plain_text%22,%22text%22:%22Check%20out%20these%20rad%20radio%20buttons%22%7D,%22accessory%22:%7B%22type%22:%22radio_buttons%22,%22action_id%22:%22this_is_an_action_id%22,%22initial_option%22:%7B%22value%22:%22A1%22,%22text%22:%7B%22type%22:%22plain_text%22,%22text%22:%22Radio%201%22%7D%7D,%22options%22:%5B%7B%22value%22:%22A1%22,%22text%22:%7B%22type%22:%22plain_text%22,%22text%22:%22Radio%201%22%7D%7D,%7B%22value%22:%22A2%22,%22text%22:%7B%22type%22:%22plain_text%22,%22text%22:%22Radio%202%22%7D%7D%5D%7D%7D%5D%7D)
+
+---

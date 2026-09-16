@@ -18,9 +18,9 @@ jobs:
         with:
           go-version-file: go.mod
           cache: true
-      -
-        name: generate assets
-        run: go generate ./...
-      -
-        name: run unit tests
-        run: go test ./...
+      - name: Check generated loggers
+        run: make logcopter-check
+      - name: Build, test and vet both bot runtimes
+        run: make build test vet
+      - name: Smoke test Slack CLI discovery
+        run: go run ./cmd/slack-bot bots list

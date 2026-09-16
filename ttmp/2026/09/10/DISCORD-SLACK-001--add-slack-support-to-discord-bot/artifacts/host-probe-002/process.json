@@ -1,0 +1,6 @@
+{
+  "signal": "SIGTERM",
+  "paneDead": true,
+  "exitCode": null,
+  "note": "Installed tmux returned empty pane_dead_status and pane_dead_signal; exit code not established."
+}

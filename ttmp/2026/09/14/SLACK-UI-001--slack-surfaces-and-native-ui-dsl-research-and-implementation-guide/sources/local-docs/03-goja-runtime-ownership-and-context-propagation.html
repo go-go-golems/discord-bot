@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Goja Runtime Ownership and Context Propagation — How We Do It</title>
+  <style>
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      background-color: #1a1a1a;
+      border: none;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+    /* CSS for syntax highlighting */
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      {   }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #7d9029; } /* Attribute */
+    code span.bn { color: #40a070; } /* BaseN */
+    code span.bu { color: #008000; } /* BuiltIn */
+    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4070a0; } /* Char */
+    code span.cn { color: #880000; } /* Constant */
+    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+    code span.dt { color: #902000; } /* DataType */
+    code span.dv { color: #40a070; } /* DecVal */
+    code span.er { color: #ff0000; font-weight: bold; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #40a070; } /* Float */
+    code span.fu { color: #06287e; } /* Function */
+    code span.im { color: #008000; font-weight: bold; } /* Import */
+    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+    code span.op { color: #666666; } /* Operator */
+    code span.ot { color: #007020; } /* Other */
+    code span.pp { color: #bc7a00; } /* Preprocessor */
+    code span.sc { color: #4070a0; } /* SpecialChar */
+    code span.ss { color: #bb6688; } /* SpecialString */
+    code span.st { color: #4070a0; } /* String */
+    code span.va { color: #19177c; } /* Variable */
+    code span.vs { color: #4070a0; } /* VerbatimString */
+    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+  </style>
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title">Goja Runtime Ownership and Context Propagation — How
+We Do It</h1>
+</header>
+<h1
+id="goja-runtime-ownership-and-context-propagation-how-we-do-it">Goja
+Runtime Ownership and Context Propagation — How We Do It</h1>
+<blockquote>
+<p>[!summary] Every <code>goja.Runtime</code> is owned by exactly one
+<code>RuntimeOwner</code>, which serializes all VM access through
+<code>Call</code> (returns a value) and <code>Post</code>
+(fire-and-forget). Per-call Go <code>context.Context</code> propagates
+through <code>runtimebridge.CurrentOwnerContext(vm)</code> so that HTTP
+cancellation, DB timeouts, and tracing reach native module code without
+being exposed to JavaScript. Async modules do blocking work in
+goroutines but settle promises only by posting back through the owner —
+never directly. The <code>engine.Factory</code> freezes module policy at
+build time; each <code>NewRuntime</code> call creates a fresh owned VM
+with its own lifecycle, closers, and runtime services.</p>
+</blockquote>
+<h2 id="the-pattern">The pattern</h2>
+<p>The go-go-goja runtime system is built around one invariant:
+<strong>a single goroutine owns all access to a
+<code>goja.Runtime</code></strong>. Every other goroutine posts work to
+that owner. The owner executes closures on the VM’s event loop, one at a
+time. This is not a suggestion; it is the correctness boundary. Two
+goroutines touching the same <code>goja.Runtime</code> concurrently is a
+data race.</p>
+<pre><code>engine.Factory (frozen module policy)
+  └─ NewRuntime(WithStartupContext, WithLifetimeContext)
+       ├─ creates goja.Runtime
+       ├─ starts event loop
+       ├─ creates RuntimeOwner
+       ├─ derives runtime lifetime context
+       ├─ stores RuntimeServices for VM in runtimebridge
+       ├─ registers modules with startup context
+       └─ runs initializers with startup context
+
+RuntimeOwner
+  ├─ Call(ctx, op, fn) → (any, error)    // request/response
+  ├─ Post(ctx, op, fn) → error            // fire-and-forget
+  ├─ detects reentrant owner calls
+  ├─ installs current owner-entry context stack
+  └─ WaitIdle + Shutdown for clean shutdown
+
+RuntimeServices (module-facing bridge)
+  ├─ Lifetime() → context.Context
+  ├─ CallWithCurrentContext / PostWithCurrentContext
+  ├─ CallWithLifetimeContext / PostWithLifetimeContext
+  ├─ CallWithCustomContext / PostWithCustomContext
+  └─ links custom contexts to runtime lifetime</code></pre>
+<h3 id="the-three-contexts-that-matter">The three contexts that
+matter</h3>
+<p>The system distinguishes three context scopes that a native module
+must understand:</p>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Context</th>
+<th>What it controls</th>
+<th>When to use</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Startup context</strong></td>
+<td>Runtime construction, module registration, runtime
+initializers.</td>
+<td><code>RuntimeModuleContext.Context</code> and
+<code>RuntimeContext.Context</code> during <code>NewRuntime</code>.</td>
+</tr>
+<tr class="even">
+<td><strong>Runtime lifetime context</strong></td>
+<td>Runtime-owned resources after construction. Canceled on
+<code>Runtime.Close</code>.</td>
+<td>Background goroutines, hardware listeners, retained callbacks.
+Access via <code>RuntimeServices.Lifetime()</code>.</td>
+</tr>
+<tr class="odd">
+<td><strong>Current owner-entry context</strong></td>
+<td>The Go <code>context.Context</code> active for the currently
+executing owner call. Falls back to lifetime context when no owner call
+is active.</td>
+<td>Synchronous JS-facing callbacks, database queries, HTTP handler
+work. Access via
+<code>runtimebridge.CurrentOwnerContext(vm)</code>.</td>
+</tr>
+</tbody>
+</table>
+<p>A fourth context — <strong>custom operation context</strong> —
+represents external operations like HTTP requests or hardware events. It
+is linked to runtime lifetime: if the runtime closes, the custom context
+is also canceled.</p>
+<h3 id="module-registration-is-runtime-aware">Module registration is
+runtime-aware</h3>
+<p>All module registration goes through one interface:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode go"><code class="sourceCode go"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">type</span> RuntimeModuleSpec <span class="kw">interface</span> <span class="op">{</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>    ID<span class="op">()</span> <span class="dt">string</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    RegisterRuntimeModule<span class="op">(</span>ctx <span class="op">*</span>RuntimeModuleContext<span class="op">,</span> reg <span class="op">*</span>require<span class="op">.</span>Registry<span class="op">)</span> <span class="dt">error</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p><code>RuntimeModuleContext</code> gives modules the VM, event loop,
+owner, lifecycle context, closer registry, and runtime values before
+<code>require</code> is enabled. This is the key architectural shift:
+static modules and runtime-scoped modules are not separate categories. A
+default module, an HTTP module, a plugin module, a generated xgoja
+provider module, and a documentation access module all register through
+the same interface.</p>
+<h3 id="the-async-promise-settlement-pattern">The async Promise
+settlement pattern</h3>
+<p>When a native module needs to do blocking work and return a
+JavaScript Promise:</p>
+<ol type="1">
+<li>Create the Promise on the owner thread.</li>
+<li>Capture <code>runtimebridge.CurrentOwnerContext(vm)</code> before
+starting the goroutine.</li>
+<li>Capture <code>RuntimeServices.Lifetime()</code> before starting the
+goroutine.</li>
+<li>Do Go work in a goroutine, observing both contexts.</li>
+<li>Settle the Promise <strong>only</strong> through
+<code>services.PostWithCustomContext(callCtx, op, fn)</code>.</li>
+<li>Never call <code>resolve</code> or <code>reject</code> directly from
+the goroutine.</li>
+</ol>
+<p>The <code>timer</code> module is the reference implementation:</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode go"><code class="sourceCode go"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>callCtx <span class="op">:=</span> runtimebridge<span class="op">.</span>CurrentOwnerContext<span class="op">(</span>vm<span class="op">)</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>lifetimeCtx <span class="op">:=</span> services<span class="op">.</span>Lifetime<span class="op">()</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="cf">go</span> <span class="kw">func</span><span class="op">()</span> <span class="op">{</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>    <span class="cf">select</span> <span class="op">{</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>    <span class="cf">case</span> <span class="op">&lt;-</span>callCtx<span class="op">.</span>Done<span class="op">():</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>    <span class="cf">case</span> <span class="op">&lt;-</span>lifetimeCtx<span class="op">.</span>Done<span class="op">():</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>    <span class="cf">case</span> <span class="op">&lt;-</span>timer<span class="op">.</span>C<span class="op">:</span></span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>        _ <span class="op">=</span> services<span class="op">.</span>PostWithCustomContext<span class="op">(</span>callCtx<span class="op">,</span> <span class="st">&quot;timer.sleep.resolve&quot;</span><span class="op">,</span></span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>            <span class="kw">func</span><span class="op">(</span>context<span class="op">.</span>Context<span class="op">,</span> <span class="op">*</span>goja<span class="op">.</span>Runtime<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>                _ <span class="op">=</span> resolve<span class="op">(</span>goja<span class="op">.</span>Undefined<span class="op">())</span></span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>            <span class="op">})</span></span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a><span class="op">}()</span></span></code></pre></div>
+<h3 id="xgoja-generated-binaries-disable-implicit-defaults">xgoja
+generated binaries disable implicit defaults</h3>
+<p>Generated xgoja binaries must expose only modules selected by their
+build spec:</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode go"><code class="sourceCode go"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>builder <span class="op">:=</span> engine<span class="op">.</span>NewBuilder<span class="op">(</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>    engine<span class="op">.</span>WithImplicitDefaultRegistryModules<span class="op">(</span><span class="ot">false</span><span class="op">),</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    engine<span class="op">.</span>WithDataOnlyDefaultRegistryModules<span class="op">(</span><span class="ot">false</span><span class="op">),</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="op">).</span>WithModules<span class="op">(</span>modules<span class="op">...)</span></span></code></pre></div>
+<p>The buildspec separates <strong>compile-time package
+selection</strong> (what Go code is in the binary) from <strong>runtime
+profile selection</strong> (what <code>require()</code> names are
+available). A module can be compiled into the binary without being
+visible to every command.</p>
+<h2 id="why-we-do-it-this-way">Why we do it this way</h2>
+<p><strong>The owner thread prevents data races.</strong> goja’s
+<code>Runtime</code> has no internal synchronization. Two goroutines
+calling <code>vm.RunString()</code> concurrently produces undefined
+behavior. The owner serializes all VM access. Alternatives we considered
+and rejected:</p>
+<ul>
+<li><strong>Mutex around every VM call</strong> — Correct but serializes
+all work including CPU-bound JS. No way to overlap I/O with
+computation.</li>
+<li><strong>Separate runtime per goroutine</strong> — Correct for
+isolation but loses shared state. Doesn’t work for REPL sessions where
+cells build on each other.</li>
+</ul>
+<p><strong>Named contexts prevent the wrong cancellation domain from
+being used.</strong> The pre-refactor API had a single
+<code>runtimebridge.Bindings.Context</code> that was used for both
+runtime lifetime and request scope. The Loupedeck UI hang (see [[ARTICLE
+- Runtime Context Ownership in go-go-goja]]) demonstrated the
+consequence: a retained hardware callback was created during an HTTP
+request, used the request context for its posted callbacks, and the
+request context was canceled when the HTTP handler returned. The
+callback never fired. The fix was to name contexts by what they control
+and provide intent-specific helpers whose names document the
+decision.</p>
+<p><strong>Runtime-aware module registration makes all extension seams
+converge.</strong> Before the unified <code>RuntimeModuleSpec</code>,
+the codebase had static module specs, runtime registrars, and xgoja
+provider adapters as separate concepts. Each invented its own lifecycle.
+The unified interface means plugin modules, HTTP modules, generated
+xgoja providers, and default modules all attach at the same point.</p>
+<p><strong>Explicit module exposure prevents accidental capability
+leakage.</strong> A plain <code>engine.NewBuilder().Build()</code>
+exposes the default registry, which includes <code>fs</code>,
+<code>os</code>, <code>exec</code>, and <code>database</code>. That is
+convenient for developer REPLs but wrong for sandboxed systems. The
+builder options <code>WithImplicitDefaultRegistryModules(false)</code>
+and <code>WithDataOnlyDefaultRegistryModules(false)</code> make the
+decision visible at the call site.</p>
+<h2 id="evidence">Evidence</h2>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Report</th>
+<th>Date</th>
+<th>Contribution</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>[[ARTICLE - go-go-goja Runtime System - Creation Context Scheduling
+and Modules]]</td>
+<td>2026-05-23</td>
+<td>Canonical description: factory, RuntimeModuleSpec, runtimebridge,
+owner scheduling, async Promise pattern, close sequence</td>
+</tr>
+<tr class="even">
+<td>[[ARTICLE - Goja Sandbox Architecture - Lessons from go-go-goja and
+vm-system]]</td>
+<td>2026-05-23</td>
+<td>Three-system comparison; identifies engine.Runtime as the strongest
+substrate; proposes sandbox manager on top</td>
+</tr>
+<tr class="odd">
+<td>[[REVIEW - go-go-goja PR 38 - UIDSL attrs and per-call context
+propagation]]</td>
+<td>2026-05-23</td>
+<td>First implementation of per-call context bridge;
+<code>rows.Err()</code> review point; <code>uidsl.Attrs</code>
+compile-time normalization</td>
+</tr>
+<tr class="even">
+<td>[[ARTICLE - xgoja - Generated Goja Applications Provider
+Architecture and Runtime Profiles]]</td>
+<td>2026-05-24</td>
+<td>xgoja buildspec, provider API, runtime profiles, generated command
+surface, core/host providers</td>
+</tr>
+<tr class="odd">
+<td>[[ARTICLE - xgoja Modules in Existing Runners - Discord Bot Case
+Study]]</td>
+<td>2026-05-25</td>
+<td>Inserting xgoja modules into existing runners without rewriting
+them; domain runtime ownership vs. module composition boundary</td>
+</tr>
+<tr class="even">
+<td>[[ARTICLE - Runtime Context Ownership in go-go-goja]]</td>
+<td>2026-05-26</td>
+<td>The context refactor: named contexts (startup, lifetime,
+current-owner, custom, cleanup), RuntimeServices helpers, Loupedeck hang
+fix, breaking API cleanup, downstream migration</td>
+</tr>
+<tr class="odd">
+<td>[[ARTICLE - Go AST Analysis - From JavaScript Bindings to Web Source
+Browser]]</td>
+<td>2026-05-27</td>
+<td>Demonstrates composable modules:
+<code>ast + db + fs + express</code> in one generated binary</td>
+</tr>
+<tr class="even">
+<td>[[ARTICLE - Playbook - Building go-go-goja xgoja Provider
+Packages]]</td>
+<td>2026-05-27</td>
+<td>Provider authoring workflow: domain logic first, narrow JS API,
+explicit wrapper objects</td>
+</tr>
+<tr class="odd">
+<td>[[ARTICLE - Go AST Analysis - xgoja Bindings and Codebase
+Navigation]]</td>
+<td>2026-05-27</td>
+<td>Reinforces explicit wrapper object rule for fluent APIs; goja
+interop should not rely on Go struct reflection</td>
+</tr>
+</tbody>
+</table>
+<h2 id="working-rules">Working rules</h2>
+<ol type="1">
+<li><p><strong>Never settle a JavaScript Promise from a goroutine
+directly.</strong> Always post back through the RuntimeOwner using
+<code>services.PostWithCustomContext(callCtx, op, fn)</code>. Calling
+<code>resolve</code> or <code>reject</code> from a goroutine is a data
+race.</p></li>
+<li><p><strong>Only the RuntimeOwner touches the VM.</strong> Any
+goroutine that calls <code>vm.RunString</code>, <code>vm.Set</code>,
+<code>vm.ToValue</code>, <code>resolve</code>, <code>reject</code>, or
+any other VM method without going through the owner is a data
+race.</p></li>
+<li><p><strong>Always propagate context through
+<code>runtimebridge</code>.</strong> Use
+<code>runtimebridge.CurrentOwnerContext(vm)</code> for request-scoped
+work inside native functions. Use
+<code>RuntimeServices.Lifetime()</code> for runtime-owned background
+work. Use <code>services.PostWithCustomContext(ctx, ...)</code> for
+request/event operations. Never use <code>context.Background()</code> as
+a shortcut for retained callbacks.</p></li>
+<li><p><strong>Name each context by what it controls.</strong> Startup
+context constructs the runtime. Lifetime context owns runtime resources.
+Current-owner context follows the active JS/native entry. Custom context
+represents external operations. The helper name at the call site should
+document which domain you chose.</p></li>
+<li><p><strong>Expose explicit JavaScript wrapper objects, not raw Go
+struct reflection.</strong> Go struct reflection produces awkward
+JavaScript APIs with wrong property names, missing methods, and
+confusing prototype chains. Build JavaScript-facing objects explicitly
+with <code>exports.Set("methodName", func(...))</code> and return
+handles (opaque objects with known methods) when the Go type is
+complex.</p></li>
+<li><p><strong>Register modules through <code>RuntimeModuleSpec</code>
+only.</strong> Do not introduce a second registrar abstraction. If code
+needs <code>ctx.Require</code>, it belongs in a
+<code>RuntimeInitializer</code>, not in module registration.</p></li>
+<li><p><strong>Generated binaries must disable implicit
+defaults.</strong> xgoja binaries set
+<code>WithImplicitDefaultRegistryModules(false)</code> and
+<code>WithDataOnlyDefaultRegistryModules(false)</code>. The
+<code>require()</code> surface comes only from the buildspec’s runtime
+profiles. If a generated binary doesn’t list a module,
+<code>require()</code> must fail.</p></li>
+<li><p><strong>Three provider patterns exist: simple loader, guarded
+host-capability, host-services.</strong> Simple loaders just register a
+<code>require.ModuleLoader</code>. Guarded host-capabilities (like
+<code>fs</code>, <code>exec</code>) require explicit
+<code>config.allow: true</code>. Host-services (like
+<code>express</code>, <code>discord</code>) need live runtime state and
+lifecycle hooks.</p></li>
+<li><p><strong>Always call <code>Runtime.Close(ctx)</code> when
+done.</strong> A runtime owns an event loop, bridge services, context,
+module resources, and possibly plugin subprocesses.
+<code>defer rt.Close(context.Background())</code> is the
+minimum.</p></li>
+<li><p><strong>Test runtime isolation by creating two runtimes from the
+same factory.</strong> A factory is a frozen plan; a runtime is a live
+instance. Bugs often appear when state accidentally belongs to the
+factory but should belong to each runtime.</p></li>
+</ol>
+<h2 id="gotchas">Gotchas</h2>
+<ol type="1">
+<li><p><strong><code>PostWithCustomContext</code> must not cancel before
+the callback executes.</strong> If the linked context is canceled
+immediately after scheduling, the owner observes a canceled context
+before the posted callback runs, breaking Promise settlement from
+goroutines. The implementation cancels only when enqueue fails and
+unregisters the lifetime hook after the callback returns.</p></li>
+<li><p><strong><code>CurrentOwnerContext(vm)</code> falls back to
+lifetime context.</strong> When no owner call is active, the function
+returns the runtime lifetime context, not
+<code>context.Background()</code>. This keeps modules functional in
+unusual entry paths, but it also means a missing current context may not
+fail loudly. New code should prefer helper methods whose names document
+the intended context.</p></li>
+<li><p><strong><code>RuntimeModuleContext.Context</code> is startup
+context, not lifetime context.</strong> Module registration and runtime
+initializers receive startup context. If a module starts long-lived
+goroutines during registration, it must use
+<code>RuntimeServices.Lifetime()</code> for those goroutines, not the
+context from <code>RuntimeModuleContext.Context</code>.</p></li>
+<li><p><strong><code>Runtime.Close</code> keeps runtimebridge services
+available during closers.</strong> Services are deleted after closers
+finish, not before. Some closers need final owner-thread cleanup. Moving
+<code>runtimebridge.Delete</code> earlier breaks cleanup hooks that need
+to post final work.</p></li>
+<li><p><strong>Reentrant owner calls are detected and executed
+directly.</strong> If code is already on the owner path and calls
+<code>Call</code> again, the owner invokes the function directly instead
+of scheduling it. This prevents deadlocks. The Loupedeck hang was caused
+by a module that used the wrong context for a reentrant callback,
+causing the owner to schedule behind itself.</p></li>
+<li><p><strong>The <code>context.AfterFunc</code> pattern prevents
+goroutine leaks.</strong> The first implementation of linked custom
+contexts used a goroutine per call, which leaked under high-frequency
+async paths. The fix uses
+<code>context.AfterFunc(lifetime, cancel)</code> and cleans up after
+callback execution.</p></li>
+<li><p><strong>Duplicate module IDs cause build-time validation
+failure.</strong> The builder validates unique IDs. xgoja includes
+package, module name, and alias in its generated module spec ID so the
+same provider module can be mounted under distinct aliases.</p></li>
+<li><p><strong>ESM import hoisting breaks the SSR sidecar.</strong> The
+sidecar entry point must use <code>require()</code> or explicit
+<code>.mjs</code> extensions — ESM auto-hoisting changes execution
+order. This is not a goja bug but affects the hosting model for
+server-side rendered Go+React applications.</p></li>
+<li><p><strong>Provider package ID must match the buildspec
+<code>packages[].id</code>.</strong> If a provider calls
+<code>registry.Package("my-provider", ...)</code>, the spec must use
+<code>id: my-provider</code>. A mismatch produces confusing runtime
+creation errors like “runtime main references unknown provider
+module.”</p></li>
+<li><p><strong>Goja has no JIT; CPU-intensive loops cannot be
+interrupted cooperatively.</strong> The <code>Runtime.Close</code> path
+uses <code>goja.Runtime.Interrupt</code> to break long-running scripts,
+but this is a best-effort mechanism. For hard CPU limits, a process
+boundary is required.</p></li>
+</ol>
+<h2 id="related-kb-entries">Related KB entries</h2>
+<ul>
+<li>[[Tribal/goja-embedding-in-go]] — How we embed goja, expose Go
+functions as JS APIs, wire <code>require()</code>, and handle
+per-sandbox isolation. This entry covers the embedding layer; the
+present entry covers the ownership and context layer above it.</li>
+<li>[[Tribal/goja-execution-model]] — Session semantics, IIFE cell
+rewriting, replay-based restore, and owner-thread discipline for REPL
+applications. This entry covers REPL-specific execution; the present
+entry covers the generic runtime substrate.</li>
+<li>[[Tribal/dsl-normalized-config-compiled-plan]] — The engine Factory
+is a compiled plan (frozen module policy) and each
+<code>NewRuntime</code> is a live instance. This is the DSL→Config→Plan
+pattern applied to JavaScript runtimes.</li>
+<li>[[On-Ramp/go-cli-with-embedded-spa]] — The SSR sidecar pattern for
+Go-hosted React SPAs, where the goja runtime serves as the server-side
+rendering engine.</li>
+</ul>
+</body>
+</html>

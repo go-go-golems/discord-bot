@@ -1,0 +1,207 @@
+[
+  {
+    "url": "https://docs.slack.dev/reference/methods/conversations.history/",
+    "file": "01-conversations.history.md",
+    "sha256": "785a442f2b2ef933520f58e6be1217211decd1e93258be297555e86a78c8c480"
+  },
+  {
+    "url": "https://docs.slack.dev/reference/methods/conversations.replies/",
+    "file": "02-conversations.replies.md",
+    "sha256": "737ad7d42dbd7963c545fe5f753a22ac64be8c5022ca0d6c3f7d648b04dd14e0"
+  },
+  {
+    "url": "https://docs.slack.dev/reference/methods/chat.update/",
+    "file": "03-chat.update.md",
+    "sha256": "53b33388966b51bea2cc97998f58bf4fbfb852ea43ec70701c1f456a93d61184"
+  },
+  {
+    "url": "https://docs.slack.dev/reference/methods/chat.delete/",
+    "file": "04-chat.delete.md",
+    "sha256": "4adeddc7ece5653d04e93c26eebe976ea5915e58242a3f50218f55fd60cb0189"
+  },
+  {
+    "url": "https://docs.slack.dev/reference/methods/chat.postEphemeral/",
+    "file": "05-chat.postEphemeral.md",
+    "sha256": "63d5bd68c359671132dc68e8d540111e3968841fd2dc2f230bc4b3cceb4be2fd"
+  },
+  {
+    "url": "https://docs.slack.dev/reference/methods/users.info/",
+    "file": "06-users.info.md",
+    "sha256": "4827ec33e360f11cec4a9cc4c44c1e9a8fbb62840463e4cc1bc3dbfbe7157726"
+  },
+  {
+    "url": "https://docs.slack.dev/reference/methods/usergroups.users.update/",
+    "file": "07-usergroups.users.update.md",
+    "sha256": "7adf6242ff17338abb74f4f036273c3a5a7d4520ae86c93530fa0d9b7940ba5c"
+  },
+  {
+    "url": "https://docs.slack.dev/reference/methods/conversations.kick/",
+    "file": "08-conversations.kick.md",
+    "sha256": "7f2b9ed1f1a2531aa65844730122251aad62f3460ca216bc6798ba250ebbd2b1"
+  },
+  {
+    "url": "https://docs.slack.dev/reference/methods/conversations.setTopic/",
+    "file": "09-conversations.setTopic.md",
+    "sha256": "f464ca1223f499c4dec2998aafe81a8cbcd83c49537469057de57d707b49d2ce"
+  },
+  {
+    "url": "https://docs.slack.dev/reference/methods/pins.add/",
+    "file": "10-pins.add.md",
+    "sha256": "cb047823c3b8d4c4bd845dbe9f14a796d7e1ff16a0bc23b771542257d2e32799"
+  },
+  {
+    "url": "https://docs.slack.dev/reference/methods/pins.remove/",
+    "file": "11-pins.remove.md",
+    "sha256": "4145b783638068d31a839a66ad4062b1e2172dc6813de0c6f0aaa825935b826c"
+  },
+  {
+    "url": "https://docs.slack.dev/reference/methods/pins.list/",
+    "file": "12-pins.list.md",
+    "sha256": "65d26381af591d4837410750caf90765d021df487d71d588cc72113ef1d401a2"
+  },
+  {
+    "url": "https://docs.slack.dev/reference/methods/files.getUploadURLExternal/",
+    "file": "13-files.getUploadURLExternal.md",
+    "sha256": "fc3e3039830974783571790f87b3a3c882469597d5bf98a439ed77fa208122f6"
+  },
+  {
+    "url": "https://docs.slack.dev/reference/methods/files.completeUploadExternal/",
+    "file": "14-files.completeUploadExternal.md",
+    "sha256": "e8c96d7e661c008c19ef5b27b4a6361cac3d6855c8305690d7d815fe56248545"
+  },
+  {
+    "url": "https://docs.slack.dev/reference/methods/reactions.add/",
+    "file": "15-reactions.add.md",
+    "sha256": "5613bb00e9c6d848b5cf9ac89febf4012c09b32d08d511c0bd528dccd99d3e66"
+  },
+  {
+    "url": "https://docs.slack.dev/reference/methods/admin.users.remove/",
+    "file": "16-admin.users.remove.md",
+    "sha256": "98f7c408e0e604f59a6cc2d9c0a8fbb611f387963d2a593aecac89697f4baafb"
+  },
+  {
+    "url": "https://docs.slack.dev/interactivity/implementing-shortcuts/",
+    "file": "17-implementing-shortcuts.md",
+    "sha256": "9cb471c0025e576cee2065865c3ef09116b90a8878b632e94a0536a1f44d3830"
+  },
+  {
+    "url": "https://docs.slack.dev/reference/block-kit/block-elements/",
+    "file": "18-block-elements.md",
+    "sha256": "9997c6ff8013594e157a872d44c12211f9094a355708d67d63f5729b5633bd90"
+  },
+  {
+    "url": "https://docs.slack.dev/reference/events/message/",
+    "file": "19-message.md",
+    "sha256": "dad5a322988974d9f6cf3176638f292498a9b5d586f7a94b812e1cbe855d5c89"
+  },
+  {
+    "url": "https://docs.slack.dev/reference/events/reaction_added/",
+    "file": "20-reaction_added.md",
+    "sha256": "d3f39c334d572585f7ad005dd8fd599500c8f8b7e57e2eda4a8cfff28640709d"
+  },
+  {
+    "url": "https://docs.slack.dev/reference/interaction-payloads/block_suggestion-payload/",
+    "file": "21-block_suggestion-payload.md",
+    "sha256": "9d5e2e7149c5be80a47520faa23817dfe8564ff037a04012341fbbb6f89c0eef"
+  },
+  {
+    "url": "https://docs.slack.dev/apis/events-api/using-socket-mode/",
+    "file": "22-using-socket-mode.md",
+    "sha256": "f7535e976ce0131c16578c8e34245264f01e3883234f2969013026bfae5ce9e2"
+  },
+  {
+    "url": "https://docs.slack.dev/reference/methods/conversations.info/",
+    "file": "23-conversations.info.md",
+    "sha256": "01dd8ce50eec891503372a92a4f0b53a51fd5ec005af95b268a92536dd8df3c5"
+  },
+  {
+    "url": "https://docs.slack.dev/reference/methods/conversations.list/",
+    "file": "24-conversations.list.md",
+    "sha256": "4f94a39b1eb56abb9fcbd9b287740ff60ea965311a5565655a84887f2d3664c0"
+  },
+  {
+    "url": "https://docs.slack.dev/reference/methods/conversations.members/",
+    "file": "25-conversations.members.md",
+    "sha256": "144201abb82ddc94bacda5ab6599eb602ef90d234141e31767862f2bf0de5f4b"
+  },
+  {
+    "url": "https://docs.slack.dev/reference/methods/conversations.join/",
+    "file": "26-conversations.join.md",
+    "sha256": "2360722f1e5070144f753d6f1553f7cd8f6930510d4c411af34ffc31f689ff9d"
+  },
+  {
+    "url": "https://docs.slack.dev/reference/methods/conversations.leave/",
+    "file": "27-conversations.leave.md",
+    "sha256": "931c5a18588cbbb80e4c4d8d7ffbb4f5ad5e3bbcb85e06c46a9542b835fd481a"
+  },
+  {
+    "url": "https://docs.slack.dev/reference/methods/conversations.archive/",
+    "file": "28-conversations.archive.md",
+    "sha256": "512da7f332b7b136185747900d8c763396d179ba632bb98f8694e7eac8e9c6ac"
+  },
+  {
+    "url": "https://docs.slack.dev/reference/methods/users.list/",
+    "file": "29-users.list.md",
+    "sha256": "61ec0592cc0564e3d9cad412a232a35b5d3d4e9c5a9c04317d87fa74bdd75ff9"
+  },
+  {
+    "url": "https://docs.slack.dev/reference/methods/usergroups.list/",
+    "file": "30-usergroups.list.md",
+    "sha256": "b4cb4dcea722728e9f7e4a2b3cc0e736fcbf0cd6765afaa581e32898e7cf1d05"
+  },
+  {
+    "url": "https://docs.slack.dev/reference/methods/usergroups.users.list/",
+    "file": "31-usergroups.users.list.md",
+    "sha256": "414bbc7a782d5d5626f02fcc00ce85cf1c9a3d69cdd269ec8c6267231b39b423"
+  },
+  {
+    "url": "https://docs.slack.dev/reference/methods/team.info/",
+    "file": "32-team.info.md",
+    "sha256": "02e75a48401c4742e31b88e7b32d66b9f846ee911cadd9fba3d9126346da8780"
+  },
+  {
+    "url": "https://docs.slack.dev/reference/methods/chat.getPermalink/",
+    "file": "33-chat.getPermalink.md",
+    "sha256": "ad7a553854b01f955e18430c8d5dbe2e3d8f10d56cf5a9f8b0dcc03ab58cf98c"
+  },
+  {
+    "url": "https://docs.slack.dev/reference/methods/reactions.remove/",
+    "file": "34-reactions.remove.md",
+    "sha256": "1fef683ff3e757afbadd2eebb74d362d887dfffc7180ec30d3362f0613d1dfd1"
+  },
+  {
+    "url": "https://docs.slack.dev/reference/methods/reactions.get/",
+    "file": "35-reactions.get.md",
+    "sha256": "8fd2810103247d6c5bcd355d241218e604614e0e2775e0969c625e62f9ff3611"
+  },
+  {
+    "url": "https://docs.slack.dev/reference/methods/admin.users.assign/",
+    "file": "36-admin.users.assign.md",
+    "sha256": "babbccfed40cbdf69d9d45b4f7d6bf7c5e5c8f7f26c8679f1548eb8adf95e601"
+  },
+  {
+    "url": "https://docs.slack.dev/reference/scopes/channels.manage/",
+    "file": "37-channels.manage.md",
+    "sha256": "e8251b34125e459de2519cd2fd4df532a5db0acc6ab1fc5dfd4ae0a83e865213"
+  },
+  {
+    "url": "https://docs.slack.dev/reference/scopes/channels.write.topic/",
+    "file": "38-channels.write.topic.md",
+    "sha256": "c3883936a4732568dd6bfc11581f57c873bb2013b10e3c8d919a1f93571b5e96"
+  },
+  {
+    "url": "https://docs.slack.dev/reference/events/message/message_changed/",
+    "file": "39-message_changed.md",
+    "sha256": "8090967e6a36c207f636319aa56c6527144e0aeae05dd53caf98992f52afb694"
+  },
+  {
+    "url": "https://docs.slack.dev/reference/events/message/message_deleted/",
+    "file": "40-message_deleted.md",
+    "sha256": "93fb0e7a9d2e93918e64205746499121fecb04b156a1cec75f138fb42eb37e12"
+  },
+  {
+    "url": "https://docs.slack.dev/reference/events/user_change/",
+    "file": "41-user_change.md",
+    "sha256": "007b6ae6fb1a56b250c0cbe01bc41dde8168dd255a81fd6d867db7c4ce4c4280"
+  }
+]

@@ -1,0 +1,226 @@
+---
+Title: "40 reference methods files.getUploadURLExternal"
+Ticket: SLACK-UI-001
+Status: active
+Topics: [slack, architecture]
+DocType: reference
+Intent: long-term
+Owners: []
+RelatedFiles: []
+ExternalSources: ["https://docs.slack.dev/reference/methods/files.getUploadURLExternal/"]
+Summary: "Official Slack documentation source capture; see sources catalog for extraction details."
+LastUpdated: 2026-09-14T23:00:00-04:00
+WhatFor: "Research evidence."
+WhenToUse: "Check the original API contract."
+---
+
+## Facts
+
+## Arguments
+
+### Required arguments
+
+**`length`** `integer` Required
+
+Size in bytes of the file being uploaded.
+
+*Example:* `53072`
+
+**`filename`** `string` Required
+
+Name of the file being uploaded.
+
+*Example:* `laughingoutloudcat.jpg`
+
+### Optional arguments
+
+**`snippet_type`** `string` Optional
+
+Syntax type of the snippet being uploaded.
+
+*Example:* `python`
+
+**`alt_txt`** `string` Optional
+
+Description of image for screen-reader.
+
+*Example:* `Aerial view of the Bixby Bridge and coastline of the Big Sur area in California`
+
+## Usage info
+
+This method gets a URL that can be used for uploading a file to share within channels. The URL allows clients to send file data to Slack's file upload service.
+
+The workflow is as follows:
+
+1. Call `files.getUploadURLExternal`, which returns an upload URL and a file ID.
+2. Upload a file by making a POST request to the upload URL. Include the filename (e.g., `-F filename="@text.txt"`). Files are processed asynchronously via a job handler.
+	- Files can be sent as raw bytes or can be multipart form encoded. Slack will return HTTP 200 if the upload is successful; a non-200 response indicates a failure.
+3. Call [`files.completeUploadExternal`](https://docs.slack.dev/reference/methods/files.completeUploadExternal) to finalize the upload.
+	- There is no need to wait for files to be processed by the job handler; the `files.completeUploadExternal` method will return with no action until both processes have completed. If `files.completeUploadExternal` is not called, the upload will be aborted and clients will receive an error.
+
+---
+
+## Response
+
+#### Typical success response
+
+```json
+{
+  "ok": true,
+  "upload_url": "https://files.slack.com/upload/v1/ABC123...",
+  "file_id": "F123ABC456"
+}
+```
+
+#### Typical error response
+
+```json
+{
+  "ok": false,
+  "error": "invalid_auth"
+}
+```
+
+## Errors
+
+This table lists the expected errors that this method could return. However, other errors can be returned in the case where the service is down or other unexpected factors affect processing. Callers should always check the value of the `ok` parameter in the response.
+
+Error
+
+Description
+
+`access_denied`
+
+Access to a resource specified in the request is denied.
+
+`accesslimited`
+
+Access to this method is limited on the current network
+
+`account_inactive`
+
+Authentication token is for a deleted user or workspace when using a `bot` token.
+
+`alt_txt_too_large`
+
+Description for the image is longer than the limit of 1000 character
+
+`deprecated_endpoint`
+
+The endpoint has been deprecated.
+
+`ekm_access_denied`
+
+Administrators have suspended the ability to post a message.
+
+`enterprise_is_restricted`
+
+The method cannot be called from an Enterprise.
+
+`fatal_error`
+
+The server could not complete your operation(s) without encountering a catastrophic error. It's possible some aspect of the operation succeeded before the error was raised.
+
+`file_type_not_allowed`
+
+The file type is not allowed.
+
+`file_upload_size_restricted`
+
+The size of provided file is too large, as the team has restricted uploads of large files.
+
+`file_uploads_disabled`
+
+Team has disabled all file uploads.
+
+`file_uploads_except_images_disabled`
+
+File uploads except images are disabled.
+
+`internal_error`
+
+The server could not complete your operation(s) without encountering an error, likely due to a transient issue on our end. It's possible some aspect of the operation succeeded before the error was raised.
+
+`invalid_arg_name`
+
+The method was passed an argument whose name falls outside the bounds of accepted or expected values. This includes very long names and names with non-alphanumeric characters other than `_`. If you get this error, it is typically an indication that you have made a *very* malformed API call.
+
+`invalid_arguments`
+
+The method was called with invalid arguments.
+
+`invalid_array_arg`
+
+The method was passed an array as an argument. Please only input valid strings.
+
+`invalid_auth`
+
+Some aspect of authentication cannot be validated. Either the provided token is invalid or the request originates from an IP address disallowed from making the request.
+
+`invalid_form_data`
+
+The method was called via a `POST` request with `Content-Type` `application/x-www-form-urlencoded` or `multipart/form-data`, but the form data was either missing or syntactically invalid.
+
+`invalid_post_type`
+
+The method was called via a `POST` request, but the specified `Content-Type` was invalid. Valid types are: `application/json` `application/x-www-form-urlencoded` `multipart/form-data` `text/plain`.
+
+`method_deprecated`
+
+The method has been deprecated.
+
+`missing_argument`
+
+A required argument was not provided. Typically only occurs when the `length` provided is 0.
+
+`missing_scope`
+
+The token used is not granted the specific scope permissions required to complete this request.
+
+`no_permission`
+
+The workspace token used in this request does not have the permissions necessary to complete the request. Make sure your app is a member of the conversation it's attempting to post a message to.
+
+`not_allowed_token_type`
+
+The token type used in this request is not allowed.
+
+`not_authed`
+
+No authentication token provided.
+
+`request_timeout`
+
+The method was called via a `POST` request, but the `POST` data was either missing or truncated.
+
+`snippet_too_large`
+
+The provided `length` is too large to create a snippet, which are limited to 1MB.
+
+`storage_limit_reached`
+
+File storage limit has been reached. This occurs when free teams have uploaded 5GB of files.
+
+`team_access_not_granted`
+
+The token used is not granted the specific workspace access required to complete this request.
+
+`token_expired`
+
+Authentication token has expired
+
+`token_revoked`
+
+Authentication token is for a deleted user or workspace or the app has been removed when using a `user` token.
+
+`two_factor_setup_required`
+
+Two factor setup is required.
+
+`unknown_snippet_type`
+
+The provided `snippet_type` is not a supported type.
+
+`unknown_subtype`
+
+The provided `subtype` is not a supported type.

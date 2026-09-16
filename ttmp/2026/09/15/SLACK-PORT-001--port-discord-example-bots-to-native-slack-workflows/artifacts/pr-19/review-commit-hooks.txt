@@ -1,0 +1,64 @@
+╭───────────────────────────────────────╮
+│ 🥊 lefthook v2.0.16  hook: pre-commit │
+╰───────────────────────────────────────╯
+┃  test ❯
+
+go test ./...
+?   	github.com/go-go-golems/discord-bot	[no test files]
+ok  	github.com/go-go-golems/discord-bot/cmd/discord-bot	(cached)
+ok  	github.com/go-go-golems/discord-bot/cmd/slack-bot	(cached)
+?   	github.com/go-go-golems/discord-bot/examples/framework-combined	[no test files]
+?   	github.com/go-go-golems/discord-bot/examples/framework-custom-module	[no test files]
+?   	github.com/go-go-golems/discord-bot/examples/framework-single-bot	[no test files]
+?   	github.com/go-go-golems/discord-bot/internal/bot	[no test files]
+?   	github.com/go-go-golems/discord-bot/internal/config	[no test files]
+ok  	github.com/go-go-golems/discord-bot/internal/jsdiscord	(cached)
+ok  	github.com/go-go-golems/discord-bot/internal/jsslack	(cached)
+ok  	github.com/go-go-golems/discord-bot/internal/slackconfig	(cached)
+ok  	github.com/go-go-golems/discord-bot/internal/slackprobe	(cached)
+ok  	github.com/go-go-golems/discord-bot/internal/slacktransport	(cached)
+ok  	github.com/go-go-golems/discord-bot/pkg/botcli	(cached)
+?   	github.com/go-go-golems/discord-bot/pkg/doc	[no test files]
+ok  	github.com/go-go-golems/discord-bot/pkg/framework	(cached)
+ok  	github.com/go-go-golems/discord-bot/pkg/slackbot	(cached)
+ok  	github.com/go-go-golems/discord-bot/pkg/slackcli	1.023s
+?   	github.com/go-go-golems/discord-bot/pkg/slackdoc	[no test files]
+ok  	github.com/go-go-golems/discord-bot/pkg/slackhost	(cached)
+ok  	github.com/go-go-golems/discord-bot/pkg/xgoja/provider	(cached)
+
+┃  lint ❯
+
+mkdir -p /home/manuel/workspaces/2026-09-10/add-slack-support/discord-bot/.bin/
+GOBIN=/home/manuel/workspaces/2026-09-10/add-slack-support/discord-bot/.bin/ go install github.com/golangci/golangci-lint/v2/cmd/golangci-lint@v2.11.2
+mkdir -p /home/manuel/workspaces/2026-09-10/add-slack-support/discord-bot/.bin/
+GOBIN=/home/manuel/workspaces/2026-09-10/add-slack-support/discord-bot/.bin/ go install github.com/go-go-golems/glazed/cmd/tools/glazed-lint@v1.3.6
+/home/manuel/workspaces/2026-09-10/add-slack-support/discord-bot/.bin/golangci-lint config verify
+/home/manuel/workspaces/2026-09-10/add-slack-support/discord-bot/.bin/golangci-lint run -v --timeout=5m ./cmd/... ./pkg/... ./internal/...
+level=info msg="golangci-lint has version 2.11.2 built with go1.26.6 from (unknown, modified: ?, mod sum: \"h1:4Icd3mEqthcFcFww8L67OBtfKB/obXxko8aFUMqP/5w=\") on (unknown)"
+level=info msg="[config_reader] Config search paths: [./ /home/manuel/workspaces/2026-09-10/add-slack-support/discord-bot/cmd /home/manuel/workspaces/2026-09-10/add-slack-support/discord-bot /home/manuel/workspaces/2026-09-10/add-slack-support /home/manuel/workspaces/2026-09-10 /home/manuel/workspaces /home/manuel /home /]"
+level=info msg="[config_reader] Used config file .golangci.yml"
+level=info msg="[config_reader] Module name \"github.com/go-go-golems/discord-bot\""
+level=info msg="[goenv] Read go env for 6.683918ms: map[string]string{\"GOCACHE\":\"/home/manuel/.cache/go-build\", \"GOROOT\":\"/home/manuel/go/pkg/mod/golang.org/toolchain@v0.0.1-go1.26.6.linux-amd64\"}"
+level=info msg="[lintersdb] Active 9 linters: [errcheck exhaustive gofmt govet ineffassign nonamedreturns predeclared staticcheck unused]"
+level=info msg="[loader] Go packages loading at mode 8767 (name|types_sizes|compiled_files|imports|deps|exports_file|files) took 231.674926ms"
+level=info msg="[runner/filename_unadjuster] Pre-built 0 adjustments in 28.066706ms"
+level=info msg="[linters_context/goanalysis] analyzers took 268.592635ms with top 10 stages: buildir: 80.164746ms, S1038: 22.697054ms, gofmt: 21.273481ms, unused: 8.837344ms, S1019: 8.719109ms, QF1010: 7.571957ms, SA4000: 6.804885ms, SA1012: 5.031514ms, S1008: 4.282738ms, printf: 4.24152ms"
+level=info msg="[runner/exclusion_rules] Skipped 0 issues by rules: [Text: \"SA1019: cli.CreateProcessorLegacy\", Linters: \"staticcheck\"]"
+level=info msg="[runner] Issues before processing: 8, after processing: 0"
+level=info msg="[runner] Processors filtering stat (in/out): generated_file_filter: 8/8, path_absoluter: 8/8, filename_unadjuster: 8/8, invalid_issue: 8/8, path_relativity: 8/8, exclusion_rules: 8/8, cgo: 8/8, nolint_filter: 8/0, exclusion_paths: 8/8"
+level=info msg="[runner] processing took 2.938244ms with stages: nolint_filter: 2.849006ms, generated_file_filter: 50.231µs, exclusion_rules: 20.704µs, path_relativity: 9.851µs, sort_results: 1.766µs, cgo: 907ns, fixer: 894ns, max_same_issues: 836ns, invalid_issue: 824ns, path_absoluter: 745ns, filename_unadjuster: 533ns, exclusion_paths: 459ns, diff: 318ns, uniq_by_line: 283ns, path_prettifier: 223ns, max_from_linter: 188ns, source_code: 183ns, path_shortener: 102ns, max_per_file_from_linter: 99ns, severity-rules: 92ns"
+level=info msg="[runner] linters took 367.814339ms with stages: goanalysis_metalinter: 364.82259ms"
+0 issues.
+level=info msg="File cache stats: 0 entries of total size 0B"
+level=info msg="Memory: 8 samples, avg is 96.8MB, max is 170.5MB"
+level=info msg="Execution took 634.707002ms"
+GOWORK=off go vet -vettool=/home/manuel/workspaces/2026-09-10/add-slack-support/discord-bot/.bin/glazed-lint  ./cmd/... ./internal/... ./pkg/...
+GOWORK=off go tool logcopter-gen -area-prefix go-go-golems.discord-bot -strip-prefix github.com/go-go-golems/discord-bot -check ./internal/... ./pkg/... ./cmd/...
+
+
+  ────────────────────────────────────
+summary: (done in 2.75 seconds)
+✔️ test (2.45 seconds)
+✔️ lint (2.74 seconds)
+[task/add-slack-support de46607] fix(slack): address app credential review and CLI lint findings
+ 12 files changed, 230 insertions(+), 61 deletions(-)

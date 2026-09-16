@@ -1,0 +1,17 @@
+Building glazed-lint from Glazed module...
+Installing github.com/go-go-golems/glazed/cmd/tools/glazed-lint@v1.3.6
+GOWORK=off go vet -vettool=/tmp/glazed-lint -glazedclilint.allow-paths=pkg/analysis/,pkg/cli/,pkg/cmds/fields/,pkg/cmds/logging/,pkg/cmds/sources/,pkg/help/ ./cmd/... ./internal/... ./pkg/...
+pkg/slackcli/credentials.go:86:2: define CLI flags with cmds.WithFlags(fields.New(...)) instead of raw Cobra/pflag/flag APIs
+pkg/slackcli/credentials.go:87:2: define CLI flags with cmds.WithFlags(fields.New(...)) instead of raw Cobra/pflag/flag APIs
+pkg/slackcli/credentials.go:88:2: define CLI flags with cmds.WithFlags(fields.New(...)) instead of raw Cobra/pflag/flag APIs
+pkg/slackcli/credentials.go:89:2: define CLI flags with cmds.WithFlags(fields.New(...)) instead of raw Cobra/pflag/flag APIs
+pkg/slackcli/credentials.go:90:2: define CLI flags with cmds.WithFlags(fields.New(...)) instead of raw Cobra/pflag/flag APIs
+pkg/slackcli/credentials.go:91:2: define CLI flags with cmds.WithFlags(fields.New(...)) instead of raw Cobra/pflag/flag APIs
+pkg/slackcli/credentials.go:99:2: define CLI flags with cmds.WithFlags(fields.New(...)) instead of raw Cobra/pflag/flag APIs
+pkg/slackcli/credentials.go:128:2: define CLI flags with cmds.WithFlags(fields.New(...)) instead of raw Cobra/pflag/flag APIs
+pkg/slackcli/credentials.go:129:2: define CLI flags with cmds.WithFlags(fields.New(...)) instead of raw Cobra/pflag/flag APIs
+pkg/slackcli/credentials.go:130:2: define CLI flags with cmds.WithFlags(fields.New(...)) instead of raw Cobra/pflag/flag APIs
+pkg/slackcli/credentials.go:131:2: define CLI flags with cmds.WithFlags(fields.New(...)) instead of raw Cobra/pflag/flag APIs
+pkg/slackcli/credentials.go:172:2: define CLI flags with cmds.WithFlags(fields.New(...)) instead of raw Cobra/pflag/flag APIs
+pkg/slackcli/credentials.go:270:2: define CLI flags with cmds.WithFlags(fields.New(...)) instead of raw Cobra/pflag/flag APIs
+make: *** [Makefile:35: glazed-lint] Error 1

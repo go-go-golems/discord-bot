@@ -1,0 +1,18 @@
+{
+  "threadPreserved": true,
+  "ephemeralRecipient": true,
+  "publicReplyCount": 0,
+  "emptyCommandAck": true,
+  "deliveries": [
+    {
+      "name": "app_mention",
+      "acked": true,
+      "attempts": 1
+    },
+    {
+      "name": "/golem-ping",
+      "acked": true,
+      "attempts": 1
+    }
+  ]
+}

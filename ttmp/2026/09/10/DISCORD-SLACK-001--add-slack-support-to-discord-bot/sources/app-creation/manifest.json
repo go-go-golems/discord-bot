@@ -1,0 +1,128 @@
+[
+  {
+    "name": "01-configuration-tokens",
+    "url": "https://docs.slack.dev/app-manifests/configuring-apps-with-app-manifests/",
+    "bytes": 6983,
+    "sha256": "69f557b12e08abe82e72aa64e990533908b40ebfa35425c3138d606d501c8ddf",
+    "fetched_at": "2026-09-15T01:16:51.111303+00:00"
+  },
+  {
+    "name": "02-create-api",
+    "url": "https://docs.slack.dev/reference/methods/apps.manifest.create/",
+    "bytes": 7913,
+    "sha256": "ae692272019618cb1f3c3fd489da8f0d8f0d719a807744bf5121d444162ff899",
+    "fetched_at": "2026-09-15T01:16:51.501700+00:00"
+  },
+  {
+    "name": "03-validate-api",
+    "url": "https://docs.slack.dev/reference/methods/apps.manifest.validate/",
+    "bytes": 6245,
+    "sha256": "cfe2080f3e7df04ea42286ed1d43407787f1b5d21c169ddba551c4043f3ba6b9",
+    "fetched_at": "2026-09-15T01:16:51.520807+00:00"
+  },
+  {
+    "name": "04-rotate-token-api",
+    "url": "https://docs.slack.dev/reference/methods/tooling.tokens.rotate/",
+    "bytes": 5297,
+    "sha256": "f4c002439dae633ce7b483fbff163109396204319b7b4d230ff729dd8e795b74",
+    "fetched_at": "2026-09-15T01:16:51.212707+00:00"
+  },
+  {
+    "name": "05-app-setup",
+    "url": "https://docs.slack.dev/tools/bolt-python/creating-an-app/",
+    "bytes": 11362,
+    "sha256": "0750f1a41f45f416c7ef11f197b67c770bee63fb519c1cf53ef3613616f5d111",
+    "fetched_at": "2026-09-15T01:16:53.660484+00:00"
+  },
+  {
+    "name": "06-cli-quickstart",
+    "url": "https://docs.slack.dev/quickstart/",
+    "bytes": 3780,
+    "sha256": "aaf95610de8dc0f2f0c18ad715d51c5cf70d7a120cc0c7d623cf445b6f1f2212",
+    "fetched_at": "2026-09-15T01:16:52.331567+00:00"
+  },
+  {
+    "name": "07-cli-api",
+    "url": "https://docs.slack.dev/tools/slack-cli/reference/commands/slack_api/",
+    "bytes": 3762,
+    "sha256": "29633d1231f902e327300bb8aa2295f63380becdfb19db43de908f3617be37ae",
+    "fetched_at": "2026-09-15T01:16:52.723794+00:00"
+  },
+  {
+    "name": "08-cli-install",
+    "url": "https://docs.slack.dev/tools/slack-cli/reference/commands/slack_app_install/",
+    "bytes": 1601,
+    "sha256": "6cc8a677d5fcbf248178b26a86fc589066ed250885eaa4d6c13275ffe18ed53a",
+    "fetched_at": "2026-09-15T01:16:52.613003+00:00"
+  },
+  {
+    "name": "09-cli-project-create",
+    "url": "https://docs.slack.dev/tools/slack-cli/reference/commands/slack_project_create/",
+    "bytes": 2289,
+    "sha256": "b88726fcc65156e2385d86dba0a9efb81e6f99ff76aea9320e59111cf6b1b868",
+    "fetched_at": "2026-09-15T01:16:53.392820+00:00"
+  },
+  {
+    "name": "10-cli-manifest-validate",
+    "url": "https://docs.slack.dev/tools/slack-cli/reference/commands/slack_manifest_validate/",
+    "bytes": 1222,
+    "sha256": "98388be5ecdfec72609babb80ecef7aef0787f23b6db841426e42643518b0b59",
+    "fetched_at": "2026-09-15T01:16:53.978440+00:00"
+  },
+  {
+    "name": "11-cli-manifest-info",
+    "url": "https://docs.slack.dev/tools/slack-cli/reference/commands/slack_manifest_info/",
+    "bytes": 1656,
+    "sha256": "628a9616db97a27968b6ff8e82e0d7cc2cdf10fabd46bbb907a42cc1d9199563",
+    "fetched_at": "2026-09-15T01:16:53.908932+00:00"
+  },
+  {
+    "name": "12-cli-commands",
+    "url": "https://docs.slack.dev/tools/slack-cli/guides/running-slack-cli-commands/",
+    "bytes": 3397,
+    "sha256": "24cac0b0c3030edf6825485c03f9369ef25cbfc59db96a0fee921649964cd67f",
+    "fetched_at": "2026-09-15T01:16:54.385536+00:00"
+  },
+  {
+    "name": "13-cli-api-release",
+    "url": "https://docs.slack.dev/changelog/2026/05/19/slack-cli/",
+    "bytes": 2701,
+    "sha256": "7923b46e1023620d7d2b82a195f3cae4194ddd019f35b0eb1dd3108ca3f944b1",
+    "fetched_at": "2026-09-15T01:16:54.661906+00:00"
+  },
+  {
+    "name": "14-app-settings-quickstart",
+    "url": "https://docs.slack.dev/app-management/quickstart-app-settings/",
+    "bytes": 6708,
+    "sha256": "e41beb9a4b84f6d19969ccd75128f3cf98758b2c6b1731dba5933089e8649fce",
+    "fetched_at": "2026-09-15T01:16:54.821802+00:00"
+  },
+  {
+    "name": "15-cli-overview",
+    "url": "https://docs.slack.dev/tools/slack-cli/",
+    "bytes": 1464,
+    "sha256": "bbee48699390636fad90d9d5578c12433c247b61b13483fa5a7f3c439f776109",
+    "fetched_at": "2026-09-15T01:16:54.846476+00:00"
+  },
+  {
+    "name": "16-oauth-installation",
+    "url": "https://docs.slack.dev/authentication/installing-with-oauth/",
+    "bytes": 18628,
+    "sha256": "aaa247e544065b191ab5880f1da2774c4b4e73092919302a76291944a6395f36",
+    "fetched_at": "2026-09-15T01:22:22.660447+00:00"
+  },
+  {
+    "name": "17-oauth-access-api",
+    "url": "https://docs.slack.dev/reference/methods/oauth.v2.access/",
+    "bytes": 8595,
+    "sha256": "722340ac9bb05d0c36f8d815364943de32f6e9ad520590a638a7650308479980",
+    "fetched_at": "2026-09-15T01:22:22.805125+00:00"
+  },
+  {
+    "name": "18-oauth-token-rotation",
+    "url": "https://docs.slack.dev/authentication/using-token-rotation/",
+    "bytes": 9215,
+    "sha256": "021c0199a21a61570c4e2874b6c0fa386abc39e1c010fded9dd72069c9b02d45",
+    "fetched_at": "2026-09-15T01:22:22.442471+00:00"
+  }
+]

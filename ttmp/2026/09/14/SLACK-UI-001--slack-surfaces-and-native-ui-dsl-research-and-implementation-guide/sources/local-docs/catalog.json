@@ -1,0 +1,23 @@
+[
+  {
+    "source": "/home/manuel/workspaces/2026-09-10/add-slack-support/discord-bot/pkg/doc/tutorials/using-the-go-side-ui-dsl-for-discord-bots.md",
+    "original": "01-using-the-go-side-ui-dsl-for-discord-bots.original.txt",
+    "markdown": "01-using-the-go-side-ui-dsl-for-discord-bots.md",
+    "original_sha256": "cf275521633e00d811617e61cf52250fc507d660d2d7d7483c810fa9db66989a",
+    "note": "Local Markdown rendered by Pandoc, then extracted by Defuddle. Original retains exact content and metadata."
+  },
+  {
+    "source": "/home/manuel/workspaces/2026-09-10/add-slack-support/discord-bot/ttmp/2026/09/10/DISCORD-SLACK-001--add-slack-support-to-discord-bot/design-doc/02-full-local-testing-plan-and-slack-mock-evaluation.md",
+    "original": "02-02-full-local-testing-plan-and-slack-mock-evaluation.original.txt",
+    "markdown": "02-02-full-local-testing-plan-and-slack-mock-evaluation.md",
+    "original_sha256": "0a54b7e327bbb18fd2f7ea0824b569cfd78f20b93dcd98ca4fc9452f41dda92a",
+    "note": "Local Markdown rendered by Pandoc, then extracted by Defuddle. Original retains exact content and metadata."
+  },
+  {
+    "source": "/home/manuel/code/wesen/go-go-golems/go-go-parc/Research/KB/Tribal/goja-runtime-ownership-and-context-propagation.md",
+    "original": "03-goja-runtime-ownership-and-context-propagation.original.txt",
+    "markdown": "03-goja-runtime-ownership-and-context-propagation.md",
+    "original_sha256": "4c0f0170c60fb51eb911f8f2c5ab0235b3c23da01d9a6969e1f3498d58ab2cf9",
+    "note": "Local Markdown rendered by Pandoc, then extracted by Defuddle. Original retains exact content and metadata."
+  }
+]

@@ -1,0 +1,31 @@
+internal/slackconfig/store.go:100:15: Error return value of `f.Close` is not checked (errcheck)
+	defer f.Close()
+	             ^
+internal/slackconfig/store.go:152:17: Error return value of `os.Remove` is not checked (errcheck)
+	defer os.Remove(tmpName)
+	               ^
+internal/slackconfig/store.go:154:12: Error return value of `tmp.Close` is not checked (errcheck)
+		tmp.Close()
+		         ^
+internal/slackconfig/store.go:158:12: Error return value of `tmp.Close` is not checked (errcheck)
+		tmp.Close()
+		         ^
+internal/slacktransport/showcase_wire_test.go:55:19: Error return value of `conn.Close` is not checked (errcheck)
+		defer conn.Close()
+		                ^
+internal/slacktransport/showcase_wire_test.go:86:15: Error return value of `h.Close` is not checked (errcheck)
+	defer h.Close(context.Background())
+	             ^
+internal/jsslack/dispatch.go:35:1: named return "dispatchErr" with type "error" found (nonamedreturns)
+func (h *Host) Dispatch(ctx context.Context, input slackbot.Invocation, responder slackbot.Responder) (dispatchErr error) {
+^
+internal/jsslack/dispatch.go:176:1: named return "result" with type "any" found (nonamedreturns)
+func (h *Host) sendReply(s *invocationState, message slackbot.MessagePayload) (result any, replyErr error) {
+^
+internal/slacktransport/client.go:188:39: QF1008: could remove embedded field "View" from selector (staticcheck)
+	return slackbot.ViewRef{ID: response.View.ID, Hash: response.View.Hash}, nil
+	                                     ^
+9 issues:
+* errcheck: 6
+* nonamedreturns: 2
+* staticcheck: 1

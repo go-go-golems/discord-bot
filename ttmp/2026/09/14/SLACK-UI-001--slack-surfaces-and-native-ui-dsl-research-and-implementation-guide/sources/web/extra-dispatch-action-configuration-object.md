@@ -1,0 +1,59 @@
+---
+Title: "extra dispatch action configuration object"
+Ticket: SLACK-UI-001
+Status: active
+Topics: [slack, architecture]
+DocType: reference
+Intent: long-term
+Owners: []
+RelatedFiles: []
+ExternalSources: ["https://docs.slack.dev/reference/block-kit/composition-objects/dispatch-action-configuration-object"]
+Summary: "Official Slack documentation source capture; see sources catalog for extraction details."
+LastUpdated: 2026-09-14T23:00:00-04:00
+WhatFor: "Research evidence."
+WhenToUse: "Check the original API contract."
+---
+
+**Defines when a [plain-text input element](https://docs.slack.dev/reference/block-kit/block-elements/plain-text-input-element) will return a [`block_actions`](https://docs.slack.dev/reference/interaction-payloads/block_actions-payload) interaction payload.**
+
+#### Fields
+
+| Field | Type | Description | Required? |
+| --- | --- | --- | --- |
+| `trigger_actions_on` | String\[\] | An array of interaction types that you would like to receive a [`block_actions` payload](https://docs.slack.dev/reference/interaction-payloads/block_actions-payload) for. Should be one or both of:`on_enter_pressed` — payload is dispatched when user presses the enter key while the input is in focus. Hint text will appear underneath the input explaining to the user to press enter to submit.`on_character_entered` — payload is dispatched when a character is entered (or removed) in the input. | Optional |
+
+#### Example
+
+The dispatch action configuration object must be used with a [plain-text input](https://docs.slack.dev/reference/block-kit/block-elements/plain-text-input-element) element or [rich text input](https://docs.slack.dev/reference/block-kit/block-elements/rich-text-input-element/) element.
+
+- JSON
+- Python Slack SDK
+- Node Slack SDK
+- Java Slack SDK
+
+```json
+{
+    "blocks": [
+        {
+            "type": "input",
+            "dispatch_action": true,
+            "element": {
+                "type": "plain_text_input",
+                "multiline": true,
+                "dispatch_action_config": {
+                    "trigger_actions_on": [
+                        "on_character_entered"
+                    ]
+                }
+            },
+            "label": {
+                "type": "plain_text",
+                "text": "This is a multiline plain-text input",
+                "emoji": true
+            }
+        }
+    ]
+}
+```
+
+[View in Block Kit Builder](https://app.slack.com/block-kit-builder/T024BE7LD#%7B%22blocks%22:%5B%7B%22type%22:%22input%22,%22dispatch_action%22:true,%22element%22:%7B%22type%22:%22plain_text_input%22,%22multiline%22:true,%22dispatch_action_config%22:%7B%22trigger_actions_on%22:%5B%22on_character_entered%22%5D%7D%7D,%22label%22:%7B%22type%22:%22plain_text%22,%22text%22:%22This%20is%20a%20multiline%20plain-text%20input%22,%22emoji%22:true%7D%7D%5D%7D)

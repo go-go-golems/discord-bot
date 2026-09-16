@@ -1,0 +1,4 @@
+{"phase":"ready","port":33555}
+{"phase":"passed","threadPreserved":true,"ephemeralRecipient":true,"publicReplyC
+ount":0,"emptyCommandAck":true,"deliveries":[{"name":"app_mention","acked":true,
+"attempts":1},{"name":"/golem-ping","acked":true,"attempts":1}]}

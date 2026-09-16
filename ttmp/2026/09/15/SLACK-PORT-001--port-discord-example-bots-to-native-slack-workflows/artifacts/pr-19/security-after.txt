@@ -1,0 +1,177 @@
+mkdir -p /home/manuel/workspaces/2026-09-10/add-slack-support/discord-bot/.bin/
+GOBIN=/home/manuel/workspaces/2026-09-10/add-slack-support/discord-bot/.bin/ go install github.com/securego/gosec/v2/cmd/gosec@v2.29.0
+/home/manuel/workspaces/2026-09-10/add-slack-support/discord-bot/.bin/gosec -exclude-generated -exclude=G101,G304,G301,G306,G204 -exclude-dir=.history -exclude-dir=ttmp ./...
+[gosec] 2026/09/15 22:41:01 Including rules: default
+[gosec] 2026/09/15 22:41:01 Excluding rules: G101,G304,G301,G306,G204
+[gosec] 2026/09/15 22:41:01 Including analyzers: default
+[gosec] 2026/09/15 22:41:01 Excluding analyzers: G101,G304,G301,G306,G204
+[gosec] 2026/09/15 22:41:01 Import directory: /home/manuel/workspaces/2026-09-10/add-slack-support/discord-bot/pkg/framework
+[gosec] 2026/09/15 22:41:01 Import directory: /home/manuel/workspaces/2026-09-10/add-slack-support/discord-bot/cmd/discord-bot
+[gosec] 2026/09/15 22:41:01 Import directory: /home/manuel/workspaces/2026-09-10/add-slack-support/discord-bot/cmd/slack-bot
+[gosec] 2026/09/15 22:41:01 Import directory: /home/manuel/workspaces/2026-09-10/add-slack-support/discord-bot/internal/slackconfig
+[gosec] 2026/09/15 22:41:01 Import directory: /home/manuel/workspaces/2026-09-10/add-slack-support/discord-bot
+[gosec] 2026/09/15 22:41:01 Import directory: /home/manuel/workspaces/2026-09-10/add-slack-support/discord-bot/pkg/slackdoc
+[gosec] 2026/09/15 22:41:01 Import directory: /home/manuel/workspaces/2026-09-10/add-slack-support/discord-bot/examples/framework-custom-module
+[gosec] 2026/09/15 22:41:01 Import directory: /home/manuel/workspaces/2026-09-10/add-slack-support/discord-bot/pkg/xgoja/provider
+[gosec] 2026/09/15 22:41:01 Checking package: discordbot
+[gosec] 2026/09/15 22:41:01 Checking file: /home/manuel/workspaces/2026-09-10/add-slack-support/discord-bot/logcopter_generate.go
+[gosec] 2026/09/15 22:41:01 Import directory: /home/manuel/workspaces/2026-09-10/add-slack-support/discord-bot/internal/bot
+[gosec] 2026/09/15 22:41:01 Checking package: slackconfig
+[gosec] 2026/09/15 22:41:01 Ignoring generated file: /home/manuel/workspaces/2026-09-10/add-slack-support/discord-bot/internal/slackconfig/logcopter.go
+[gosec] 2026/09/15 22:41:01 Checking file: /home/manuel/workspaces/2026-09-10/add-slack-support/discord-bot/internal/slackconfig/store.go
+[gosec] 2026/09/15 22:41:01 Import directory: /home/manuel/workspaces/2026-09-10/add-slack-support/discord-bot/pkg/botcli
+[gosec] 2026/09/15 22:43:11 Checking package: slackdoc
+[gosec] 2026/09/15 22:43:11 Checking file: /home/manuel/workspaces/2026-09-10/add-slack-support/discord-bot/pkg/slackdoc/doc.go
+[gosec] 2026/09/15 22:43:11 Ignoring generated file: /home/manuel/workspaces/2026-09-10/add-slack-support/discord-bot/pkg/slackdoc/logcopter.go
+[gosec] 2026/09/15 22:43:11 Import directory: /home/manuel/workspaces/2026-09-10/add-slack-support/discord-bot/pkg/slackcli
+[gosec] 2026/09/15 22:43:13 Checking package: main
+[gosec] 2026/09/15 22:43:13 Checking file: /home/manuel/workspaces/2026-09-10/add-slack-support/discord-bot/cmd/discord-bot/commands.go
+[gosec] 2026/09/15 22:43:13 Checking file: /home/manuel/workspaces/2026-09-10/add-slack-support/discord-bot/cmd/discord-bot/main.go
+[gosec] 2026/09/15 22:43:13 Checking file: /home/manuel/workspaces/2026-09-10/add-slack-support/discord-bot/cmd/discord-bot/root.go
+[gosec] 2026/09/15 22:43:13 Import directory: /home/manuel/workspaces/2026-09-10/add-slack-support/discord-bot/pkg/slackhost
+[gosec] 2026/09/15 22:43:14 Checking package: slackhost
+[gosec] 2026/09/15 22:43:14 Checking file: /home/manuel/workspaces/2026-09-10/add-slack-support/discord-bot/pkg/slackhost/host.go
+[gosec] 2026/09/15 22:43:14 Ignoring generated file: /home/manuel/workspaces/2026-09-10/add-slack-support/discord-bot/pkg/slackhost/logcopter.go
+[gosec] 2026/09/15 22:43:14 Import directory: /home/manuel/workspaces/2026-09-10/add-slack-support/discord-bot/internal/jsdiscord
+[gosec] 2026/09/15 22:43:15 Checking package: slackcli
+[gosec] 2026/09/15 22:43:15 Checking file: /home/manuel/workspaces/2026-09-10/add-slack-support/discord-bot/pkg/slackcli/commands.go
+[gosec] 2026/09/15 22:43:15 Checking file: /home/manuel/workspaces/2026-09-10/add-slack-support/discord-bot/pkg/slackcli/create_app.go
+[gosec] 2026/09/15 22:43:15 Checking file: /home/manuel/workspaces/2026-09-10/add-slack-support/discord-bot/pkg/slackcli/credentials.go
+[gosec] 2026/09/15 22:43:15 Checking file: /home/manuel/workspaces/2026-09-10/add-slack-support/discord-bot/pkg/slackcli/discover.go
+[gosec] 2026/09/15 22:43:15 Checking file: /home/manuel/workspaces/2026-09-10/add-slack-support/discord-bot/pkg/slackcli/install_app.go
+[gosec] 2026/09/15 22:43:15 Ignoring generated file: /home/manuel/workspaces/2026-09-10/add-slack-support/discord-bot/pkg/slackcli/logcopter.go
+[gosec] 2026/09/15 22:43:15 Checking file: /home/manuel/workspaces/2026-09-10/add-slack-support/discord-bot/pkg/slackcli/run_remote.go
+[gosec] 2026/09/15 22:43:15 Checking file: /home/manuel/workspaces/2026-09-10/add-slack-support/discord-bot/pkg/slackcli/update_manifest.go
+[gosec] 2026/09/15 22:43:15 Checking package: main
+[gosec] 2026/09/15 22:43:15 Checking file: /home/manuel/workspaces/2026-09-10/add-slack-support/discord-bot/cmd/slack-bot/main.go
+[gosec] 2026/09/15 22:43:15 Import directory: /home/manuel/workspaces/2026-09-10/add-slack-support/discord-bot/internal/jsslack
+[gosec] 2026/09/15 22:43:15 Checking package: main
+[gosec] 2026/09/15 22:43:15 Checking file: /home/manuel/workspaces/2026-09-10/add-slack-support/discord-bot/examples/framework-custom-module/main.go
+[gosec] 2026/09/15 22:43:15 Import directory: /home/manuel/workspaces/2026-09-10/add-slack-support/discord-bot/pkg/doc
+[gosec] 2026/09/15 22:43:15 Import directory: /home/manuel/workspaces/2026-09-10/add-slack-support/discord-bot/pkg/slackbot
+[gosec] 2026/09/15 22:43:17 Checking package: slackbot
+[gosec] 2026/09/15 22:43:17 Checking file: /home/manuel/workspaces/2026-09-10/add-slack-support/discord-bot/pkg/slackbot/ingress.go
+[gosec] 2026/09/15 22:43:17 Ignoring generated file: /home/manuel/workspaces/2026-09-10/add-slack-support/discord-bot/pkg/slackbot/logcopter.go
+[gosec] 2026/09/15 22:43:17 Checking file: /home/manuel/workspaces/2026-09-10/add-slack-support/discord-bot/pkg/slackbot/model.go
+[gosec] 2026/09/15 22:43:17 Checking file: /home/manuel/workspaces/2026-09-10/add-slack-support/discord-bot/pkg/slackbot/operations.go
+[gosec] 2026/09/15 22:43:17 Checking file: /home/manuel/workspaces/2026-09-10/add-slack-support/discord-bot/pkg/slackbot/recording.go
+[gosec] 2026/09/15 22:43:17 Import directory: /home/manuel/workspaces/2026-09-10/add-slack-support/discord-bot/examples/framework-combined
+[gosec] 2026/09/15 22:43:17 Checking package: doc
+[gosec] 2026/09/15 22:43:17 Checking file: /home/manuel/workspaces/2026-09-10/add-slack-support/discord-bot/pkg/doc/doc.go
+[gosec] 2026/09/15 22:43:17 Ignoring generated file: /home/manuel/workspaces/2026-09-10/add-slack-support/discord-bot/pkg/doc/logcopter.go
+[gosec] 2026/09/15 22:43:17 Import directory: /home/manuel/workspaces/2026-09-10/add-slack-support/discord-bot/examples/framework-single-bot
+[gosec] 2026/09/15 22:43:17 Checking package: jsslack
+[gosec] 2026/09/15 22:43:17 Checking file: /home/manuel/workspaces/2026-09-10/add-slack-support/discord-bot/internal/jsslack/dispatch.go
+[gosec] 2026/09/15 22:43:17 Checking file: /home/manuel/workspaces/2026-09-10/add-slack-support/discord-bot/internal/jsslack/host.go
+[gosec] 2026/09/15 22:43:17 Ignoring generated file: /home/manuel/workspaces/2026-09-10/add-slack-support/discord-bot/internal/jsslack/logcopter.go
+[gosec] 2026/09/15 22:43:17 Checking file: /home/manuel/workspaces/2026-09-10/add-slack-support/discord-bot/internal/jsslack/module.go
+[gosec] 2026/09/15 22:43:17 Checking file: /home/manuel/workspaces/2026-09-10/add-slack-support/discord-bot/internal/jsslack/operations.go
+[gosec] 2026/09/15 22:43:17 Checking file: /home/manuel/workspaces/2026-09-10/add-slack-support/discord-bot/internal/jsslack/store.go
+[gosec] 2026/09/15 22:43:17 Checking file: /home/manuel/workspaces/2026-09-10/add-slack-support/discord-bot/internal/jsslack/ui_elements.go
+[gosec] 2026/09/15 22:43:17 Checking file: /home/manuel/workspaces/2026-09-10/add-slack-support/discord-bot/internal/jsslack/ui_module.go
+[gosec] 2026/09/15 22:43:17 Checking file: /home/manuel/workspaces/2026-09-10/add-slack-support/discord-bot/internal/jsslack/verbs.go
+[gosec] 2026/09/15 22:43:17 Checking package: framework
+[gosec] 2026/09/15 22:43:17 Checking file: /home/manuel/workspaces/2026-09-10/add-slack-support/discord-bot/pkg/framework/framework.go
+[gosec] 2026/09/15 22:43:17 Ignoring generated file: /home/manuel/workspaces/2026-09-10/add-slack-support/discord-bot/pkg/framework/logcopter.go
+[gosec] 2026/09/15 22:43:17 Import directory: /home/manuel/workspaces/2026-09-10/add-slack-support/discord-bot/internal/config
+[gosec] 2026/09/15 22:43:17 Import directory: /home/manuel/workspaces/2026-09-10/add-slack-support/discord-bot/internal/slackprobe
+[gosec] 2026/09/15 22:43:18 Checking package: discordbot
+[gosec] 2026/09/15 22:43:18 Checking file: /home/manuel/workspaces/2026-09-10/add-slack-support/discord-bot/logcopter_generate.go
+[gosec] 2026/09/15 22:43:18 Import directory: /home/manuel/workspaces/2026-09-10/add-slack-support/discord-bot/internal/slacktransport
+[gosec] 2026/09/15 22:43:18 Checking package: main
+[gosec] 2026/09/15 22:43:18 Checking file: /home/manuel/workspaces/2026-09-10/add-slack-support/discord-bot/examples/framework-single-bot/main.go
+[gosec] 2026/09/15 22:43:19 Checking package: bot
+[gosec] 2026/09/15 22:43:19 Checking file: /home/manuel/workspaces/2026-09-10/add-slack-support/discord-bot/internal/bot/bot.go
+[gosec] 2026/09/15 22:43:19 Ignoring generated file: /home/manuel/workspaces/2026-09-10/add-slack-support/discord-bot/internal/bot/logcopter.go
+[gosec] 2026/09/15 22:43:19 Checking package: config
+[gosec] 2026/09/15 22:43:19 Checking file: /home/manuel/workspaces/2026-09-10/add-slack-support/discord-bot/internal/config/config.go
+[gosec] 2026/09/15 22:43:19 Ignoring generated file: /home/manuel/workspaces/2026-09-10/add-slack-support/discord-bot/internal/config/logcopter.go
+[gosec] 2026/09/15 22:43:19 Checking package: main
+[gosec] 2026/09/15 22:43:19 Checking file: /home/manuel/workspaces/2026-09-10/add-slack-support/discord-bot/examples/framework-combined/main.go
+[gosec] 2026/09/15 22:43:19 Checking package: botcli
+[gosec] 2026/09/15 22:43:19 Checking file: /home/manuel/workspaces/2026-09-10/add-slack-support/discord-bot/pkg/botcli/bootstrap.go
+[gosec] 2026/09/15 22:43:19 Checking file: /home/manuel/workspaces/2026-09-10/add-slack-support/discord-bot/pkg/botcli/command_help.go
+[gosec] 2026/09/15 22:43:19 Checking file: /home/manuel/workspaces/2026-09-10/add-slack-support/discord-bot/pkg/botcli/command_list.go
+[gosec] 2026/09/15 22:43:19 Checking file: /home/manuel/workspaces/2026-09-10/add-slack-support/discord-bot/pkg/botcli/command_root.go
+[gosec] 2026/09/15 22:43:19 Checking file: /home/manuel/workspaces/2026-09-10/add-slack-support/discord-bot/pkg/botcli/command_run.go
+[gosec] 2026/09/15 22:43:19 Checking file: /home/manuel/workspaces/2026-09-10/add-slack-support/discord-bot/pkg/botcli/discover.go
+[gosec] 2026/09/15 22:43:19 Checking file: /home/manuel/workspaces/2026-09-10/add-slack-support/discord-bot/pkg/botcli/doc.go
+[gosec] 2026/09/15 22:43:19 Checking package: slacktransport
+[gosec] 2026/09/15 22:43:19 Checking file: /home/manuel/workspaces/2026-09-10/add-slack-support/discord-bot/pkg/botcli/host_options_context.go
+[gosec] 2026/09/15 22:43:19 Checking file: /home/manuel/workspaces/2026-09-10/add-slack-support/discord-bot/pkg/botcli/invoker.go
+[gosec] 2026/09/15 22:43:19 Ignoring generated file: /home/manuel/workspaces/2026-09-10/add-slack-support/discord-bot/pkg/botcli/logcopter.go
+[gosec] 2026/09/15 22:43:19 Checking file: /home/manuel/workspaces/2026-09-10/add-slack-support/discord-bot/pkg/botcli/model.go
+[gosec] 2026/09/15 22:43:19 Checking file: /home/manuel/workspaces/2026-09-10/add-slack-support/discord-bot/pkg/botcli/options.go
+[gosec] 2026/09/15 22:43:19 Checking file: /home/manuel/workspaces/2026-09-10/add-slack-support/discord-bot/pkg/botcli/run_description.go
+[gosec] 2026/09/15 22:43:19 Checking file: /home/manuel/workspaces/2026-09-10/add-slack-support/discord-bot/pkg/botcli/runtime_factory.go
+[gosec] 2026/09/15 22:43:19 Checking file: /home/manuel/workspaces/2026-09-10/add-slack-support/discord-bot/pkg/botcli/runtime_helpers.go
+[gosec] 2026/09/15 22:43:19 Checking file: /home/manuel/workspaces/2026-09-10/add-slack-support/discord-bot/internal/slacktransport/client.go
+[gosec] 2026/09/15 22:43:19 Ignoring generated file: /home/manuel/workspaces/2026-09-10/add-slack-support/discord-bot/internal/slacktransport/logcopter.go
+[gosec] 2026/09/15 22:43:19 Checking file: /home/manuel/workspaces/2026-09-10/add-slack-support/discord-bot/internal/slacktransport/operations.go
+[gosec] 2026/09/15 22:43:19 Checking file: /home/manuel/workspaces/2026-09-10/add-slack-support/discord-bot/internal/slacktransport/run.go
+[gosec] 2026/09/15 22:43:20 Checking package: jsdiscord
+[gosec] 2026/09/15 22:43:20 Checking file: /home/manuel/workspaces/2026-09-10/add-slack-support/discord-bot/internal/jsdiscord/bot_compile.go
+[gosec] 2026/09/15 22:43:20 Checking file: /home/manuel/workspaces/2026-09-10/add-slack-support/discord-bot/internal/jsdiscord/bot_context.go
+[gosec] 2026/09/15 22:43:20 Checking file: /home/manuel/workspaces/2026-09-10/add-slack-support/discord-bot/internal/jsdiscord/bot_dispatch.go
+[gosec] 2026/09/15 22:43:20 Checking file: /home/manuel/workspaces/2026-09-10/add-slack-support/discord-bot/internal/jsdiscord/bot_logging.go
+[gosec] 2026/09/15 22:43:20 Checking file: /home/manuel/workspaces/2026-09-10/add-slack-support/discord-bot/internal/jsdiscord/bot_ops.go
+[gosec] 2026/09/15 22:43:20 Checking file: /home/manuel/workspaces/2026-09-10/add-slack-support/discord-bot/internal/jsdiscord/bot_store.go
+[gosec] 2026/09/15 22:43:20 Checking file: /home/manuel/workspaces/2026-09-10/add-slack-support/discord-bot/internal/jsdiscord/descriptor.go
+[gosec] 2026/09/15 22:43:20 Checking file: /home/manuel/workspaces/2026-09-10/add-slack-support/discord-bot/internal/jsdiscord/host.go
+[gosec] 2026/09/15 22:43:20 Checking file: /home/manuel/workspaces/2026-09-10/add-slack-support/discord-bot/internal/jsdiscord/host_commands.go
+[gosec] 2026/09/15 22:43:20 Checking file: /home/manuel/workspaces/2026-09-10/add-slack-support/discord-bot/internal/jsdiscord/host_dispatch.go
+[gosec] 2026/09/15 22:43:20 Checking file: /home/manuel/workspaces/2026-09-10/add-slack-support/discord-bot/internal/jsdiscord/host_logging.go
+[gosec] 2026/09/15 22:43:20 Checking file: /home/manuel/workspaces/2026-09-10/add-slack-support/discord-bot/internal/jsdiscord/host_maps.go
+[gosec] 2026/09/15 22:43:20 Checking file: /home/manuel/workspaces/2026-09-10/add-slack-support/discord-bot/internal/jsdiscord/host_ops.go
+[gosec] 2026/09/15 22:43:20 Checking file: /home/manuel/workspaces/2026-09-10/add-slack-support/discord-bot/internal/jsdiscord/host_ops_channels.go
+[gosec] 2026/09/15 22:43:20 Checking file: /home/manuel/workspaces/2026-09-10/add-slack-support/discord-bot/internal/jsdiscord/host_ops_guilds.go
+[gosec] 2026/09/15 22:43:20 Checking file: /home/manuel/workspaces/2026-09-10/add-slack-support/discord-bot/internal/jsdiscord/host_ops_helpers.go
+[gosec] 2026/09/15 22:43:20 Checking file: /home/manuel/workspaces/2026-09-10/add-slack-support/discord-bot/internal/jsdiscord/host_ops_members.go
+[gosec] 2026/09/15 22:43:20 Checking file: /home/manuel/workspaces/2026-09-10/add-slack-support/discord-bot/internal/jsdiscord/host_ops_messages.go
+[gosec] 2026/09/15 22:43:20 Checking file: /home/manuel/workspaces/2026-09-10/add-slack-support/discord-bot/internal/jsdiscord/host_ops_roles.go
+[gosec] 2026/09/15 22:43:20 Checking file: /home/manuel/workspaces/2026-09-10/add-slack-support/discord-bot/internal/jsdiscord/host_ops_threads.go
+[gosec] 2026/09/15 22:43:20 Checking file: /home/manuel/workspaces/2026-09-10/add-slack-support/discord-bot/internal/jsdiscord/host_options.go
+[gosec] 2026/09/15 22:43:20 Checking file: /home/manuel/workspaces/2026-09-10/add-slack-support/discord-bot/internal/jsdiscord/host_responses.go
+[gosec] 2026/09/15 22:43:20 Ignoring generated file: /home/manuel/workspaces/2026-09-10/add-slack-support/discord-bot/internal/jsdiscord/logcopter.go
+[gosec] 2026/09/15 22:43:20 Checking file: /home/manuel/workspaces/2026-09-10/add-slack-support/discord-bot/internal/jsdiscord/payload_components.go
+[gosec] 2026/09/15 22:43:20 Checking file: /home/manuel/workspaces/2026-09-10/add-slack-support/discord-bot/internal/jsdiscord/payload_embeds.go
+[gosec] 2026/09/15 22:43:20 Checking file: /home/manuel/workspaces/2026-09-10/add-slack-support/discord-bot/internal/jsdiscord/payload_files.go
+[gosec] 2026/09/15 22:43:20 Checking file: /home/manuel/workspaces/2026-09-10/add-slack-support/discord-bot/internal/jsdiscord/payload_mentions.go
+[gosec] 2026/09/15 22:43:20 Checking file: /home/manuel/workspaces/2026-09-10/add-slack-support/discord-bot/internal/jsdiscord/payload_message.go
+[gosec] 2026/09/15 22:43:20 Checking file: /home/manuel/workspaces/2026-09-10/add-slack-support/discord-bot/internal/jsdiscord/payload_model.go
+[gosec] 2026/09/15 22:43:20 Checking file: /home/manuel/workspaces/2026-09-10/add-slack-support/discord-bot/internal/jsdiscord/runtime.go
+[gosec] 2026/09/15 22:43:20 Checking file: /home/manuel/workspaces/2026-09-10/add-slack-support/discord-bot/internal/jsdiscord/snapshot_builders.go
+[gosec] 2026/09/15 22:43:20 Checking file: /home/manuel/workspaces/2026-09-10/add-slack-support/discord-bot/internal/jsdiscord/snapshot_types.go
+[gosec] 2026/09/15 22:43:20 Checking file: /home/manuel/workspaces/2026-09-10/add-slack-support/discord-bot/internal/jsdiscord/store.go
+[gosec] 2026/09/15 22:43:20 Checking file: /home/manuel/workspaces/2026-09-10/add-slack-support/discord-bot/internal/jsdiscord/ui_components.go
+[gosec] 2026/09/15 22:43:20 Checking file: /home/manuel/workspaces/2026-09-10/add-slack-support/discord-bot/internal/jsdiscord/ui_embed.go
+[gosec] 2026/09/15 22:43:20 Checking file: /home/manuel/workspaces/2026-09-10/add-slack-support/discord-bot/internal/jsdiscord/ui_errors.go
+[gosec] 2026/09/15 22:43:20 Checking file: /home/manuel/workspaces/2026-09-10/add-slack-support/discord-bot/internal/jsdiscord/ui_form.go
+[gosec] 2026/09/15 22:43:20 Checking file: /home/manuel/workspaces/2026-09-10/add-slack-support/discord-bot/internal/jsdiscord/ui_helpers.go
+[gosec] 2026/09/15 22:43:20 Checking file: /home/manuel/workspaces/2026-09-10/add-slack-support/discord-bot/internal/jsdiscord/ui_message.go
+[gosec] 2026/09/15 22:43:20 Checking file: /home/manuel/workspaces/2026-09-10/add-slack-support/discord-bot/internal/jsdiscord/ui_module.go
+[gosec] 2026/09/15 22:43:22 Checking package: provider
+[gosec] 2026/09/15 22:43:22 Ignoring generated file: /home/manuel/workspaces/2026-09-10/add-slack-support/discord-bot/pkg/xgoja/provider/logcopter.go
+[gosec] 2026/09/15 22:43:22 Checking file: /home/manuel/workspaces/2026-09-10/add-slack-support/discord-bot/pkg/xgoja/provider/provider.go
+Results:
+
+
+Summary:
+  Gosec  : dev
+  Files  : 92
+  Lines  : 14908
+  Nosec  : 1
+  Issues : 0
+
+mkdir -p /home/manuel/workspaces/2026-09-10/add-slack-support/discord-bot/.bin/
+GOBIN=/home/manuel/workspaces/2026-09-10/add-slack-support/discord-bot/.bin/ go install golang.org/x/vuln/cmd/govulncheck@v1.8.0
+/home/manuel/workspaces/2026-09-10/add-slack-support/discord-bot/.bin/govulncheck ./...
+=== Symbol Results ===
+
+No vulnerabilities found.
+
+Your code is affected by 0 vulnerabilities.
+This scan also found 1 vulnerability in packages you import and 5
+vulnerabilities in modules you require, but your code doesn't appear to call
+these vulnerabilities.
+Use '-show verbose' for more details.

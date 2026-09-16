@@ -1,0 +1,26 @@
+digraph modal_sequence {
+  graph [rankdir=LR, bgcolor="white", pad=0.25, nodesep=0.5, ranksep=0.55, fontname="DejaVu Sans"];
+  node [shape=box, style="rounded,filled", fillcolor="#eef4ff", color="#315a9d", fontname="DejaVu Sans", fontsize=10, margin="0.15,0.09"];
+  edge [color="#315a9d", penwidth=1.1, arrowsize=0.75, fontname="DejaVu Sans", fontsize=8];
+  S [label="Slack"];
+  T [label="Go transport"];
+  J [label="JS handler"];
+  V [label="Validate title locally", fillcolor="#f3f3f3", color="#777777"];
+  I [label="Store new title", fillcolor="#f3f3f3", color="#777777"];
+  E [label="ACK errors keyed by block ID", fillcolor="#fff4df", color="#a36b00"];
+  A [label="ACK empty", fillcolor="#e7f6e7", color="#39703b"];
+  U [label="messages.update", fillcolor="#f3f3f3", color="#777777"];
+  S -> T [label="view_submission, envelope E"];
+  T -> J [label="Deadline-bound interaction"];
+  J -> V;
+  V -> E [label="invalid"];
+  E -> T [label="response_action errors"];
+  T -> S [label="E + errors"];
+  V -> A [label="valid"];
+  A -> T [label="empty"];
+  T -> S [label="E accepted"];
+  A -> I;
+  I -> U;
+  U -> T;
+  T -> S [label="chat.update"];
+}

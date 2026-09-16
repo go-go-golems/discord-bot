@@ -1,0 +1,21 @@
+digraph G {
+  graph [rankdir=LR, bgcolor="white", pad="0.2", nodesep="0.55", ranksep="0.35"];
+  node [shape=box, style="rounded,filled", fillcolor="#eef4ff", color="#355c9a", fontname="DejaVu Sans", fontsize=13, margin="0.14,0.08"];
+  edge [color="#355c9a", penwidth=1.2, arrowsize=0.65, fontname="DejaVu Sans", fontsize=10];
+  U [label="User"]; S [label="Slack"]; G [label="Go host"]; J [label="Bot handler"]; D [label="SQLite"];
+  U -> S [label="Click Edit"];
+  S -> G [label="Block action"];
+  G -> S [label="Empty ACK"];
+  G -> J [label="Record/action context"];
+  J -> D [label="Read record"];
+  J -> G [label="Open modal with metadata"];
+  G -> S [label="views.open"];
+  U -> S [label="Submit edit"];
+  S -> G [label="View submission"];
+  G -> J [label="Fields and ACK capability"];
+  J -> J [label="Validate actor and fields"];
+  J -> G [label="Accept or field errors"];
+  G -> S [label="Submission ACK"];
+  J -> D [label="Commit valid edit"];
+  J -> G [label="Update visible result"];
+}
