@@ -38,11 +38,11 @@ declare module "slack/ui" {
   export function header(text: string): Block;
   export interface ButtonBuilder {
     value(value: string): ButtonBuilder;
-    style(style: "primary" | "danger"): ButtonBuilder;
+    style(style: "primary" | "danger" | ""): ButtonBuilder;
     build(): Block;
   }
   export function button(actionId: string, label: string): ButtonBuilder;
-  export function section(text: Block): Block;
+  export function section(text: Block, accessory?: Block | ButtonBuilder): Block;
   export function actions(blockId: string, ...buttons: (ButtonBuilder | Block)[]): Block;
   export interface MessageBuilder {
     block(block: Block): MessageBuilder;
@@ -52,19 +52,41 @@ declare module "slack/ui" {
   export interface TextInputBuilder {
     initial(value: string): TextInputBuilder;
     placeholder(value: string): TextInputBuilder;
-    required(): TextInputBuilder;
-    optional(): TextInputBuilder;
+    multiline(): TextInputBuilder;
+    length(min: number, max: number): TextInputBuilder;
     build(): Block;
   }
-  export function input(blockId: string, label: string, input: TextInputBuilder | Block): Block;
+  export interface InputOptions {optional?: boolean; hint?: string; dispatch_action?: boolean}
+  export function option(label: string, value: string): Block;
+  export function context(...elements: Block[]): Block;
+  export function image(url: string, altText: string): Block;
+  export function linkButton(actionId: string, label: string, url: string): Block;
+  export function confirm(element: Block | ButtonBuilder, title: string, text: string, accept?: string, cancel?: string): Block;
+  export function input(blockId: string, label: string, input: TextInputBuilder | Block, options?: InputOptions): Block;
   export function textInput(actionId: string): TextInputBuilder;
   export interface ModalBuilder {
+    block(block: Block): ModalBuilder;
     metadata(value: string): ModalBuilder;
-    input(blockId: string, label: string, input: TextInputBuilder | Block): ModalBuilder;
+    input(blockId: string, label: string, input: TextInputBuilder | Block, options?: InputOptions): ModalBuilder;
     input(block: Block): ModalBuilder;
     submit(label: string): ModalBuilder;
     close(label: string): ModalBuilder;
     build(): Block;
   }
   export function modal(callbackId: string, title: string): ModalBuilder;
+  export function staticSelect(actionId: string, options?: Record<string, unknown>): Block;
+  export function multiStaticSelect(actionId: string, options?: Record<string, unknown>): Block;
+  export function externalSelect(actionId: string, options?: Record<string, unknown>): Block;
+  export function multiExternalSelect(actionId: string, options?: Record<string, unknown>): Block;
+  export function usersSelect(actionId: string, options?: Record<string, unknown>): Block;
+  export function multiUsersSelect(actionId: string, options?: Record<string, unknown>): Block;
+  export function channelsSelect(actionId: string, options?: Record<string, unknown>): Block;
+  export function multiChannelsSelect(actionId: string, options?: Record<string, unknown>): Block;
+  export function conversationsSelect(actionId: string, options?: Record<string, unknown>): Block;
+  export function multiConversationsSelect(actionId: string, options?: Record<string, unknown>): Block;
+  export function datePicker(actionId: string, options?: Record<string, unknown>): Block;
+  export function timePicker(actionId: string, options?: Record<string, unknown>): Block;
+  export function checkboxes(actionId: string, options?: Record<string, unknown>): Block;
+  export function radioButtons(actionId: string, options?: Record<string, unknown>): Block;
+  export function overflow(actionId: string, options?: Record<string, unknown>): Block;
 }

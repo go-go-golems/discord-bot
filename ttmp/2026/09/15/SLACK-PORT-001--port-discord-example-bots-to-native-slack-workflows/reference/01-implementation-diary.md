@@ -140,3 +140,47 @@ Then implement task by task, commit at appropriate intervals and keep a detailed
 ### Technical details
 - Source scripts, printable Markdown, figures, PDF and upload receipts are stored with this ticket.
 - This is a design and delivery checkpoint, not a full parity qualification.
+
+
+## Step 3: Add native controls and correct optional input semantics
+
+Extended the shared UI construction API before implementing the dependent bot workflows. The payload tests exercise optional inputs, select values, section accessories and confirmation composition. This completes the construction portion of T2; handler routing and live Slack acceptance remain separate work.
+
+### Prompt Context
+See Step 2. **Assistant interpretation:** Build reusable native controls needed by the full example collection. **Inferred user intent:** Equivalent workflows with idiomatic Slack payloads.
+
+### What I did
+- Added select, date/time, checkbox, radio and overflow constructors, plus options, images, context, URL buttons and confirmation composition.
+- Added modal.block, section accessories, multiline and length-constrained text inputs.
+- Moved optionality to input options and removed the invalid textInput.optional/required methods; no compatibility layer was introduced.
+- Made neutral buttons the default and updated TypeScript declarations and CLI UI documentation.
+
+### Why
+- Slack optionality belongs to input blocks, not plain_text_input elements.
+- Wire-key option objects avoid duplicating the complete Block Kit schema in a local builder hierarchy.
+
+### What worked
+- GOCACHE=/tmp/go-build-cache-slack-ui GOWORK=off go test ./internal/jsslack passed.
+- Regression assertions verify optional never appears on the nested element and both input construction paths agree.
+
+### What didn't work
+- No implementation/test failures observed. An exploratory read of ui_module_test.go failed because that file did not exist; tests previously lived in host_test.go.
+
+### What I learned
+- The current examples do not use optional/required methods, so fixing their ownership needs no script migrations.
+
+### What was tricky to build
+- Both modal.input and ui.input must share the same block constructor to prevent divergent serialization.
+
+### What warrants a second pair of eyes
+- Helpers enforce selected common limits, not the full Slack schema or every surface restriction.
+
+### What should be done in the future
+- Connect option-loading and selection handlers; do not equate payload construction with working interaction routing.
+
+### Code review instructions
+- Review internal/jsslack/ui_elements.go, ui_module.go and ui_elements_test.go, then the TypeScript declarations.
+
+### Technical details
+- input's fourth argument accepts optional, hint and dispatch_action.
+- Static select options max100; overflow max5; checkbox/radio max10. Context max10. Existing message/modal block limits retained.

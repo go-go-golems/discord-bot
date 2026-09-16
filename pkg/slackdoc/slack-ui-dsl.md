@@ -235,3 +235,42 @@ URLs are not included in the host's reply diagnostics.
 - `internal/jsslack/ui_module.go` — Go implementation of the builders.
 - `internal/jsslack/dispatch.go` — context methods and reply/ACK dispatch.
 - Ticket `SLACK-UI-001`, `design-doc/01-slack-surfaces-and-ui-dsl-intern-guide.md` — deeper design, archived Slack references, diagrams and future surfaces.
+
+
+## Native controls for example ports
+
+`ui.input(blockId, label, element, {optional: true, hint: "Details"})` puts
+optionality on the input block. Inputs are required by default. The former
+`textInput().optional()` and `.required()` methods have been removed because
+optionality is not an element property. The modal's three-argument `input`
+method accepts the same fourth options argument. `textInput` supports
+`.multiline()` and `.length(min, max)` for constraints up to 3,000 characters.
+
+Select helpers return detached Slack elements and take an action ID plus an
+options object using Slack wire keys:
+
+```javascript
+const choices = ui.staticSelect("article", {
+  placeholder: "Choose an article",
+  options: [ui.option("Getting started", "start"), ui.option("FAQ", "faq")]
+});
+const controls = ui.actions("browse", choices, ui.usersSelect("owner"));
+```
+
+Available helpers are `staticSelect`, `multiStaticSelect`, `externalSelect`,
+`multiExternalSelect`, `usersSelect`, `multiUsersSelect`, `channelsSelect`,
+`multiChannelsSelect`, `conversationsSelect`, `multiConversationsSelect`,
+`datePicker`, `timePicker`, `checkboxes`, `radioButtons`, and `overflow`.
+These helpers construct payloads; external option loading additionally requires
+runtime support and a registered options handler. Construction alone does not
+establish that routing capability.
+
+`ui.section(text, accessory)` accepts an optional element. `ui.context(...elements)`
+accepts up to ten text/image elements, and `ui.image(httpsURL, altText)` creates
+an image. `ui.linkButton(id, label, httpsURL)` adds a URL button.
+`ui.confirm(element, title, text, acceptLabel?, cancelLabel?)` adds a native
+confirmation dialog. Buttons are neutral by default; use `.style("primary")`
+or `.style("danger")` explicitly. `modal.block(block)` adds non-input blocks.
+
+The helpers enforce a few common shape and count constraints, not the complete
+Slack schema. Slack still validates surface compatibility and all field limits.

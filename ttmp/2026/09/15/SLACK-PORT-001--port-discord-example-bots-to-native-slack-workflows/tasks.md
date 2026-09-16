@@ -11,7 +11,7 @@ reference/02-source-handler-acceptance-matrix.md.
 - [x] Inventory source examples, archive API references, and write the intern guide.
 - [x] Upload the intern guide to reMarkable.
 - [ ] T1: Complete feature mappings and acceptance tests for all source workflows.
-- [ ] T2: Fix optional inputs and add native UI controls needed by the ports.
+- [x] T2: Fix optional inputs and add native UI controls needed by the ports.
 - [ ] T3: Complete shortcuts, options, modal-result and reply-update interactions.
 - [ ] T4: Implement operational Slack services and explicit capability scopes.
 - [ ] T5: Add lifecycle-owned persistent database capability and reopen tests.
