@@ -568,3 +568,27 @@ its changed permissions and restarted it in the existing slack-bot tmux session.
   User interaction remains necessary to qualify the live form workflow.
 - No implementation changes or additional test messages were made. Poker's prior
   logs showed successful interactive dispatch and reply delivery before stopping.
+
+## Step 12: Remove Slack documentation credentials from outgoing Git history
+
+User requested: "Filter out the token from the git history so we can push" and
+provided GitHub push-protection diagnostics. Scanned every reachable historical
+blob without printing credential values. Found documentation token/webhook
+examples and their duplicated source archives; retained synthetic transport-test
+URLs used for host validation.
+
+- Rewrote task/add-slack-support in an isolated local clone using git-filter-repo
+  exact-value replacement. Replaced three distinct documentation values with
+  SLACK_REDACTED_EXAMPLE throughout the branch's ancestry.
+- Verified the resulting tree changes are confined to seven archived reference
+  files (19 lines), and rescanned history: only the synthetic test URL remains.
+- Imported the rewritten branch using git fetch and git reset --keep. The
+  untracked slack-bot binary is preserved; no live process was restarted.
+- Original tip ced0832 became 5ea6410. Historical hashes in prior diary entries
+  describe the original checkpoints and no longer identify the rewritten commits.
+- Archived download checksums describe pre-redaction source bytes. Published
+  copies now deliberately redact credential-shaped documentation examples.
+- Remote branch lookup returned no existing task/add-slack-support ref, so an
+  ordinary push is appropriate; no remote force update is needed.
+- This cleans the outgoing branch. Other local refs/reflogs are not purged or
+  rewritten, and must not be pushed with --mirror as part of this cleanup.
