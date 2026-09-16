@@ -274,3 +274,38 @@ or `.style("danger")` explicitly. `modal.block(block)` adds non-input blocks.
 
 The helpers enforce a few common shape and count constraints, not the complete
 Slack schema. Slack still validates surface compatibility and all field limits.
+
+
+## Shortcuts, external options and modal results
+
+Register a message or global shortcut with
+`shortcut({callbackId, name, description, type: "message" | "global"}, handler)`.
+The generated manifest includes its declaration. A shortcut handler receives
+`ctx.shortcut.message` for message shortcuts and can open a modal with
+`ctx.openModal(view)`. Commands now also retain their modal trigger. Global
+shortcuts have no channel; they should open a modal instead of assuming a reply
+channel exists.
+
+Register external select suggestions with `options(actionId, handler)`.
+The handler receives `ctx.query` and must call `await ctx.ack.options([...])`
+within Slack's acknowledgment deadline. Return at most 100 option objects;
+`ui.option(label, value)` constructs each object. An empty list is valid.
+
+A view submission handler can call `ctx.ack.update(view)` to display a result
+view in the same modal. It remains a single acknowledgment choice, alongside
+`accept` and `errors`; it is not a second Web API request. Ordinary button and
+shortcut receipts still get an immediate transport acknowledgment.
+
+For message pagination, an action handler can call
+`ctx.replaceOriginal(message)` when its interaction includes a response URL.
+This replaces the originating message, including ephemeral messages. It claims
+the invocation's reply slot. It is unavailable for slash commands and for
+view-only interactions that have no message response URL.
+
+`ctx.action.selection` preserves Slack's element-specific `selected_*` fields,
+including selected users, conversations, channels and dates. The existing
+`selectedOption` and `selectedOptions` fields remain available for static selects.
+
+Bots can declare explicit additional `scopes` in configure. Manifest creation
+merges these with the automatically required chat/command/mention scopes.
+Changing scopes requires reinstalling the app before using the added features.

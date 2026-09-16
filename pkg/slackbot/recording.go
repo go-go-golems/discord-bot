@@ -60,15 +60,12 @@ func (r *Recorder) Respond(ctx context.Context, response InteractionResponse) er
 	if err := ctx.Err(); err != nil {
 		return err
 	}
-	if response.Kind != "accept" && response.Kind != "errors" {
-		return Fail("invalid_argument", "ack", "response kind must be accept or errors")
-	}
-	if response.Kind == "errors" && len(response.Errors) == 0 {
-		return Fail("invalid_argument", "ack", "errors response requires at least one field")
+	if err := response.Validate(); err != nil {
+		return err
 	}
 	r.mu.Lock()
 	defer r.mu.Unlock()
-	copyResponse := InteractionResponse{Kind: response.Kind}
+	copyResponse := response
 	if response.Errors != nil {
 		copyResponse.Errors = map[string]string{}
 		for key, value := range response.Errors {
@@ -116,7 +113,7 @@ func (r *Recorder) Operations() []RecordedOperation {
 			out[i].Ref = &v
 		}
 		if op.Ack != nil {
-			v := InteractionResponse{Kind: op.Ack.Kind}
+			v := *op.Ack
 			if op.Ack.Errors != nil {
 				v.Errors = map[string]string{}
 				for key, value := range op.Ack.Errors {
@@ -132,4 +129,19 @@ func (r *Recorder) Operations() []RecordedOperation {
 		}
 	}
 	return out
+}
+
+var _ UpdatingResponder = (*Recorder)(nil)
+
+func (r *Recorder) Replace(ctx context.Context, m MessagePayload) error {
+	if err := ctx.Err(); err != nil {
+		return err
+	}
+	if err := m.Validate("replaceOriginal"); err != nil {
+		return err
+	}
+	r.mu.Lock()
+	defer r.mu.Unlock()
+	r.operations = append(r.operations, RecordedOperation{Kind: "replace_original", Reply: &m})
+	return nil
 }

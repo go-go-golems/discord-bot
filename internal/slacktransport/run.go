@@ -3,6 +3,7 @@ package slacktransport
 import (
 	"context"
 	"encoding/json"
+	"strings"
 	"sync"
 	"time"
 
@@ -33,15 +34,17 @@ func (r *receipt) Ack(ctx context.Context, id string, busy bool) error {
 }
 
 func (r *receipt) Respond(ctx context.Context, response slackbot.InteractionResponse) error {
-	if response.Kind != "accept" && response.Kind != "errors" {
-		return slackbot.Fail("invalid_argument", "ack", "response kind must be accept or errors")
-	}
-	if response.Kind == "errors" && len(response.Errors) == 0 {
-		return slackbot.Fail("invalid_argument", "ack", "errors response requires at least one field")
+	if err := response.Validate(); err != nil {
+		return err
 	}
 	var payload any
-	if response.Kind == "errors" {
+	switch response.Kind {
+	case "errors":
 		payload = map[string]any{"response_action": "errors", "errors": response.Errors}
+	case "update":
+		payload = map[string]any{"response_action": "update", "view": response.View}
+	case "options":
+		payload = map[string]any{"options": response.Options}
 	}
 	return r.send(ctx, r.id, payload, response)
 }
@@ -56,7 +59,7 @@ func (r *receipt) send(ctx context.Context, id string, payload any, response sla
 		r.mu.Unlock()
 		return slackbot.Fail("ack_expired", "ack", "interaction acknowledgment deadline has passed")
 	}
-	if response.Kind == "errors" && !r.acceptsResponse {
+	if payload != nil && response.Kind != "auto" && !r.acceptsResponse {
 		r.mu.Unlock()
 		return slackbot.Fail("ack_payload_unsupported", "ack", "Slack did not accept an acknowledgment payload")
 	}
@@ -213,6 +216,7 @@ func (c *Client) decode(r socketmode.Request) (slackbot.Envelope, error) {
 			ChannelID     string `json:"channel_id"`
 			UserID        string `json:"user_id"`
 			ResponseURL   string `json:"response_url"`
+			TriggerID     string `json:"trigger_id"`
 			Command, Text string
 		}
 		if err := json.Unmarshal(r.Payload, &p); err != nil {
@@ -224,11 +228,13 @@ func (c *Client) decode(r socketmode.Request) (slackbot.Envelope, error) {
 			return e, err
 		}
 		e.AppID = p.AppID
-		e.Invocation = slackbot.Invocation{ID: r.EnvelopeID, TeamID: p.TeamID, ChannelID: p.ChannelID, UserID: p.UserID, Command: p.Command, Text: p.Text}
+		e.Invocation = slackbot.Invocation{ID: r.EnvelopeID, TeamID: p.TeamID, ChannelID: p.ChannelID, UserID: p.UserID, Command: p.Command, Text: p.Text, TriggerID: p.TriggerID}
 	case socketmode.RequestTypeInteractive:
 		var p struct {
-			Type string `json:"type"`
-			Team struct {
+			Type     string `json:"type"`
+			ActionID string `json:"action_id"`
+			Value    string `json:"value"`
+			Team     struct {
 				ID string `json:"id"`
 			} `json:"team"`
 			User struct {
@@ -237,14 +243,12 @@ func (c *Client) decode(r socketmode.Request) (slackbot.Envelope, error) {
 			Channel struct {
 				ID string `json:"id"`
 			} `json:"channel"`
-			APIAppID    string `json:"api_app_id"`
-			ResponseURL string `json:"response_url"`
-			CallbackID  string `json:"callback_id"`
-			TriggerID   string `json:"trigger_id"`
-			Message     struct {
-				TS string `json:"ts"`
-			} `json:"message"`
-			Container struct {
+			APIAppID    string         `json:"api_app_id"`
+			ResponseURL string         `json:"response_url"`
+			CallbackID  string         `json:"callback_id"`
+			TriggerID   string         `json:"trigger_id"`
+			Message     map[string]any `json:"message"`
+			Container   struct {
 				ChannelID string `json:"channel_id"`
 				MessageTS string `json:"message_ts"`
 				ThreadTS  string `json:"thread_ts"`
@@ -270,6 +274,16 @@ func (c *Client) decode(r socketmode.Request) (slackbot.Envelope, error) {
 		if err := json.Unmarshal(r.Payload, &p); err != nil || p.Type == "" {
 			return e, errors.New("unsupported interactive payload")
 		}
+		if p.Type == "shortcut" || p.Type == "message_action" {
+			e.AppID = p.APIAppID
+			e.Invocation = slackbot.Invocation{ID: r.EnvelopeID, TeamID: p.Team.ID, UserID: p.User.ID, ChannelID: p.Channel.ID, TriggerID: p.TriggerID, Shortcut: &slackbot.Shortcut{Type: p.Type, CallbackID: p.CallbackID, Message: p.Message}}
+			return e, e.Invocation.Validate()
+		}
+		if p.Type == "block_suggestion" {
+			e.AppID = p.APIAppID
+			e.Invocation = slackbot.Invocation{ID: r.EnvelopeID, TeamID: p.Team.ID, UserID: p.User.ID, Interaction: &slackbot.Interaction{Type: p.Type, CallbackID: p.ActionID, Query: p.Value}}
+			return e, e.Invocation.Validate()
+		}
 		if p.Type == "view_submission" {
 			e.AppID = p.APIAppID
 			e.Invocation = slackbot.Invocation{
@@ -286,7 +300,7 @@ func (c *Client) decode(r socketmode.Request) (slackbot.Envelope, error) {
 			channelID = p.Container.ChannelID
 		}
 		threadTS := p.Container.ThreadTS
-		messageTS := p.Message.TS
+		messageTS, _ := p.Message["ts"].(string)
 		if messageTS == "" {
 			messageTS = p.Container.MessageTS
 		}
@@ -299,6 +313,19 @@ func (c *Client) decode(r socketmode.Request) (slackbot.Envelope, error) {
 			}
 		}
 		a := p.Actions[0]
+		// Keep every element-specific selected_* field without losing IDs or dates.
+		var raw struct {
+			Actions []map[string]any `json:"actions"`
+		}
+		_ = json.Unmarshal(r.Payload, &raw)
+		selection := map[string]any{}
+		if len(raw.Actions) > 0 {
+			for key, value := range raw.Actions[0] {
+				if strings.HasPrefix(key, "selected_") {
+					selection[key] = value
+				}
+			}
+		}
 		selected := make([]any, len(a.SelectedOptions))
 		for i := range a.SelectedOptions {
 			selected[i] = a.SelectedOptions[i]
@@ -307,7 +334,7 @@ func (c *Client) decode(r socketmode.Request) (slackbot.Envelope, error) {
 		e.Responder = responder
 		e.Invocation = slackbot.Invocation{
 			ID: r.EnvelopeID, TeamID: p.Team.ID, ChannelID: channelID, UserID: p.User.ID,
-			Action: &slackbot.Action{Type: a.Type, ActionID: a.ActionID, BlockID: a.BlockID, Value: a.Value, SelectedOption: a.SelectedOption, SelectedOptions: selected, MessageTS: messageTS, ThreadTS: threadTS, ResponseURL: p.ResponseURL, TriggerID: p.TriggerID, CallbackID: p.CallbackID},
+			Action: &slackbot.Action{Selection: selection, Type: a.Type, ActionID: a.ActionID, BlockID: a.BlockID, Value: a.Value, SelectedOption: a.SelectedOption, SelectedOptions: selected, MessageTS: messageTS, ThreadTS: threadTS, ResponseURL: p.ResponseURL, TriggerID: p.TriggerID, CallbackID: p.CallbackID},
 		}
 	default:
 		return e, errors.New("unsupported envelope")

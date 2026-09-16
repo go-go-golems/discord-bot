@@ -9,20 +9,25 @@ declare module "slack" {
     id: string; teamId: string; channelId: string; userId: string;
     command: string; text: string;
     event: {type: string; text: string; ts: string; threadTs: string; channelId: string; userId: string};
-    action?: {type: string; actionId: string; blockId?: string; value?: string; selectedOption?: Record<string, JSONValue>; selectedOptions?: JSONValue[]; messageTs?: string; threadTs?: string};
+    action?: {type: string; actionId: string; blockId?: string; value?: string; selectedOption?: Record<string, JSONValue>; selectedOptions?: JSONValue[]; selection?: Record<string, JSONValue>; messageTs?: string; threadTs?: string};
     view?: {type: string; callbackId: string; privateMetadata?: string; id?: string; hash?: string};
     values?: {all: Record<string, Record<string, JSONValue>>; text(blockId: string, actionId: string): string | undefined};
+    shortcut?: {type: string; callbackId: string; message?: Record<string, JSONValue>};
+    query?: string;
+    replaceOriginal(message: MessagePayload): Promise<void>;
     config: Record<string, string | boolean | number>;
     reply(message: MessagePayload): Promise<MessageRef | {delivered: true; via: "response_url"}>;
     slack: {messages: {post(message: PostMessage): Promise<MessageRef>}};
     store: {get(key: string): JSONValue | undefined; set(key: string, value: JSONValue): void; delete(key: string): boolean; keys(): string[]};
     log: {debug(message: string): void; info(message: string): void; warn(message: string): void; error(message: string): void};
-    ack?: {accept(): Promise<void>; errors(errors: Record<string, string>): Promise<void>};
+    ack?: {accept(): Promise<void>; errors(errors: Record<string, string>): Promise<void>; update(view: Block): Promise<void>; options(options: Block[]): Promise<void>};
     openModal(view: Block): Promise<{id: string; hash: string}>;
   }
   export interface Registration {
-    configure(spec: {name: string; description?: string; run?: {fields: Record<string, {type: "string" | "bool" | "number"; default?: string | boolean | number; required?: boolean; help?: string}>}}): void;
+    configure(spec: {name: string; description?: string; scopes?: string[]; run?: {fields: Record<string, {type: "string" | "bool" | "number"; default?: string | boolean | number; required?: boolean; help?: string}>}}): void;
     command(name: string, spec: {description: string}, handler: (ctx: Context) => MessagePayload | void | Promise<MessagePayload | void>): void;
+    shortcut(spec: {callbackId: string; name: string; description: string; type: "message" | "global"}, handler: (ctx: Context) => void | Promise<void>): void;
+    options(actionId: string, handler: (ctx: Context) => void | Promise<void>): void;
     event(name: "app_mention", handler: (ctx: Context) => MessagePayload | void | Promise<MessagePayload | void>): void;
     view(callbackId: string, handler: (ctx: Context) => void | Promise<void>): void;
     action(actionId: string, handler: (ctx: Context) => MessagePayload | void | Promise<MessagePayload | void>): void;

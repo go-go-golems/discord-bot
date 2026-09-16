@@ -98,5 +98,15 @@
     "url": "https://docs.slack.dev/reference/events/reaction_added/",
     "file": "20-reaction_added.md",
     "sha256": "d3f39c334d572585f7ad005dd8fd599500c8f8b7e57e2eda4a8cfff28640709d"
+  },
+  {
+    "url": "https://docs.slack.dev/reference/interaction-payloads/block_suggestion-payload/",
+    "file": "21-block_suggestion-payload.md",
+    "sha256": "9d5e2e7149c5be80a47520faa23817dfe8564ff037a04012341fbbb6f89c0eef"
+  },
+  {
+    "url": "https://docs.slack.dev/apis/events-api/using-socket-mode/",
+    "file": "22-using-socket-mode.md",
+    "sha256": "f7535e976ce0131c16578c8e34245264f01e3883234f2969013026bfae5ce9e2"
   }
 ]

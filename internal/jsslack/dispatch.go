@@ -80,8 +80,14 @@ func (h *Host) Dispatch(ctx context.Context, input slackbot.Invocation, responde
 			key = "event:" + input.Event
 		} else if input.Action != nil {
 			key = "action:" + input.Action.ID()
+		} else if input.Shortcut != nil {
+			key = "shortcut:" + input.Shortcut.CallbackID
 		} else if input.Interaction != nil {
-			key = "view:" + input.Interaction.CallbackID
+			prefix := "view:"
+			if input.Interaction.Type == "block_suggestion" {
+				prefix = "options:"
+			}
+			key = prefix + input.Interaction.CallbackID
 		}
 		fn, ok := h.handlers[key]
 		if !ok {
@@ -274,15 +280,20 @@ func (h *Host) buildContext(vm *goja.Runtime, s *invocationState) *goja.Object {
 			"blockId": s.input.Action.BlockID, "value": s.input.Action.Value,
 			"selectedOption":  s.input.Action.SelectedOption,
 			"selectedOptions": s.input.Action.SelectedOptions,
+			"selection":       s.input.Action.Selection,
 			"messageTs":       s.input.Action.MessageTS, "threadTs": s.input.Action.ThreadTS,
 		}
 		must(vm, c.Set("action", action))
 	} else {
 		must(vm, c.Set("action", goja.Undefined()))
 	}
+	if s.input.Shortcut != nil {
+		must(vm, c.Set("shortcut", map[string]any{"type": s.input.Shortcut.Type, "callbackId": s.input.Shortcut.CallbackID, "message": s.input.Shortcut.Message}))
+	}
 	if s.input.Interaction != nil {
 		interaction := s.input.Interaction
 		must(vm, c.Set("view", map[string]any{"type": interaction.Type, "callbackId": interaction.CallbackID, "privateMetadata": interaction.PrivateMetadata, "id": interaction.ViewID, "hash": interaction.ViewHash}))
+		must(vm, c.Set("query", interaction.Query))
 		values := vm.NewObject()
 		all := map[string]map[string]any{}
 		for blockID, actions := range interaction.Values {
@@ -330,6 +341,39 @@ func (h *Host) buildContext(vm *goja.Runtime, s *invocationState) *goja.Object {
 				return nil, interaction.Ack.Respond(s.ctx, slackbot.InteractionResponse{Kind: "errors", Errors: errs})
 			})
 		}))
+		for _, kind := range []string{"update", "options"} {
+			kind := kind
+			must(vm, ack.Set(kind, func(call goja.FunctionCall) goja.Value {
+				response := slackbot.InteractionResponse{Kind: kind}
+				if kind == "update" {
+					if interaction.Type != "view_submission" {
+						panic(vm.NewTypeError("ack.update requires view_submission"))
+					}
+					response.View = &slackbot.ModalView{}
+					must(vm, decode(vm, call.Argument(0), response.View))
+				} else {
+					if interaction.Type != "block_suggestion" {
+						panic(vm.NewTypeError("ack.options requires block_suggestion"))
+					}
+					raw, err := call.Argument(0).ToObject(vm).MarshalJSON()
+					must(vm, err)
+					must(vm, json.Unmarshal(raw, &response.Options))
+					if response.Options == nil {
+						response.Options = []slackbot.Block{}
+					}
+				}
+				must(vm, response.Validate())
+				if !s.chooseAck() {
+					panic(jsError(vm, slackbot.Fail("ack_already_sent", "ack", "interaction acknowledgment was already chosen")))
+				}
+				return h.async(vm, s, "ack", func() (any, error) {
+					if interaction.Ack == nil {
+						return nil, slackbot.Fail("unavailable", "ack", "no interaction acknowledgment capability")
+					}
+					return nil, interaction.Ack.Respond(s.ctx, response)
+				})
+			}))
+		}
 		must(vm, c.Set("ack", ack))
 	} else {
 		must(vm, c.Set("view", goja.Undefined()))
@@ -337,7 +381,11 @@ func (h *Host) buildContext(vm *goja.Runtime, s *invocationState) *goja.Object {
 		must(vm, c.Set("ack", goja.Undefined()))
 	}
 	must(vm, c.Set("openModal", func(call goja.FunctionCall) goja.Value {
-		if s.input.Action == nil || s.input.Action.TriggerID == "" {
+		trigger := s.input.TriggerID
+		if trigger == "" && s.input.Action != nil {
+			trigger = s.input.Action.TriggerID
+		}
+		if trigger == "" {
 			panic(jsError(vm, slackbot.Fail("unavailable", "views.open", "no modal trigger is available")))
 		}
 		if h.views == nil {
@@ -347,7 +395,7 @@ func (h *Host) buildContext(vm *goja.Runtime, s *invocationState) *goja.Object {
 		must(vm, decode(vm, call.Argument(0), &view))
 		must(vm, view.Validate())
 		return h.async(vm, s, "views.open", func() (any, error) {
-			ref, err := h.views.Open(s.ctx, s.input.Action.TriggerID, view)
+			ref, err := h.views.Open(s.ctx, trigger, view)
 			return map[string]any{"id": ref.ID, "hash": ref.Hash}, err
 		})
 	}))
@@ -359,6 +407,20 @@ func (h *Host) buildContext(vm *goja.Runtime, s *invocationState) *goja.Object {
 			panic(jsError(vm, err))
 		}
 		return h.async(vm, s, "reply", func() (any, error) { return h.sendReply(s, message) })
+	}))
+	must(vm, c.Set("replaceOriginal", func(call goja.FunctionCall) goja.Value {
+		if s.input.Action == nil {
+			panic(vm.NewTypeError("replaceOriginal requires a message action"))
+		}
+		updater, ok := s.responder.(slackbot.UpdatingResponder)
+		if !ok {
+			panic(jsError(vm, slackbot.Fail("unavailable", "replaceOriginal", "no response URL update capability")))
+		}
+		var message slackbot.MessagePayload
+		must(vm, decode(vm, call.Argument(0), &message))
+		must(vm, message.Validate("replaceOriginal"))
+		must(vm, claimReply(s))
+		return h.async(vm, s, "replaceOriginal", func() (any, error) { return nil, updater.Replace(s.ctx, message) })
 	}))
 	messages := vm.NewObject()
 	must(vm, messages.Set("post", func(call goja.FunctionCall) goja.Value {

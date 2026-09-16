@@ -184,3 +184,49 @@ See Step 2. **Assistant interpretation:** Build reusable native controls needed 
 ### Technical details
 - input's fourth argument accepts optional, hint and dispatch_action.
 - Static select options max100; overflow max5; checkbox/radio max10. Context max10. Existing message/modal block limits retained.
+
+## Step 4: Route shortcuts, external options and modal result acknowledgments
+
+Added the runtime routes required by context-menu equivalents and external selects. Slash commands and shortcuts retain their trigger IDs, while dynamic suggestions use the same explicit one-shot receipt path as modal submissions. Result views update through the ACK payload, without adding a scheduler or separate worker allocation.
+
+### Prompt Context
+See Step 2. **Assistant interpretation:** Implement T3 before porting handlers that depend on it. **Inferred user intent:** Working native interaction flows, not payload-only demonstrations.
+
+### What I did
+- Added shortcut and options registrations and manifest shortcuts/additional scopes.
+- Preserved selected_* fields in decoded actions and message context in shortcuts.
+- Added ack.options, ack.update, and response-URL replaceOriginal.
+- Added decoder and host workflow regression tests and TypeScript/help documentation.
+
+### Why
+- Global shortcuts have no message/channel destination; trigger-based modals provide their native interaction surface.
+- External suggestions and modal updates require payload ACKs, whereas ordinary actions retain immediate ACK behavior.
+
+### What worked
+- Targeted jsslack, slacktransport, slackcli and slackbot tests passed with loopback permission.
+- Tests cover command/shortcut modal triggers, message context, query result options, result view payloads and original-message replacement.
+
+### What didn't work
+- The first targeted test command in the sandbox failed: `httptest: failed to listen on a port: listen tcp6 [::1]:0: socket: operation not permitted`.
+- Re-ran the same tests with escalation for local listener access; all passed.
+
+### What I learned
+- Modern selected-user/channel/date values must be preserved independently of selected_option.
+
+### What was tricky to build
+- Suggestions must enter the existing explicit-ACK path so automatic ingress acknowledgment does not discard their response payload.
+
+### What warrants a second pair of eyes
+- These routes have offline verification; Slack workspace acceptance remains untested.
+- Global shortcut handlers must not assume a response URL exists.
+
+### What should be done in the future
+- Implement service methods for persistent message updates and other operational bot workflows.
+
+### Code review instructions
+- Review run.go decoding/receipt serialization, dispatch.go context methods, and interactions_test.go.
+
+### Technical details
+- Response payloads are retained by the existing ACK replay cache.
+- Native options use up to100 option objects; ack.update contains a validated modal view.
+- No new scheduler, reservation mechanism or compatibility API was introduced.

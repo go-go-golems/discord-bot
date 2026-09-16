@@ -223,11 +223,22 @@ func (r *responder) Reply(ctx context.Context, text slackbot.Text) error {
 	return r.ReplyMessage(ctx, slackbot.MessagePayload{Text: text.Text})
 }
 
+var _ slackbot.UpdatingResponder = (*responder)(nil)
+
+func (r *responder) Replace(ctx context.Context, message slackbot.MessagePayload) error {
+	return r.sendMessage(ctx, message, true)
+}
 func (r *responder) ReplyMessage(ctx context.Context, message slackbot.MessagePayload) error {
+	return r.sendMessage(ctx, message, false)
+}
+func (r *responder) sendMessage(ctx context.Context, message slackbot.MessagePayload, replace bool) error {
 	if err := message.Validate("reply"); err != nil {
 		return err
 	}
 	bodyValue := map[string]any{"response_type": "ephemeral", "text": message.Text}
+	if replace {
+		bodyValue["replace_original"] = true
+	}
 	if message.Blocks != nil {
 		blocks := make([]map[string]any, len(message.Blocks))
 		for i, block := range message.Blocks {

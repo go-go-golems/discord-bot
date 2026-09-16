@@ -109,10 +109,22 @@ type Responder interface {
 // RichResponder is implemented by response URL transports that can preserve
 // Block Kit payloads. Text-only responders remain valid for simple tests and
 // integrations; callers must check this capability before sending blocks.
+type UpdatingResponder interface {
+	Replace(context.Context, MessagePayload) error
+}
+
 type RichResponder interface {
 	ReplyMessage(context.Context, MessagePayload) error
 }
+type Shortcut struct {
+	Type       string         `json:"type"`
+	CallbackID string         `json:"callbackId"`
+	Message    map[string]any `json:"message,omitempty"`
+}
+
 type Invocation struct {
+	TriggerID   string       `json:"triggerId,omitempty"`
+	Shortcut    *Shortcut    `json:"shortcut,omitempty"`
 	ID          string       `json:"id"`
 	TeamID      string       `json:"teamId"`
 	ChannelID   string       `json:"channelId"`
@@ -130,6 +142,7 @@ type Invocation struct {
 // bot. Selection fields remain detached JSON so the transport can preserve
 // Slack's different element-specific values without exposing SDK objects.
 type Action struct {
+	Selection       map[string]any `json:"selection,omitempty"`
 	Type            string         `json:"type"`
 	ActionID        string         `json:"actionId"`
 	BlockID         string         `json:"blockId,omitempty"`
@@ -146,8 +159,10 @@ type Action struct {
 func (a Action) ID() string { return a.ActionID }
 
 type InteractionResponse struct {
-	Kind   string            `json:"kind"`
-	Errors map[string]string `json:"errors,omitempty"`
+	View    *ModalView        `json:"view,omitempty"`
+	Options []Block           `json:"options,omitempty"`
+	Kind    string            `json:"kind"`
+	Errors  map[string]string `json:"errors,omitempty"`
 }
 
 type InteractionAcknowledger interface {
@@ -155,6 +170,7 @@ type InteractionAcknowledger interface {
 }
 
 type Interaction struct {
+	Query           string                    `json:"query,omitempty"`
 	Type            string                    `json:"type"`
 	CallbackID      string                    `json:"callbackId"`
 	PrivateMetadata string                    `json:"privateMetadata,omitempty"`
@@ -212,6 +228,9 @@ func (i Invocation) Validate() error {
 	if i.Event != "" {
 		kinds++
 	}
+	if i.Shortcut != nil {
+		kinds++
+	}
 	if i.Action != nil {
 		kinds++
 	}
@@ -249,15 +268,25 @@ type Command struct {
 	Name        string `json:"name"`
 	Description string `json:"description"`
 }
+type ShortcutDefinition struct {
+	CallbackID  string `json:"callbackId"`
+	Name        string `json:"name"`
+	Description string `json:"description"`
+	Type        string `json:"type"`
+}
+
 type Descriptor struct {
-	Name        string    `json:"name"`
-	Description string    `json:"description"`
-	ScriptPath  string    `json:"scriptPath"`
-	Run         RunSchema `json:"run"`
-	Commands    []Command `json:"commands"`
-	Events      []string  `json:"events"`
-	Actions     []string  `json:"actions,omitempty"`
-	Views       []string  `json:"views,omitempty"`
+	Shortcuts   []ShortcutDefinition `json:"shortcuts,omitempty"`
+	Options     []string             `json:"options,omitempty"`
+	Scopes      []string             `json:"scopes,omitempty"`
+	Name        string               `json:"name"`
+	Description string               `json:"description"`
+	ScriptPath  string               `json:"scriptPath"`
+	Run         RunSchema            `json:"run"`
+	Commands    []Command            `json:"commands"`
+	Events      []string             `json:"events"`
+	Actions     []string             `json:"actions,omitempty"`
+	Views       []string             `json:"views,omitempty"`
 }
 
 var namePattern = regexp.MustCompile(`^[a-z][a-z0-9-]*$`)
@@ -317,4 +346,25 @@ func (d Descriptor) Config(input map[string]any) (map[string]any, error) {
 		out[name] = value
 	}
 	return out, nil
+}
+
+// Validate constrains payload acknowledgments before claiming their one-shot receipt.
+func (r InteractionResponse) Validate() error {
+	switch r.Kind {
+	case "accept":
+		return nil
+	case "errors":
+		if len(r.Errors) > 0 {
+			return nil
+		}
+	case "update":
+		if r.View != nil {
+			return r.View.Validate()
+		}
+	case "options":
+		if len(r.Options) <= 100 {
+			return nil
+		}
+	}
+	return Fail("invalid_argument", "ack", "invalid acknowledgment payload")
 }

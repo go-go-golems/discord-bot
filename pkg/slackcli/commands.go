@@ -251,15 +251,34 @@ func Manifest(d slackbot.Descriptor) map[string]any {
 		commands = append(commands, map[string]any{"command": c.Name, "description": c.Description, "should_escape": true})
 	}
 	scopes := []string{"chat:write"}
-	if len(commands) > 0 {
+	if len(commands) > 0 || len(d.Shortcuts) > 0 {
 		scopes = append(scopes, "commands")
 	}
 	if len(d.Events) > 0 {
 		scopes = append(scopes, "app_mentions:read")
 	}
+	for _, scope := range d.Scopes {
+		found := false
+		for _, existing := range scopes {
+			if existing == scope {
+				found = true
+				break
+			}
+		}
+		if !found {
+			scopes = append(scopes, scope)
+		}
+	}
 	features := map[string]any{"bot_user": map[string]any{"display_name": d.Name, "always_online": false}}
 	if len(commands) > 0 {
 		features["slash_commands"] = commands
+	}
+	if len(d.Shortcuts) > 0 {
+		shortcuts := []map[string]any{}
+		for _, shortcut := range d.Shortcuts {
+			shortcuts = append(shortcuts, map[string]any{"name": shortcut.Name, "description": shortcut.Description, "callback_id": shortcut.CallbackID, "type": shortcut.Type})
+		}
+		features["shortcuts"] = shortcuts
 	}
 	settings := map[string]any{"socket_mode_enabled": true, "interactivity": map[string]any{"is_enabled": true}}
 	if len(d.Events) > 0 {

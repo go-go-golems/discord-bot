@@ -50,11 +50,13 @@ func (h *Host) loader(vm *goja.Runtime, module *goja.Object) {
 				Name        string             `json:"name"`
 				Description string             `json:"description"`
 				Run         slackbot.RunSchema `json:"run"`
+				Scopes      []string           `json:"scopes"`
 			}
 			must(vm, decode(vm, c.Argument(0), &cfg))
 			h.descriptor.Name = cfg.Name
 			h.descriptor.Description = cfg.Description
 			h.descriptor.Run = cfg.Run
+			h.descriptor.Scopes = cfg.Scopes
 			h.configured = true
 			return goja.Undefined()
 		}))
@@ -90,6 +92,25 @@ func (h *Host) loader(vm *goja.Runtime, module *goja.Object) {
 			}
 			h.register(vm, "action:"+name, c.Argument(1))
 			h.descriptor.Actions = append(h.descriptor.Actions, name)
+			return goja.Undefined()
+		}))
+		must(vm, api.Set("shortcut", func(c goja.FunctionCall) goja.Value {
+			var spec slackbot.ShortcutDefinition
+			must(vm, decode(vm, c.Argument(0), &spec))
+			if spec.CallbackID == "" || spec.Name == "" || spec.Description == "" || (spec.Type != "message" && spec.Type != "global") {
+				panic(vm.NewTypeError("shortcut requires callbackId, name, description and type message/global"))
+			}
+			h.register(vm, "shortcut:"+spec.CallbackID, c.Argument(1))
+			h.descriptor.Shortcuts = append(h.descriptor.Shortcuts, spec)
+			return goja.Undefined()
+		}))
+		must(vm, api.Set("options", func(c goja.FunctionCall) goja.Value {
+			id := argString(c, 0)
+			if id == "" {
+				panic(vm.NewTypeError("options requires action id"))
+			}
+			h.register(vm, "options:"+id, c.Argument(1))
+			h.descriptor.Options = append(h.descriptor.Options, id)
 			return goja.Undefined()
 		}))
 		must(vm, api.Set("view", func(c goja.FunctionCall) goja.Value {
